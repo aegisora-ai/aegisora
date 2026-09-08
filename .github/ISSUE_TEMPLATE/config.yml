@@ -3,17 +3,17 @@ blank_issues_enabled: false
 contact_links:
 
 * name: Security Vulnerability
-  url: https://github.com/aegisora-ai/aegisora.ai/security
+  url: https://github.com/aegisora-ai/aegisora/security
   about: Report security vulnerabilities privately according to SECURITY.md.
 
 * name: GitHub Discussions
-  url: https://github.com/aegisora-ai/aegisora.ai/discussions
+  url: https://github.com/aegisora-ai/aegisora/discussions
   about: Ask questions, discuss ideas, and propose larger changes.
 
 * name: Support Guide
-  url: https://github.com/aegisora-ai/aegisora.ai/blob/main/SUPPORT.md
+  url: https://github.com/aegisora-ai/aegisora/blob/main/SUPPORT.md
   about: Find the correct channel for support, bugs, features, and development questions.
 
 * name: Contributing Guide
-  url: https://github.com/aegisora-ai/aegisora.ai/blob/main/CONTRIBUTING.md
+  url: https://github.com/aegisora-ai/aegisora/blob/main/CONTRIBUTING.md
   about: Learn how to contribute code, documentation, tests, and security improvements.

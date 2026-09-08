@@ -315,9 +315,9 @@ For critical security issues, follow [`Security Policy`](./docs/security/validat
 
 ## Important Links
 
-* [Aegisora Repository](https://github.com/aegisora-ai/aegisora.ai)
-* [GitHub Issues](https://github.com/aegisora-ai/aegisora.ai/issues)
-* [GitHub Discussions](https://github.com/aegisora-ai/aegisora.ai/discussions)
+* [Aegisora Repository](https://github.com/aegisora-ai/aegisora)
+* [GitHub Issues](https://github.com/aegisora-ai/aegisora/issues)
+* [GitHub Discussions](https://github.com/aegisora-ai/aegisora/discussions)
 * [Contributing Guide](./CONTRIBUTING.md)
 * [Security Policy](./docs/security/validation.md)
 * [Architecture](./docs/)

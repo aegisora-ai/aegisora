@@ -92,8 +92,8 @@ The repository currently uses pnpm and Turbo-based project scripts. See `package
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/aegisora-ai/aegisora.ai.git
-cd aegisora.ai
+git clone https://github.com/aegisora-ai/aegisora.git
+cd aegisora
 ```
 
 ### Install Dependencies

@@ -11,8 +11,8 @@ Clean-clone onboarding path for developers and engineering teams.
 ## Clone
 
 ```bash
-git clone https://github.com/aegisora-ai/aegisora.ai.git
-cd aegisora.ai
+git clone https://github.com/aegisora-ai/aegisora.git
+cd aegisora
 ```
 
 ## Install

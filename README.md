@@ -21,11 +21,11 @@
     <a href="https://opensource.org/licenses/MIT">
       <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License">
     </a>
-    <a href="https://github.com/aegisora-ai/aegisora.ai/releases">
-      <img src="https://img.shields.io/github/v/release/aegisora-ai/aegisora.ai?color=green&label=release" alt="Release">
+    <a href="https://github.com/aegisora-ai/aegisora/releases">
+      <img src="https://img.shields.io/github/v/release/aegisora-ai/aegisora?color=green&label=release" alt="Release">
     </a>
-    <a href="https://github.com/aegisora-ai/aegisora.ai/actions">
-      <img src="https://img.shields.io/github/actions/workflow/status/aegisora-ai/aegisora.ai/ci.yml?branch=main&label=CI" alt="CI status">
+    <a href="https://github.com/aegisora-ai/aegisora/actions">
+      <img src="https://img.shields.io/github/actions/workflow/status/aegisora-ai/aegisora/ci.yml?branch=main&label=CI" alt="CI status">
     </a>
     <a href="https://nextjs.org">
       <img src="https://img.shields.io/badge/Next.js-14%2B-black" alt="Next.js">
@@ -53,9 +53,9 @@
   <p>
     <a href="https://aegisora-ai.vercel.app"><strong>Live Demo</strong></a>
     &nbsp;·&nbsp;
-    <a href="https://github.com/aegisora-ai/aegisora.ai/tree/main/docs"><strong>Architecture</strong></a>
+    <a href="https://github.com/aegisora-ai/aegisora/tree/main/docs"><strong>Architecture</strong></a>
     &nbsp;·&nbsp;
-    <a href="https://github.com/aegisora-ai/aegisora.ai/blob/main/docs/security/validation.md"><strong>Security</strong></a>
+    <a href="https://github.com/aegisora-ai/aegisora/blob/main/docs/security/validation.md"><strong>Security</strong></a>
     &nbsp;·&nbsp;
     <a href="https://discord.gg/8CM3PpQRT5"><strong>Discord</strong></a>
   </p>
@@ -298,8 +298,8 @@ The runtime model is intended to remain provider-agnostic: the security and gove
 Clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/aegisora-ai/aegisora.ai.git
-cd aegisora.ai
+git clone https://github.com/aegisora-ai/aegisora.git
+cd aegisora
 pnpm install
 ```
 
@@ -444,7 +444,7 @@ The project roadmap focuses on strengthening:
 - provider and tool integrations,
 - and production-grade governance.
 
-See the repository's [Issues](https://github.com/aegisora-ai/aegisora.ai/issues) and [Releases](https://github.com/aegisora-ai/aegisora.ai/releases) for the current project status.
+See the repository's [Issues](https://github.com/aegisora-ai/aegisora/issues) and [Releases](https://github.com/aegisora-ai/aegisora/releases) for the current project status.
 
 ---
 
@@ -466,7 +466,7 @@ For project discussion and community collaboration, join the [Aegisora Discord](
 
 ## Community
 
-- **GitHub:** https://github.com/aegisora-ai/aegisora.ai
+- **GitHub:** https://github.com/aegisora-ai/aegisora
 - **Live Demo:** https://aegisora-ai.vercel.app
 - **Discord:** https://discord.gg/8CM3PpQRT5
 - **Product Hunt:** https://www.producthunt.com/posts/aegisora
