@@ -81,3 +81,6 @@ security-evidence/
 
 .vercel
 .env*
+
+# Aegisora security benchmark generated results
+core/packages/runtime/benchmark/results/

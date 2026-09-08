@@ -15,7 +15,8 @@
     "scripts":  {
                     "build":  "tsc",
                     "test":  "tsx test/run-all.ts",
-                    "test:live":  "tsx test/trace-94-live-groq-governance.ts"
+                    "test:live":  "tsx test/trace-94-live-groq-governance.ts",
+                    "benchmark:security":  "tsx benchmark/run-agent-security-benchmark.ts"
                 },
     "dependencies":  {
                          "@aegisora/core":  "workspace:*",
@@ -23,7 +24,8 @@
                          "@aegisora/plugins":  "workspace:*",
                          "@aegisora/policy-engine":  "workspace:*",
                          "@aegisora/security-engine":  "workspace:*",
-                         "@aegisora/audit":  "workspace:*"
+                         "@aegisora/audit":  "workspace:*",
+                         "@supabase/supabase-js":  "2.112.4"
                      },
     "devDependencies":  {
                             "@types/node":  "^20.19.43",
