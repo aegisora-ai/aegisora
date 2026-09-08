@@ -24,8 +24,7 @@
                          "@aegisora/plugins":  "workspace:*",
                          "@aegisora/policy-engine":  "workspace:*",
                          "@aegisora/security-engine":  "workspace:*",
-                         "@aegisora/audit":  "workspace:*",
-                         "@supabase/supabase-js":  "2.112.4"
+                         "@aegisora/audit":  "workspace:*"
                      },
     "devDependencies":  {
                             "@types/node":  "^20.19.43",
