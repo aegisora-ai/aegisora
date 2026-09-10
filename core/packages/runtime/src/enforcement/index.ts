@@ -9,3 +9,5 @@ export type {
   EnforcementThreat,
   EnforcementAuditRecord,
 } from "./types";
+
+export * from "./enterprise-entitlement-bridge";

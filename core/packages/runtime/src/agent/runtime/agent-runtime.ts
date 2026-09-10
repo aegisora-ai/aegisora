@@ -34,6 +34,14 @@ import { EnforcementGate } from "../../enforcement";
 import { ProviderExecutionGateway } from "../../providers";
 import { CollaborationManager } from "../../collaboration";
 
+import {
+  EnterpriseRuntimeApprovalBridge,
+} from "@aegisora/core";
+
+import type {
+  EnterpriseApprovalRuntimeConfig,
+} from "../../enforcement/types";
+
 export interface AgentExecutionRequest {
   agentId: string;
   goal: string;
@@ -111,7 +119,32 @@ export class AgentRuntime {
     this.learning,
   );
 
-  constructor() {
+  constructor(
+    enterpriseApprovalConfig?: EnterpriseApprovalRuntimeConfig,
+  ) {
+
+    if (enterpriseApprovalConfig) {
+
+      const normalized =
+        {
+          ...enterpriseApprovalConfig,
+
+          bridge:
+            enterpriseApprovalConfig.bridge ??
+            new EnterpriseRuntimeApprovalBridge(),
+        };
+
+      this.enforcement
+        .configureEnterpriseApproval(
+          normalized,
+        );
+
+      this.providerGateway
+        .configureEnterpriseApproval(
+          normalized,
+        );
+    }
+
     this.tools.setEnforcementGate(this.enforcement);
     this.tools.register(new EchoTool());
   }

@@ -1,47 +1,48 @@
 {
-    "name":  "@aegisora/runtime",
-    "version":  "2.0.0",
-    "description":  "Aegisora runtime governance engine for autonomous AI agents.",
-    "license":  "MIT",
-    "main":  "./dist/index.js",
-    "types":  "./dist/index.d.ts",
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/index.d.ts",
-                              "require":  "./dist/index.js",
-                              "default":  "./dist/index.js"
-                          }
-                },
-    "scripts":  {
-                    "build":  "tsc",
-                    "test":  "tsx test/run-all.ts",
-                    "test:live":  "tsx test/trace-94-live-groq-governance.ts",
-                    "benchmark:security":  "tsx benchmark/run-agent-security-benchmark.ts"
-                },
-    "dependencies":  {
-                         "@aegisora/core":  "workspace:*",
-                         "@aegisora/observability":  "workspace:*",
-                         "@aegisora/plugins":  "workspace:*",
-                         "@aegisora/policy-engine":  "workspace:*",
-                         "@aegisora/security-engine":  "workspace:*",
-                         "@aegisora/audit":  "workspace:*"
-                     },
-    "devDependencies":  {
-                            "@types/node":  "^20.19.43",
-                            "tsx":  "^4",
-                            "typescript":  "^5"
-                        },
-    "files":  [
-                  "dist",
-                  "README.md",
-                  "LICENSE"
-              ],
-    "repository":  {
-                       "type":  "git",
-                       "url":  "git+https://github.com/aegisora-ai/aegisora.git"
-                   },
-    "bugs":  {
-                 "url":  "https://github.com/aegisora-ai/aegisora/issues"
-             },
-    "homepage":  "https://docs.aegisora.org"
+    "name": "@aegisora/runtime",
+    "version": "2.0.0",
+    "description": "Aegisora runtime governance engine for autonomous AI agents.",
+    "license": "MIT",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "require": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsc",
+        "test": "tsx test/run-all.ts",
+        "test:live": "tsx test/trace-94-live-groq-governance.ts",
+        "benchmark:security": "tsx benchmark/run-agent-security-benchmark.ts"
+    },
+    "dependencies": {
+        "@aegisora/audit": "workspace:*",
+        "@aegisora/core": "workspace:*",
+        "@aegisora/observability": "workspace:*",
+        "@aegisora/plugins": "workspace:*",
+        "@aegisora/policy-engine": "workspace:*",
+        "@aegisora/security-engine": "workspace:*",
+        "@supabase/supabase-js": "2.112.4"
+    },
+    "devDependencies": {
+        "@types/node": "^20.19.43",
+        "tsx": "^4",
+        "typescript": "^5"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aegisora-ai/aegisora.git"
+    },
+    "bugs": {
+        "url": "https://github.com/aegisora-ai/aegisora/issues"
+    },
+    "homepage": "https://docs.aegisora.org"
 }

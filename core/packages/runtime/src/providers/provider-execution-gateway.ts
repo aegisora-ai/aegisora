@@ -1,3 +1,21 @@
+import type {
+  EnterpriseApprovalRuntimeConfig,
+} from "../enforcement/types";
+
+import type {
+  EnterpriseEntitlementRuntimeConfig,
+} from "../enforcement/enterprise-entitlement-bridge";
+import type {
+  EnterpriseEvidenceRuntimeConfig,
+} from "../enforcement/enterprise-evidence-bridge";
+
+import {
+  EnterpriseUsageRuntimeBridge,
+} from "../enforcement/enterprise-usage-bridge";
+
+import type {
+  EnterpriseUsageRuntimeConfig,
+} from "../enforcement/enterprise-usage-bridge";
 import { ProviderRouter } from "./provider-router";
 import type { ProviderName } from "./provider-router";
 
@@ -9,6 +27,10 @@ import type {
 } from "./base-provider";
 
 import { EnforcementGate } from "../enforcement";
+
+import {
+  ApprovalEngine,
+} from "../approval";
 
 import { RuntimeContext } from "../context/runtime-context";
 
@@ -37,8 +59,11 @@ export interface ProviderExecutionRequest {
 export class ProviderExecutionGateway {
 
   private readonly enforcement: EnforcementGate;
+  private readonly approvalEngine: ApprovalEngine;
 
-  private readonly router: ProviderRouter;
+    private enterpriseUsageBridge?: EnterpriseUsageRuntimeBridge;
+
+    private readonly router: ProviderRouter;
 
   private readonly manager: ProviderManager;
 
@@ -52,6 +77,9 @@ export class ProviderExecutionGateway {
     manager?: ProviderManager,
     permissions: PermissionEngine = new PermissionEngine(),
     providerExecutionToken?: symbol,
+    approvalEngine: ApprovalEngine = new ApprovalEngine(),
+    enterpriseApprovalConfig?: EnterpriseApprovalRuntimeConfig,
+    enterpriseEntitlementConfig?: EnterpriseEntitlementRuntimeConfig,
   ) {
 
     let token: symbol | undefined;
@@ -84,9 +112,15 @@ export class ProviderExecutionGateway {
     this.providerExecutionToken = token;
     this.routerCapabilityOwned = ownsRouterCapability;
 
+    this.approvalEngine =
+      approvalEngine;
+
     this.enforcement = new EnforcementGate(
       context,
       permissions,
+      this.approvalEngine,
+      enterpriseApprovalConfig,
+      enterpriseEntitlementConfig,
     );
   }
 
@@ -284,6 +318,56 @@ export class ProviderExecutionGateway {
           providerRequest,
           providerContext
         );
+      if (
+        this.enterpriseUsageBridge &&
+        response.usage
+      ) {
+        await this.enterpriseUsageBridge.record({
+          traceId:
+            enforcement.traceId,
+
+          decisionId:
+            enforcement.decisionId,
+
+          executionId:
+            enforcement.executionId,
+
+          evidenceId:
+            enforcement.evidenceId,
+
+          agentId:
+            input.agentId,
+
+          // Canonical identities come from the gateway.
+          // ProviderResponse.provider/model are never trusted.
+          providerId:
+            providerName,
+
+          modelId:
+            model,
+
+          outcome:
+            "executed",
+
+          usage: {
+            promptTokens:
+              response.usage.promptTokens,
+
+            completionTokens:
+              response.usage.completionTokens,
+
+            totalTokens:
+              response.usage.totalTokens,
+          },
+
+          metadata: {
+            ...(input.context?.metadata ?? {}),
+            ...(input.metadata ?? {}),
+            source:
+              "provider-execution-gateway",
+          },
+        });
+      }
 
       providerContext.response =
         response.output;
@@ -302,8 +386,78 @@ export class ProviderExecutionGateway {
     }
   }
 
-  getDefaultModel(
-    provider: ProviderName
+  getApprovalEngine(): ApprovalEngine {
+    return this.approvalEngine;
+  }
+
+  configureEnterpriseApproval(
+    config: EnterpriseApprovalRuntimeConfig,
+  ): void {
+
+    this.enforcement.configureEnterpriseApproval(
+      config,
+    );
+  }
+
+  getEnterpriseApprovalBridge() {
+    return this.enforcement
+      .getEnterpriseApprovalBridge();
+  }
+
+  configureEnterpriseAudit(
+    config: EnterpriseAuditRuntimeConfig,
+  ): void {
+    this.enforcement.configureEnterpriseAudit(config);
+  }
+  configureEnterpriseEvidence(
+    config: EnterpriseEvidenceRuntimeConfig,
+  ): void {
+    this.enforcement.configureEnterpriseEvidence(
+      config,
+    );
+  }
+
+  getEnterpriseAuditBridge() {
+    return this.enforcement
+      .getEnterpriseAuditBridge();
+  }
+  getEnterpriseEvidenceBridge() {
+    return this.enforcement
+      .getEnterpriseEvidenceBridge();
+  }
+    configureEnterpriseEntitlement(
+    config: EnterpriseEntitlementRuntimeConfig,
+  ): void {
+    this.enforcement.configureEnterpriseEntitlement(
+      config,
+    );
+  }
+
+  getEnterpriseEntitlementBridge() {
+    return this.enforcement
+      .getEnterpriseEntitlementBridge();
+  }
+  configureEnterpriseUsage(
+      config: EnterpriseUsageRuntimeConfig,
+    ): void {
+      if (this.enterpriseUsageBridge) {
+        throw new Error(
+          "Enterprise usage bridge is already configured.",
+        );
+      }
+
+      this.enterpriseUsageBridge =
+        new EnterpriseUsageRuntimeBridge(
+          config,
+        );
+    }
+
+    getEnterpriseUsageBridge() {
+      return this.enterpriseUsageBridge;
+    }
+
+    getDefaultModel(
+      provider: ProviderName
   ): string {
     return this.manager.getDefaultModel(
       provider
@@ -322,3 +476,5 @@ export class ProviderExecutionGateway {
     );
   }
 }
+
+import type { EnterpriseAuditRuntimeConfig } from "../enforcement/enterprise-audit-bridge";

@@ -1,4 +1,4 @@
-import type { RuntimeContext } from "../context/runtime-context";
+﻿import type { RuntimeContext } from "../context/runtime-context";
 
 export type EnforcementDecision =
   | "ALLOW"
@@ -69,4 +69,33 @@ export interface EnforcementDependencies {
   audit?: {
     record(record: EnforcementAuditRecord): Promise<unknown> | unknown;
   };
+}
+
+import type {
+  EnterpriseRuntimeApprovalBridge,
+} from "@aegisora/core";
+
+export interface EnterpriseApprovalRuntimeConfig {
+
+  /**
+   * Trusted workspace scope established by the
+   * enterprise bootstrap layer.
+   *
+   * NEVER derive this from request.metadata.
+   */
+  readonly workspaceId: string;
+
+  /**
+   * Trusted requester/principal identity established
+   * by the enterprise bootstrap layer.
+   */
+  readonly requesterId: string;
+
+  /**
+   * Shared enterprise/runtime approval bridge.
+   *
+   * A shared instance is required when multiple runtime
+   * enforcement boundaries participate in the same process.
+   */
+  readonly bridge?: EnterpriseRuntimeApprovalBridge;
 }

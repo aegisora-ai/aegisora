@@ -1,4 +1,4 @@
-{
+﻿{
     "name":  "aegisora-core",
     "version":  "0.1.0",
     "private":  true,
@@ -11,8 +11,9 @@
                     "verify":  "pnpm build \u0026\u0026 pnpm typecheck \u0026\u0026 pnpm test"
                 },
     "devDependencies":  {
+                            "supabase":  "2.116.0",
+                            "tsx":  "^4.23.10",
                             "turbo":  "^2.10.8",
-                            "typescript":  "^5",
-                            "tsx":  "^4.23.10"
+                            "typescript":  "^5"
                         }
 }
