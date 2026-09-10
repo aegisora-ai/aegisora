@@ -28,7 +28,7 @@ Security vulnerabilities should be reported privately so they can be investigate
 
 ### Security Contact
 
-**[security@aegisora.ai](mailto:security@aegisora.ai)**
+**[security@aegisora.com](mailto:security@aegisora.com)**
 
 Please use this address for confidential vulnerability reports.
 
@@ -211,7 +211,7 @@ Additional security and architecture information is available in:
 
 For confidential security reports and security-related questions:
 
-**[security@aegisora.ai](mailto:security@aegisora.ai)**
+**[security@aegisora.com](mailto:security@aegisora.com)**
 
 Please do not include passwords, API keys, private credentials, or unrelated sensitive information in your initial report.
 
