@@ -28,7 +28,7 @@ Security vulnerabilities should be reported privately so they can be investigate
 
 ### Security Contact
 
-**[security@aegisora.com](mailto:security@aegisora.com)**
+**[security@aegisora.org](mailto:security@aegisora.org)**
 
 Please use this address for confidential vulnerability reports.
 
@@ -211,7 +211,7 @@ Additional security and architecture information is available in:
 
 For confidential security reports and security-related questions:
 
-**[security@aegisora.com](mailto:security@aegisora.com)**
+**[security@aegisora.org](mailto:security@aegisora.org)**
 
 Please do not include passwords, API keys, private credentials, or unrelated sensitive information in your initial report.
 
@@ -236,3 +236,5 @@ They do not constitute independent certification, attestation, or a guarantee th
 
 Security readiness is continuously validated by
 [Security Readiness CI](./.github/workflows/security-readiness.yml).
+
+Official website: https://aegisora.org
