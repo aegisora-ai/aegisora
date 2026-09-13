@@ -30,3 +30,15 @@ export type {
   ResolveEnterpriseRuntimeApprovalInput,
   ConsumeEnterpriseRuntimeApprovalInput,
 } from "./bridge";
+
+export {
+  EnterpriseApprovalWorkflow,
+} from "./workflow";
+
+export type {
+  ApprovalWorkflowActor,
+  CreateApprovalWorkflowInput,
+  ResolveApprovalWorkflowInput,
+  ApprovalWorkflowRecord,
+  EnterpriseApprovalWorkflowOptions,
+} from "./workflow";
