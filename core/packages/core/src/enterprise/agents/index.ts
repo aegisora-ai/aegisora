@@ -7,6 +7,13 @@ export {
   discoverAgents,
 } from "./discovery";
 
+export {
+  AgentFleetEngine,
+  type AgentFleetQuery,
+  type AgentFleetSummary,
+  type AgentFleetSnapshot,
+} from "./fleet";
+
 export type {
   AgentId,
   AgentStatus,
