@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   WorkspaceId,
 } from "../access";
 
@@ -181,7 +181,7 @@ export class InMemoryPolicyRegistry
 
     const id =
       policyVersionId(
-        `${input.policyId}:v${versionNumber}`,
+        `${input.workspaceId}:${input.policyId}:v${versionNumber}`,
       );
 
     const validation =
@@ -501,3 +501,4 @@ export class InMemoryPolicyRegistry
     );
   }
 }
+

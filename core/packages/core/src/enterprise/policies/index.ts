@@ -35,3 +35,14 @@ export type {
   PolicyDiscoveryQuery,
   PolicyVersionDiscoveryQuery,
 } from "./types";
+
+export {
+  PolicySimulator,
+  type PolicyDecisionStatus,
+  type PolicyDecisionTransition,
+  type PolicySimulationRequest,
+  type PolicySimulationTransitionSummary,
+  type PolicySimulationCase,
+  type PolicySimulationResult,
+  type PolicySimulatorOptions,
+} from "./simulator";
