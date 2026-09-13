@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 
 import {
   ApprovalEngine,
@@ -396,6 +396,195 @@ async function main(): Promise<void> {
   );
 
   // ========================================================
+  // CANONICALIZATION HARDENING
+  // ========================================================
+
+  console.log(
+    "[9] Testing approval-binding serialization hardening...",
+  );
+
+  const undefinedApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: 100,
+        limit: undefined,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  const absentApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: 100,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  assert.notEqual(
+    undefinedApproval.requestHash,
+    absentApproval.requestHash,
+    "undefined property must not collide with absent property",
+  );
+
+  console.log(
+    "undefined property vs absent property: PASS",
+  );
+
+  const nanApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: Number.NaN,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  const nullApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: null,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  assert.notEqual(
+    nanApproval.requestHash,
+    nullApproval.requestHash,
+    "NaN must not collide with null",
+  );
+
+  console.log(
+    "NaN vs null: PASS",
+  );
+
+  const infinityApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: Number.POSITIVE_INFINITY,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  assert.notEqual(
+    infinityApproval.requestHash,
+    nullApproval.requestHash,
+    "Infinity must not collide with null",
+  );
+
+  assert.notEqual(
+    infinityApproval.requestHash,
+    nanApproval.requestHash,
+    "Infinity must not collide with NaN",
+  );
+
+  console.log(
+    "Infinity vs null/NaN: PASS",
+  );
+
+  const negativeInfinityApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: Number.NEGATIVE_INFINITY,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  assert.notEqual(
+    negativeInfinityApproval.requestHash,
+    nullApproval.requestHash,
+    "-Infinity must not collide with null",
+  );
+
+  assert.notEqual(
+    negativeInfinityApproval.requestHash,
+    infinityApproval.requestHash,
+    "-Infinity must not collide with Infinity",
+  );
+
+  console.log(
+    "-Infinity remains distinct: PASS",
+  );
+
+  const explicitNullApproval =
+    engine.create({
+      agentId,
+      action: "provider.generate",
+      traceId: crypto.randomUUID(),
+      decisionId: crypto.randomUUID(),
+      executionId: crypto.randomUUID(),
+      request: {
+        tool: "transfer",
+        amount: null,
+      },
+      expiresAt:
+        new Date(
+          Date.now() + 60_000,
+        ).toISOString(),
+    });
+
+  assert.match(
+    explicitNullApproval.requestHash,
+    /^[0-9a-f]{64}$/i,
+  );
+
+  console.log(
+    "Explicit null remains valid: PASS",
+  );
+
+  // ========================================================
   // EXPIRY
   // ========================================================
 
@@ -579,28 +768,28 @@ async function main(): Promise<void> {
     "============================================================",
   );
   console.log(
-    "Canonical approval contract       ✅",
+    "Canonical approval contract       ?",
   );
   console.log(
-    "Pending -> Approved               ✅",
+    "Pending -> Approved               ?",
   );
   console.log(
-    "Approved -> Consumed              ✅",
+    "Approved -> Consumed              ?",
   );
   console.log(
-    "Replay protection                 ✅",
+    "Replay protection                 ?",
   );
   console.log(
-    "Request binding                   ✅",
+    "Request binding                   ?",
   );
   console.log(
-    "Agent binding                     ✅",
+    "Agent binding                     ?",
   );
   console.log(
-    "Expiry enforcement                ✅",
+    "Expiry enforcement                ?",
   );
   console.log(
-    "Rejection enforcement             ✅",
+    "Rejection enforcement             ?",
   );
 }
 

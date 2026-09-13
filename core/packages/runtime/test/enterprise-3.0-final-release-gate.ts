@@ -1,4 +1,6 @@
-﻿import { execSync } from "node:child_process";
+import { execSync } from "node:child_process";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 type Case = {
   name: string;
@@ -6,7 +8,18 @@ type Case = {
   args: string[];
 };
 
-const root = process.cwd();
+const testDir = dirname(
+  fileURLToPath(import.meta.url),
+);
+
+const runtimeRoot = dirname(
+  testDir,
+);
+
+const root = resolve(
+  runtimeRoot,
+  "../..",
+);
 
 const pnpmCommand =
   process.platform === "win32"

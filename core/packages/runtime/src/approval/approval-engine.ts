@@ -566,49 +566,86 @@ export class ApprovalEngine {
   private canonicalize(
     value: unknown,
   ): unknown {
+    if (value === undefined) {
+      return ["undefined"];
+    }
 
-    if (
-      value === null ||
-      typeof value !== "object"
-    ) {
-      return value;
+    if (value === null) {
+      return ["null"];
+    }
+
+    if (typeof value === "boolean") {
+      return ["boolean", value];
+    }
+
+    if (typeof value === "string") {
+      return ["string", value];
+    }
+
+    if (typeof value === "number") {
+      if (Number.isNaN(value)) {
+        return ["number", "NaN"];
+      }
+
+      if (value === Number.POSITIVE_INFINITY) {
+        return ["number", "Infinity"];
+      }
+
+      if (value === Number.NEGATIVE_INFINITY) {
+        return ["number", "-Infinity"];
+      }
+
+      if (Object.is(value, -0)) {
+        return ["number", "-0"];
+      }
+
+      return ["number", value];
     }
 
     if (
-      Array.isArray(value)
+      typeof value === "bigint" ||
+      typeof value === "symbol" ||
+      typeof value === "function"
     ) {
-      return value.map(
-        (item) =>
-          this.canonicalize(item),
+      throw new Error(
+        "Approval binding contains an unsupported value type",
       );
     }
 
-    const object =
-      value as Record<
-        string,
-        unknown
-      >;
+    if (Array.isArray(value)) {
+      return [
+        "array",
+        value.map(
+          (item) =>
+            this.canonicalize(item),
+        ),
+      ];
+    }
 
-    return Object.keys(
-      object,
-    )
-      .sort()
-      .reduce<
-        Record<string, unknown>
-      >(
-        (
-          result,
-          key,
-        ) => {
+    if (typeof value === "object") {
+      const object =
+        value as Record<
+          string,
+          unknown
+        >;
 
-          result[key] =
-            this.canonicalize(
-              object[key],
-            );
+      return [
+        "object",
+        Object.keys(object)
+          .sort()
+          .map(
+            (key) => [
+              key,
+              this.canonicalize(
+                object[key],
+              ),
+            ],
+          ),
+      ];
+    }
 
-          return result;
-        },
-        {},
-      );
+    throw new Error(
+      "Approval binding contains an unsupported value type",
+    );
   }
 }
