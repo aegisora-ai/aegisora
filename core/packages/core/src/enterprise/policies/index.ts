@@ -4,6 +4,12 @@
 } from "./registry";
 
 export {
+  PolicyLifecycleEngine,
+  type PolicyLifecycleState,
+  type PolicyLifecycleRecord,
+} from "./lifecycle";
+
+export {
   validatePolicyDocument,
   type PolicyValidationResult,
 } from "./validator";
