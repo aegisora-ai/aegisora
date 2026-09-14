@@ -87,3 +87,7 @@ export * from "./enterprise/attack-path-mitigation";
 export * from "./enterprise/authority-drift";
 
 export * from "./enterprise/authority-drift-enforcement";
+
+export * from "./enterprise/autonomous-containment";
+
+export * from "./enterprise/authority-drift-execution-boundary";
