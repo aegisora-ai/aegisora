@@ -73,3 +73,6 @@ export * from "./enterprise/identity/engine";
 export * from "./enterprise/recovery/types";
 
 export * from "./enterprise/recovery/engine";
+
+export * from "./enterprise/risk-center";
+
