@@ -448,6 +448,55 @@ See the repository's [Issues](https://github.com/aegisora-ai/aegisora/issues) an
 
 ---
 
+---
+
+## START CONTRIBUTING IN 5 MINUTES
+
+Aegisora is an open-source runtime security and governance layer for autonomous AI agents.
+
+Pick the path that matches your interests.
+
+### Security Researchers
+
+**Break the Agent Execution Boundary**
+
+Find a reproducible path where a consequential agent action can execute without a valid authorization decision at the execution boundary.
+
+[Security Research Challenge #28](https://github.com/aegisora-ai/aegisora/issues/28)
+
+### First Contribution
+
+New to Aegisora?
+
+[#4 - Add PII masking tests](https://github.com/aegisora-ai/aegisora/issues/4)
+
+[#3 - Improve the Live Monitor documentation](https://github.com/aegisora-ai/aegisora/issues/3)
+
+### Agent / LLM Engineers
+
+[#7 - Alternative LLM providers](https://github.com/aegisora-ai/aegisora/issues/7)
+
+[#19 - LiteLLM routing](https://github.com/aegisora-ai/aegisora/issues/19)
+
+### Systems / Infrastructure
+
+[#22 - Go enforcement sidecar + FastAPI control plane](https://github.com/aegisora-ai/aegisora/issues/22)
+
+### The Core Question
+
+> **Can an autonomous agent ever reach a consequential side effect without a valid authorization decision bound to the exact execution context?**
+
+Break it. Reproduce it. Test it. Harden it.
+
+### Community
+
+[Join the Aegisora Discord](https://discord.gg/8CM3PpQRT5)
+
+[Try the Live Demo](https://aegisora-ai.vercel.app)
+
+We value real technical participation: security findings, reproductions, tests, reviews, documentation improvements, and PRs.
+
+---
 ## Contributing
 
 Contributions are welcome.
