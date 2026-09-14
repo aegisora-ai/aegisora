@@ -85,3 +85,5 @@ export * from "./enterprise/compromise-simulation";
 export * from "./enterprise/attack-path-mitigation";
 
 export * from "./enterprise/authority-drift";
+
+export * from "./enterprise/authority-drift-enforcement";
