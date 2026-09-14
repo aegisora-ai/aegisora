@@ -91,3 +91,5 @@ export * from "./enterprise/authority-drift-enforcement";
 export * from "./enterprise/autonomous-containment";
 
 export * from "./enterprise/authority-drift-execution-boundary";
+
+export * from "./enterprise/transitive-authority";
