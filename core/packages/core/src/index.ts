@@ -76,3 +76,6 @@ export * from "./enterprise/recovery/engine";
 
 export * from "./enterprise/risk-center";
 
+
+export * from "./enterprise/blast-radius";
+
