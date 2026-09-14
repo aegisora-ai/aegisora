@@ -448,8 +448,6 @@ See the repository's [Issues](https://github.com/aegisora-ai/aegisora/issues) an
 
 ---
 
----
-
 ## START CONTRIBUTING IN 5 MINUTES
 
 Aegisora is an open-source runtime security and governance layer for autonomous AI agents.
