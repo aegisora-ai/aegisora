@@ -83,3 +83,5 @@ export * from "./enterprise/blast-radius";
 export * from "./enterprise/compromise-simulation";
 
 export * from "./enterprise/attack-path-mitigation";
+
+export * from "./enterprise/authority-drift";
