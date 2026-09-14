@@ -79,3 +79,5 @@ export * from "./enterprise/risk-center";
 
 export * from "./enterprise/blast-radius";
 
+
+export * from "./enterprise/compromise-simulation";
