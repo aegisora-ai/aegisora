@@ -1,4 +1,4 @@
-﻿export type CompromiseSimulationNodeType =
+export type CompromiseSimulationNodeType =
   | "agent"
   | "identity"
   | "capability"
@@ -15,7 +15,8 @@ export type CompromiseSimulationEdgeType =
   | "ROUTES_TO"
   | "GOVERNED_BY"
   | "REQUIRES_APPROVAL"
-  | "REACHES";
+  | "REACHES"
+  | "DELEGATES_TO";
 
 export type CompromiseSimulationRiskLevel =
   | "LOW"
@@ -130,6 +131,7 @@ const EDGE_TYPES = new Set<CompromiseSimulationEdgeType>([
   "GOVERNED_BY",
   "REQUIRES_APPROVAL",
   "REACHES",
+  "DELEGATES_TO",
 ]);
 
 function assertValidNode(node: CompromiseSimulationNode): void {
