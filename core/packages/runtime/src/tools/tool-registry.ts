@@ -1,3 +1,8 @@
+
+import type {
+  DelegationAuthorityContract,
+  CompromiseSimulationGraph,
+} from "@aegisora/core";
 import {
   RuntimeTool,
   ToolContext,
@@ -7,6 +12,12 @@ import {
   EnforcementGate,
   type EnforcementResult,
 } from "../enforcement";
+
+import {
+  verifyExternalDecision,
+  verifyExecutionBinding,
+  type ExternalDecisionBinding,
+} from "../enforcement/external-decision-binding";
 
 import {
   DelegationAuthority,
@@ -125,6 +136,33 @@ export class ToolRegistry {
       );
     }
 
+    if (metadata && metadata.externalDecision) {
+      const binding =
+        metadata.externalDecision as ExternalDecisionBinding;
+
+      const decisionVerification =
+        verifyExternalDecision(binding);
+
+      if (!decisionVerification.valid) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] External decision verification failed: ${decisionVerification.reason}`,
+        );
+      }
+
+      const executionVerification =
+        verifyExecutionBinding(binding, {
+          agentId,
+          tool: name,
+          args: input,
+        });
+
+      if (!executionVerification.valid) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] External decision execution binding failed: ${executionVerification.reason}`,
+        );
+      }
+    }
+
     const enforcement =
       await this.enforcement.enforce({
         agentId,
@@ -213,27 +251,17 @@ export class ToolRegistry {
       );
     }
 
-    if (receipt) {
-      this.validateAuthorization(
-        receipt,
-        name,
-        context,
-      );
-    } else {
-      const generated =
-        await this.authorize(
-          context.agentId,
-          name,
-          input,
-          context.metadata,
-        );
-
-      this.validateAuthorization(
-        generated,
-        name,
-        context,
+    if (!receipt) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] ToolRegistry execution requires a prior authorization receipt.",
       );
     }
+
+    this.validateAuthorization(
+      receipt,
+      name,
+      context,
+    );
 
     const tool =
       this.resolve(name);
@@ -314,6 +342,113 @@ export class ToolRegistry {
     );
   }
 
+  /**
+   * 4.0-12 contract-governed delegated execution.
+   *
+   * Contract evaluation is completed before any tool side effect.
+   *
+   * BLOCK / ESCALATE:
+   *   zero tool execution.
+   *
+   * ALLOW:
+   *   normal EnforcementGate authorization remains the
+   *   second runtime control boundary.
+   */
+  /**
+   * 4.0-12 contract-governed delegated execution.
+   *
+   * All contract decisions cross EnforcementGate.
+   * The ToolRegistry performs no independent contract rejection
+   * that would bypass the canonical evidence/audit path.
+   */
+  async executeContractDelegated(
+    name: string,
+    input: unknown,
+    context: ToolContext,
+    contract: DelegationAuthorityContract,
+    graph: CompromiseSimulationGraph,
+    taskId: string,
+    now: string = new Date().toISOString(),
+  ): Promise<unknown> {
+
+    if (!this.enforcement) {
+      throw new Error(
+        "[DELEGATION_CONTRACT:BLOCK] ToolRegistry execution boundary is not configured.",
+      );
+    }
+
+    const enforcement =
+      await this.enforcement.enforceDelegationContract({
+        contract,
+
+        graph,
+
+        workspaceId:
+          contract.workspaceId,
+
+        taskId,
+
+        now,
+
+        request: {
+          agentId:
+            context.agentId,
+
+          resourceType:
+            "tool",
+
+          tool:
+            name,
+
+          action:
+            "tool.execute",
+
+          input,
+
+          metadata: {
+            ...(context.metadata ?? {}),
+            delegated: true,
+          },
+        },
+      });
+
+    if (
+      enforcement.decision !==
+      "ALLOW"
+    ) {
+      throw new Error(
+        `[DELEGATION_CONTRACT:${enforcement.decision}] ${enforcement.reason}`,
+      );
+    }
+
+    const receipt: ToolAuthorizationReceipt =
+      Object.freeze({
+        authorizationId:
+          crypto.randomUUID(),
+
+        agentId:
+          context.agentId,
+
+        tool:
+          name,
+
+        action:
+          "tool.execute" as const,
+
+        enforcement,
+
+        marker:
+          TOOL_AUTHORIZATION_MARKER,
+      });
+
+    return this.execute(
+      name,
+      input,
+      context,
+      this.#executionToken,
+      receipt,
+    );
+  }
   list() {
     return Array.from(
       this.tools.values(),

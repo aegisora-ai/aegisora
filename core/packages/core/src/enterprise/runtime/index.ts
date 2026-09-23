@@ -22,3 +22,5 @@ export type {
 export type {
   RuntimeDecisionAdapter,
 } from "./adapter";
+export { AuthorityAwareRuntimeDecisionAdapter } from "./authority-aware-adapter";
+export type { AuthorityAwareRuntimeContextProvider, AuthorityAwareRuntimeContext, RuntimeExecutionIdResolver } from "./authority-aware-adapter";

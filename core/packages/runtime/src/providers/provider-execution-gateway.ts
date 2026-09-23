@@ -22,6 +22,7 @@ import type { ProviderName } from "./provider-router";
 import { ProviderManager } from "./provider-manager";
 
 import type {
+  BaseProvider,
   ProviderRequest,
   ProviderResponse,
 } from "./base-provider";
@@ -33,6 +34,18 @@ import {
 } from "../approval";
 
 import { RuntimeContext } from "../context/runtime-context";
+
+import {
+  AuthorityAwareRuntimeDecisionAdapter,
+  EnterpriseRuntimeExecutionGate,
+  workspaceId,
+} from "@aegisora/core";
+
+import type {
+  AuthorityAwareRuntimeContextProvider,
+  RuntimeExecutionRequest,
+  WorkspaceId,
+} from "@aegisora/core";
 
 import {
   PermissionEngine
@@ -56,6 +69,28 @@ export interface ProviderExecutionRequest {
   context?: ProviderRuntimeContext;
 }
 
+/**
+ * 4.0-12C trusted provider authority binding.
+ *
+ * Authority state MUST come from trusted runtime integration.
+ * Caller metadata is never used as an authority source.
+ *
+ * resolveWorkspaceId() is trusted runtime code responsible for
+ * resolving the canonical workspace boundary for the execution.
+ *
+ * contextProvider resolves the authority snapshot used by
+ * AuthorityAwareExecutionControlEngine through the core runtime
+ * adapter.
+ */
+export interface AuthorityAwareProviderRuntimeConfig {
+  readonly contextProvider:
+    AuthorityAwareRuntimeContextProvider;
+
+  readonly resolveWorkspaceId: (
+    request: ProviderExecutionRequest,
+  ) => WorkspaceId;
+}
+
 export class ProviderExecutionGateway {
 
   private readonly enforcement: EnforcementGate;
@@ -70,6 +105,19 @@ export class ProviderExecutionGateway {
   private readonly providerExecutionToken?: symbol;
 
   private readonly routerCapabilityOwned: boolean;
+
+  /**
+   * Optional 4.0-12C authority execution boundary.
+   *
+   * When configured, every provider execution that has already
+   * passed canonical EnforcementGate governance must also pass
+   * authority-aware execution control before model/provider
+   * resolution.
+   */
+  private authorityExecutionGate?: EnterpriseRuntimeExecutionGate;
+
+  private authorityExecutionWorkspaceResolver?:
+    AuthorityAwareProviderRuntimeConfig["resolveWorkspaceId"];
 
   constructor(
     private readonly context: RuntimeContext,
@@ -216,6 +264,101 @@ export class ProviderExecutionGateway {
       throw new Error(
         `[ENFORCEMENT:${enforcement.decision}] ${enforcement.reason}`
       );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * 4.0-12C AUTHORITY EXECUTION BOUNDARY
+     * ----------------------------------------------------------
+     *
+     * Canonical EnforcementGate ALLOW is necessary but not
+     * sufficient when authority-aware runtime control is enabled.
+     *
+     * The authority check runs:
+     *
+     *   EnforcementGate ALLOW
+     *        ↓
+     *   AuthorityAwareExecutionControl
+     *        ↓
+     *   model resolution
+     *        ↓
+     *   provider resolution
+     *        ↓
+     *   provider.generate()
+     *
+     * The canonical EnforcementResult.executionId is deliberately
+     * reused as RuntimeExecutionRequest.requestId. This preserves
+     * one execution identity across the runtime authority boundary.
+     *
+     * No authority information is read from input.metadata.
+     */
+
+    if (this.authorityExecutionGate) {
+
+      const resolveWorkspaceId =
+        this.authorityExecutionWorkspaceResolver;
+
+      if (!resolveWorkspaceId) {
+        throw new Error(
+          "[AUTHORITY:BLOCK] Authority workspace resolver is not configured.",
+        );
+      }
+
+      const resolvedWorkspaceId =
+        resolveWorkspaceId(input);
+
+      if (
+        typeof resolvedWorkspaceId !== "string" ||
+        resolvedWorkspaceId.trim().length === 0
+      ) {
+        throw new Error(
+          "[AUTHORITY:BLOCK] Canonical workspace identity is required before provider execution.",
+        );
+      }
+
+      const canonicalWorkspaceId =
+        workspaceId(
+          resolvedWorkspaceId,
+        );
+
+      const authorityRuntimeRequest:
+        RuntimeExecutionRequest = {
+
+        workspaceId:
+          canonicalWorkspaceId,
+
+        requestId:
+          enforcement.executionId,
+
+        agentId:
+          input.agentId,
+
+        action:
+          "provider.generate",
+
+        payload: {
+          provider:
+            providerName,
+
+          ...(requestedModel !== undefined
+            ? {
+                model:
+                  requestedModel,
+              }
+            : {}),
+        },
+      };
+
+      const authority =
+        this.authorityExecutionGate.check(
+          authorityRuntimeRequest,
+        );
+
+      if (!authority.allowed) {
+        throw new Error(
+          `[AUTHORITY:${authority.decision}] ${authority.reason}`,
+        );
+      }
     }
 
     /*
@@ -386,6 +529,42 @@ export class ProviderExecutionGateway {
     }
   }
 
+  /**
+   * Bind authority evaluation directly to the canonical
+   * RuntimeContext owned by this gateway.
+   *
+   * No caller-owned authority graph is accepted here.
+   */
+  configureAuthorityAwareExecutionFromRuntimeContext(): void {
+
+    /*
+     * 4.0-12C canonical ownership:
+     *
+     * EnforcementGate owns the runtime authority decision.
+     * ProviderExecutionGateway must not create a second,
+     * post-enforcement authority decision.
+     */
+    this.enforcement
+      .configureAuthorityAwareExecutionFromRuntimeContext();
+  }
+
+  /**
+   * Controlled provider registration for runtime integration
+   * and provider adapters.
+   *
+   * The gateway retains ownership of the underlying router.
+   */
+  registerProvider(
+    name: ProviderName,
+    provider: BaseProvider,
+  ): void {
+
+    this.router.register(
+      name,
+      provider,
+    );
+  }
+
   getApprovalEngine(): ApprovalEngine {
     return this.approvalEngine;
   }
@@ -397,6 +576,45 @@ export class ProviderExecutionGateway {
     this.enforcement.configureEnterpriseApproval(
       config,
     );
+  }
+
+  /**
+   * Configure the trusted 4.0-12C authority execution boundary.
+   *
+   * This method deliberately accepts authority state through an
+   * explicit trusted provider instead of caller metadata.
+   */
+  configureAuthorityAwareExecution(
+    config: AuthorityAwareProviderRuntimeConfig,
+  ): void {
+
+    if (
+      !config ||
+      typeof config.resolveWorkspaceId !== "function"
+    ) {
+      throw new Error(
+        "Authority-aware execution requires a workspace resolver.",
+      );
+    }
+
+    if (
+      !config.contextProvider ||
+      typeof config.contextProvider.resolve !== "function"
+    ) {
+      throw new Error(
+        "Authority-aware execution requires a trusted authority context provider.",
+      );
+    }
+
+    this.authorityExecutionWorkspaceResolver =
+      config.resolveWorkspaceId;
+
+    this.authorityExecutionGate =
+      new EnterpriseRuntimeExecutionGate(
+        new AuthorityAwareRuntimeDecisionAdapter(
+          config.contextProvider,
+        ),
+      );
   }
 
   getEnterpriseApprovalBridge() {

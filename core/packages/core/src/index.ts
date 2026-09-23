@@ -93,3 +93,8 @@ export * from "./enterprise/autonomous-containment";
 export * from "./enterprise/authority-drift-execution-boundary";
 
 export * from "./enterprise/transitive-authority";
+
+export * from "./enterprise/delegation-authority-contract";
+
+export * from "./enterprise/authority-aware-execution-control";
+export * from "./enterprise/runtime/authority-aware-adapter";

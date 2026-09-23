@@ -11,6 +11,26 @@ import type { RuntimeEvent } from "../events";
 import {
   EnterpriseRuntimeApprovalBridge,
 } from "@aegisora/core";
+import {
+  DelegationAuthorityContractEngine,
+} from "@aegisora/core";
+
+import type {
+  DelegationAuthorityContract,
+  CompromiseSimulationGraph,
+} from "@aegisora/core";
+
+import {
+  AuthorityAwareRuntimeDecisionAdapter,
+  EnterpriseRuntimeExecutionGate,
+  workspaceId,
+} from "@aegisora/core";
+
+import type {
+  AuthorityAwareRuntimeContextProvider,
+  RuntimeExecutionRequest,
+  WorkspaceId,
+} from "@aegisora/core";
 import { PermissionEngine } from "../permissions";
 import {
   ApprovalEngine,
@@ -46,7 +66,22 @@ private readonly approvals: ApprovalEngine;
   private enterpriseEntitlementConfig?: EnterpriseEntitlementRuntimeConfig;
 
   private enterpriseEntitlementBridge?: EnterpriseEntitlementRuntimeBridge;
-  constructor(
+
+  /**
+   * Canonical 4.0-12C authority execution boundary.
+   *
+   * Authority is evaluated inside EnforcementGate so the resulting
+   * ALLOW / ESCALATE / BLOCK becomes the canonical governance
+   * decision persisted by the existing decision, evidence and
+   * enterprise audit completion paths.
+   */
+  private authorityExecutionGate?: EnterpriseRuntimeExecutionGate;
+
+  private authorityExecutionWorkspaceResolver?: (
+    request: EnforcementRequest,
+  ) => WorkspaceId;
+
+    constructor(
     context?: RuntimeContext,
     permissions?: PermissionEngine,
     approvals?: ApprovalEngine,
@@ -202,6 +237,99 @@ private readonly approvals: ApprovalEngine;
   getEnterpriseApprovalBridge():
     EnterpriseRuntimeApprovalBridge | undefined {
     return this.enterpriseBridge;
+  }
+  /**
+   * Configure the canonical 4.0-12C authority execution boundary.
+   *
+   * The supplied context provider is the trusted source for
+   * transitive authority and authority drift.
+   *
+   * Workspace identity is resolved independently and canonicalized
+   * before every authority decision.
+   */
+  configureAuthorityAwareExecution(config: {
+    readonly contextProvider:
+      AuthorityAwareRuntimeContextProvider;
+
+    readonly resolveWorkspaceId:
+      () => WorkspaceId;
+  }): void {
+
+    if (
+      !config ||
+      typeof config.resolveWorkspaceId !==
+        "function"
+    ) {
+      throw new Error(
+        "Authority-aware execution requires a workspace resolver.",
+      );
+    }
+
+    if (
+      !config.contextProvider ||
+      typeof config.contextProvider.resolve !==
+        "function"
+    ) {
+      throw new Error(
+        "Authority-aware execution requires a trusted authority context provider.",
+      );
+    }
+
+    this.authorityExecutionWorkspaceResolver =
+      () =>
+        config.resolveWorkspaceId();
+
+    this.authorityExecutionGate =
+      new EnterpriseRuntimeExecutionGate(
+        new AuthorityAwareRuntimeDecisionAdapter(
+          config.contextProvider,
+        ),
+      );
+  }
+
+  /**
+   * Canonical RuntimeContext integration.
+   *
+   * RuntimeContext remains the source of truth for:
+   *
+   *   workspace identity
+   *   transitive authority
+   *   delegation graph
+   *
+   * No caller-supplied workspace metadata is trusted here.
+   */
+  configureAuthorityAwareExecutionFromRuntimeContext(): void {
+
+    this.configureAuthorityAwareExecution({
+
+      resolveWorkspaceId:
+        () =>
+          this.context.getAuthorityWorkspaceId(),
+
+      contextProvider: {
+
+        resolve:
+          (runtimeRequest) => {
+
+            const authority =
+              this.context.getTransitiveAuthority(
+                runtimeRequest.agentId,
+              );
+
+            return {
+
+              resource:
+                "provider:runtime",
+
+              transitiveAuthority:
+                authority,
+
+              authorityDriftSeverity:
+                "NONE",
+            };
+          },
+      },
+    });
   }
 
   getEnterpriseWorkspaceId():
@@ -754,6 +882,214 @@ private readonly approvals: ApprovalEngine;
         );
       }
     }
+    /*
+     * ------------------------------------------------------------
+     * 4.0-12C CANONICAL AUTHORITY DECISION
+     * ------------------------------------------------------------
+     *
+     * Authority is evaluated after governance/security/entitlement
+     * checks and before permission-review / final ALLOW completion.
+     *
+     * BLOCK / ESCALATE enter complete() and therefore become the
+     * canonical persisted decision for local decision/evidence and
+     * enterprise audit/evidence.
+     */
+    if (this.authorityExecutionGate) {
+
+      const workspaceResolver =
+        this.authorityExecutionWorkspaceResolver;
+
+      if (!workspaceResolver) {
+
+        return this.complete(
+          request,
+          {
+            ...metadata,
+
+            authorityDecision:
+              "BLOCK",
+
+            authorityReason:
+              "Authority workspace resolver is not configured.",
+          },
+          {
+            decision:
+              "BLOCK",
+
+            reason:
+              "Authority workspace resolver is not configured.",
+
+            riskScore:
+              100,
+
+            threats,
+
+            permission:
+              permission.action,
+
+            policy:
+              "allow",
+
+            security:
+              "allow",
+          },
+          "prevented",
+          "not_attempted",
+        );
+      }
+
+      let canonicalWorkspaceId:
+        WorkspaceId;
+
+      try {
+
+        canonicalWorkspaceId =
+          workspaceId(
+            workspaceResolver(
+              request,
+            ),
+          );
+
+      } catch (error) {
+
+        const authorityReason =
+          error instanceof Error
+            ? error.message
+            : "Canonical authority workspace resolution failed.";
+
+        return this.complete(
+          request,
+          {
+            ...metadata,
+
+            authorityDecision:
+              "BLOCK",
+
+            authorityReason,
+          },
+          {
+            decision:
+              "BLOCK",
+
+            reason:
+              authorityReason,
+
+            riskScore:
+              100,
+
+            threats,
+
+            permission:
+              permission.action,
+
+            policy:
+              "allow",
+
+            security:
+              "allow",
+          },
+          "prevented",
+          "not_attempted",
+        );
+      }
+
+      const authorityRequest:
+        RuntimeExecutionRequest = {
+
+        workspaceId:
+          canonicalWorkspaceId,
+
+        requestId:
+          String(
+            metadata.executionId,
+          ),
+
+        agentId:
+          request.agentId,
+
+        action:
+          request.action,
+
+        payload:
+          request.input,
+      };
+
+      const authority =
+        this.authorityExecutionGate.check(
+          authorityRequest,
+        );
+
+      if (authority.allowed) {
+
+        metadata.authorityDecision =
+          "ALLOW";
+
+        metadata.authorityWorkspaceId =
+          canonicalWorkspaceId;
+
+        metadata.authorityExecutionId =
+          String(
+            metadata.executionId,
+          );
+
+      } else {
+
+        metadata.authorityDecision =
+          authority.decision;
+
+        metadata.authorityWorkspaceId =
+          canonicalWorkspaceId;
+
+        metadata.authorityExecutionId =
+          String(
+            metadata.executionId,
+          );
+
+        metadata.authorityReason =
+          authority.reason;
+
+        const authorityRiskScore =
+          authority.decision === "BLOCK"
+            ? Math.max(
+                riskScore,
+                100,
+              )
+            : Math.max(
+                riskScore,
+                50,
+              );
+
+        return this.complete(
+          request,
+          metadata,
+          {
+            decision:
+              authority.decision,
+
+            reason:
+              authority.reason,
+
+            riskScore:
+              authorityRiskScore,
+
+            threats,
+
+            permission:
+              permission.action,
+
+            policy:
+              "allow",
+
+            security:
+              "allow",
+          },
+          authority.decision === "ESCALATE"
+            ? "escalated"
+            : "prevented",
+          "not_attempted",
+        );
+      }
+    }
 
     if (
       permission.action === "review" &&
@@ -977,6 +1313,286 @@ private readonly approvals: ApprovalEngine;
     );
   }
 
+  /**
+   * 4.0-12 Delegation Authority Contract enforcement.
+   *
+   * The delegation contract is evaluated before normal execution.
+   *
+   * BLOCK / ESCALATE:
+   *   - no execution is attempted
+   *   - decision/evidence/audit are persisted
+   *
+   * ALLOW:
+   *   - continues through the canonical EnforcementGate pipeline
+   */
+  /**
+   * 4.0-12 Delegation Authority Contract enforcement.
+   *
+   * Every contract decision is persisted through the canonical
+   * decision/evidence/audit path before execution.
+   *
+   * BLOCK / ESCALATE:
+   *   - zero execution
+   *   - decision recorded
+   *   - evidence recorded
+   *
+   * ALLOW:
+   *   - continues through normal EnforcementGate governance
+   */
+  async enforceDelegationContract(input: {
+    contract: DelegationAuthorityContract;
+    graph: CompromiseSimulationGraph;
+    workspaceId: string;
+    taskId: string;
+    now: string;
+    request: EnforcementRequest;
+  }): Promise<EnforcementResult> {
+
+    const traceId =
+      crypto.randomUUID();
+
+    const decisionId =
+      crypto.randomUUID();
+
+    const executionId =
+      crypto.randomUUID();
+
+    const evidenceId =
+      crypto.randomUUID();
+
+    const metadata: Record<string, unknown> = {
+      ...(input.request.metadata ?? {}),
+
+      delegated: true,
+
+      correlationId:
+        traceId,
+
+      traceId,
+
+      decisionId,
+
+      executionId,
+
+      evidenceId,
+
+      delegationContractId:
+        input.contract.contractId,
+
+      delegationContractHash:
+        input.contract.contractHash,
+
+      delegationTaskId:
+        input.contract.taskId,
+
+      delegationIssuerAgentId:
+        input.contract.issuerAgentId,
+
+      delegationDelegateAgentId:
+        input.contract.delegateAgentId,
+    };
+
+    const completeContractDecision = async (
+      decision:
+        | "BLOCK"
+        | "ESCALATE",
+      reason: string,
+      failureCode: string,
+      reasonCodes: readonly string[] = [],
+    ): Promise<EnforcementResult> => {
+
+      const failureMetadata = {
+        ...metadata,
+
+        delegationFailureCode:
+          failureCode,
+
+        delegationReasonCodes:
+          [...reasonCodes],
+
+        delegationDecision:
+          decision,
+      };
+
+      return this.complete(
+        input.request,
+
+        failureMetadata,
+
+        {
+          decision,
+
+          reason,
+
+          riskScore:
+            decision === "ESCALATE"
+              ? 50
+              : 100,
+
+          threats: [],
+
+          permission:
+            decision === "ESCALATE"
+              ? "review"
+              : "deny",
+
+          policy: "allow",
+
+          security: "allow",
+        },
+
+        decision === "ESCALATE"
+          ? "escalated"
+          : "prevented",
+
+        "not_attempted",
+      );
+    };
+
+    /*
+     * Runtime identity must match the contract delegate.
+     * This check belongs inside the governed decision path so
+     * forged execution context attempts are auditable.
+     */
+    if (
+      input.request.agentId !==
+      input.contract.delegateAgentId
+    ) {
+      return completeContractDecision(
+        "BLOCK",
+
+        "Delegation contract delegate identity does not match execution context.",
+
+        "DELEGATE_IDENTITY_MISMATCH",
+      );
+    }
+
+    /*
+     * Requested tool must be explicitly contained by the
+     * contract scope before any execution can occur.
+     */
+    if (
+      input.request.tool !== undefined &&
+      !input.contract.scope.toolIds.includes(
+        `tool:${input.request.tool}`,
+      )
+    ) {
+      return completeContractDecision(
+        "BLOCK",
+
+        `Tool ${input.request.tool} is outside the delegation contract scope.`,
+
+        "TOOL_OUTSIDE_CONTRACT_SCOPE",
+      );
+    }
+
+    let evaluation:
+      ReturnType<
+        DelegationAuthorityContractEngine["evaluate"]
+      >;
+
+    try {
+      const engine =
+        new DelegationAuthorityContractEngine();
+
+      evaluation =
+        engine.evaluate({
+          contract:
+            input.contract,
+
+          graph:
+            input.graph,
+
+          workspaceId:
+            input.workspaceId,
+
+          taskId:
+            input.taskId,
+
+          now:
+            input.now,
+        });
+    } catch (error) {
+
+      return completeContractDecision(
+        "BLOCK",
+
+        error instanceof Error
+          ? error.message
+          : "Delegation authority contract evaluation failed closed.",
+
+        "CONTRACT_EVALUATION_ERROR",
+
+        ["INVALID_GRAPH"],
+      );
+    }
+
+    const allowedMetadata = {
+      ...metadata,
+
+      delegationDecision:
+        evaluation.decision,
+
+      delegationReasonCodes:
+        [...evaluation.reasonCodes],
+
+      delegationObservedDepth:
+        evaluation.observedDelegationDepth,
+    };
+
+    if (
+      evaluation.decision ===
+      "ALLOW"
+    ) {
+      return this.enforce({
+        ...input.request,
+
+        metadata:
+          allowedMetadata,
+      });
+    }
+
+    const escalation =
+      evaluation.decision ===
+      "ESCALATE";
+
+    return this.complete(
+      input.request,
+
+      allowedMetadata,
+
+      {
+        decision:
+          evaluation.decision,
+
+        reason:
+          evaluation.reasons.join("; ") ||
+          "Delegation authority contract denied execution.",
+
+        riskScore:
+          escalation
+            ? 50
+            : 100,
+
+        threats: [],
+
+        permission:
+          escalation
+            ? "review"
+            : "deny",
+
+        policy: "allow",
+
+        security: "allow",
+      },
+
+      escalation
+        ? "escalated"
+        : "prevented",
+
+      "not_attempted",
+    );
+  }
   async evaluate(
     request: EnforcementRequest,
   ): Promise<EnforcementResult> {

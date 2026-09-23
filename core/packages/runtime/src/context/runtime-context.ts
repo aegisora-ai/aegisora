@@ -55,6 +55,17 @@ import {
   MessageBus
 } from "../communication";
 
+import {
+  TransitiveAuthorityEngine,
+  workspaceId,
+} from "@aegisora/core";
+
+import type {
+  CompromiseSimulationGraph,
+  TransitiveAuthorityResult,
+  WorkspaceId,
+} from "@aegisora/core";
+
 
 export class RuntimeContext {
 
@@ -115,6 +126,17 @@ export class RuntimeContext {
    */
   messageRouter:
     MessageRouter;
+
+  /**
+   * Trusted runtime authority context.
+   *
+   * Workspace identity is immutable after initialization.
+   * The graph itself may evolve, but only inside the same
+   * canonical workspace boundary.
+   */
+  private authorityWorkspaceId?: WorkspaceId;
+
+  private authorityGraph?: CompromiseSimulationGraph;
 
 
   constructor() {
@@ -195,6 +217,165 @@ export class RuntimeContext {
         this.eventStore
       );
 
+  }
+
+  /**
+   * Configure the canonical authority context for this runtime.
+   *
+   * Workspace identity becomes immutable after the first
+   * configuration. Authority graph changes must remain inside
+   * that workspace.
+   */
+  configureAuthorityContext(input: {
+    workspaceId: string;
+    graph: CompromiseSimulationGraph;
+  }): void {
+
+    const canonicalWorkspaceId =
+      workspaceId(input.workspaceId);
+
+    if (
+      this.authorityWorkspaceId &&
+      this.authorityWorkspaceId !== canonicalWorkspaceId
+    ) {
+      throw new Error(
+        "Runtime authority workspace identity is immutable.",
+      );
+    }
+
+    this.assertAuthorityGraphWorkspace(
+      input.graph,
+      canonicalWorkspaceId,
+    );
+
+    this.authorityWorkspaceId =
+      canonicalWorkspaceId;
+
+    this.authorityGraph =
+      this.cloneAuthorityGraph(
+        input.graph,
+      );
+  }
+
+  /**
+   * Replace the current authority graph without changing
+   * the canonical workspace identity.
+   */
+  updateAuthorityGraph(
+    graph: CompromiseSimulationGraph,
+  ): void {
+
+    const canonicalWorkspaceId =
+      this.getAuthorityWorkspaceId();
+
+    this.assertAuthorityGraphWorkspace(
+      graph,
+      canonicalWorkspaceId,
+    );
+
+    this.authorityGraph =
+      this.cloneAuthorityGraph(
+        graph,
+      );
+  }
+
+  getAuthorityWorkspaceId(): WorkspaceId {
+
+    if (!this.authorityWorkspaceId) {
+      throw new Error(
+        "Runtime authority workspace identity is not configured.",
+      );
+    }
+
+    return this.authorityWorkspaceId;
+  }
+
+  getAuthorityGraph(): CompromiseSimulationGraph {
+
+    if (!this.authorityGraph) {
+      throw new Error(
+        "Runtime authority graph is not configured.",
+      );
+    }
+
+    return this.cloneAuthorityGraph(
+      this.authorityGraph,
+    );
+  }
+
+  getTransitiveAuthority(
+    agentId: string,
+    maxDelegationDepth?: number,
+  ): TransitiveAuthorityResult {
+
+    const engine =
+      new TransitiveAuthorityEngine();
+
+    return engine.analyze({
+      workspaceId:
+        this.getAuthorityWorkspaceId(),
+
+      sourceAgentId:
+        agentId,
+
+      graph:
+        this.getAuthorityGraph(),
+
+      ...(maxDelegationDepth !== undefined
+        ? { maxDelegationDepth }
+        : {}),
+    });
+  }
+
+  private assertAuthorityGraphWorkspace(
+    graph: CompromiseSimulationGraph,
+    canonicalWorkspaceId: WorkspaceId,
+  ): void {
+
+    for (const node of graph.nodes) {
+      if (
+        node.workspaceId !==
+        canonicalWorkspaceId
+      ) {
+        throw new Error(
+          `Runtime authority node workspace mismatch: ${node.id}`,
+        );
+      }
+    }
+
+    for (const edge of graph.edges) {
+      if (
+        edge.workspaceId !==
+        canonicalWorkspaceId
+      ) {
+        throw new Error(
+          `Runtime authority edge workspace mismatch: ${edge.id}`,
+        );
+      }
+    }
+  }
+
+  private cloneAuthorityGraph(
+    graph: CompromiseSimulationGraph,
+  ): CompromiseSimulationGraph {
+
+    return {
+      nodes: graph.nodes.map(
+        (node) => ({
+          ...node,
+          metadata:
+            node.metadata
+              ? { ...node.metadata }
+              : undefined,
+        }),
+      ),
+
+      edges: graph.edges.map(
+        (edge) => ({
+          ...edge,
+        }),
+      ),
+    };
   }
 
 }

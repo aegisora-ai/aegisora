@@ -180,33 +180,44 @@ export class ToolRegistryExternalBridge {
       );
     }
 
+    const context = {
+      agentId:
+        request.agentId,
+
+      traceId:
+        request.traceId,
+
+      decisionId:
+        request.decisionId,
+
+      executionId:
+        request.executionId,
+
+      evidenceId:
+        request.evidenceId,
+
+      metadata: {
+        ...(request.metadata ?? {}),
+        externalToolRequest:
+          request,
+      },
+    };
+
+    const receipt =
+      await this.registry.authorize(
+        request.agentId,
+        descriptor.id,
+        request.input,
+        context.metadata,
+      );
+
     const result =
       await this.registry.execute(
         descriptor.id,
         request.input,
-        {
-          agentId:
-            request.agentId,
-
-          traceId:
-            request.traceId,
-
-          decisionId:
-            request.decisionId,
-
-          executionId:
-            request.executionId,
-
-          evidenceId:
-            request.evidenceId,
-
-          metadata: {
-            ...(request.metadata ?? {}),
-            externalToolRequest:
-              request,
-          },
-        },
+        context,
         this.executionToken,
+        receipt,
       );
 
     return result;

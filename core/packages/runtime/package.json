@@ -25,6 +25,7 @@
         "@aegisora/plugins": "workspace:*",
         "@aegisora/policy-engine": "workspace:*",
         "@aegisora/security-engine": "workspace:*",
+        "@noble/curves": "2.4.0",
         "@supabase/supabase-js": "2.112.4"
     },
     "devDependencies": {
