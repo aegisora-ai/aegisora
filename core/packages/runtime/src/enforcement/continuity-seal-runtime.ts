@@ -1,4 +1,4 @@
-﻿import {
+import {
   ContinuitySealEngine,
 } from "@aegisora/core";
 

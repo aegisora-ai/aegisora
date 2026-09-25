@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { EnterpriseEvidenceRuntimeBridge } from "./enterprise-evidence-bridge";
 import { EnterpriseAuditRuntimeBridge } from "./enterprise-audit-bridge";
 import { EnterpriseEntitlementRuntimeBridge } from "./enterprise-entitlement-bridge";
@@ -2063,7 +2063,7 @@ private authorityExecutionWorkspaceResolver?: (
     }
   }
 
-    public reconcileContinuityEffect(
+  public reconcileContinuityEffect(
     seal: ContinuitySeal,
     effect: Parameters<
       ContinuitySealEngine["reconcileEffect"]
