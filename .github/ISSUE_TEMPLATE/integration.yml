@@ -1,0 +1,70 @@
+name: Agent / tool integration
+description: Propose or contribute an integration for an AI agent, provider, framework, tool, or MCP surface.
+title: "[Integration]: "
+labels:
+  - agent integration
+  - growth
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Expand the Aegisora ecosystem
+
+        Integrations should preserve the runtime enforcement boundary.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Integration category
+      options:
+        - AI provider
+        - Agent framework
+        - MCP
+        - Tool / execution surface
+        - Observability
+        - Identity / access
+        - Security tooling
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: project
+    attributes:
+      label: Project / provider
+      placeholder: "LiteLLM, Anthropic, LangGraph, MCP server"
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What real developer workflow does this enable?
+    validations:
+      required: true
+
+  - type: textarea
+    id: architecture
+    attributes:
+      label: Integration design
+      description: Explain where interception, policy, decision, and enforcement occur.
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Proposed implementation
+      description: Describe adapters, APIs, files, interfaces, and tests.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation strategy
+      description: Explain how the integration should be tested.
+    validations:
+      required: true
