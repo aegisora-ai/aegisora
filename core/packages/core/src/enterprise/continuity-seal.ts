@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+﻿import { createHash } from "node:crypto";
 
 import type {
   TransitiveAuthorityResult,
@@ -6,6 +6,7 @@ import type {
 
 export type ContinuitySealCode =
   | "VALID"
+  | "INVALID_SEAL"
   | "SEAL_TAMPERED"
   | "WORKSPACE_MISMATCH"
   | "AGENT_MISMATCH"

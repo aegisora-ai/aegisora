@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+﻿import { randomUUID } from "node:crypto";
 import { EnterpriseEvidenceRuntimeBridge } from "./enterprise-evidence-bridge";
 import { EnterpriseAuditRuntimeBridge } from "./enterprise-audit-bridge";
 import { EnterpriseEntitlementRuntimeBridge } from "./enterprise-entitlement-bridge";
@@ -380,6 +380,8 @@ private authorityExecutionWorkspaceResolver?: (
         code: "INVALID_SEAL",
         reason:
           "Continuity Seal verification requires the canonical authority runtime context.",
+        sealId:
+          seal.sealId,
       };
     }
 
@@ -401,6 +403,8 @@ private authorityExecutionWorkspaceResolver?: (
           error instanceof Error
             ? error.message
             : "Canonical workspace resolution failed during Continuity Seal verification.",
+        sealId:
+          seal.sealId,
       };
     }
 
@@ -470,6 +474,8 @@ private authorityExecutionWorkspaceResolver?: (
           error instanceof Error
             ? error.message
             : "Current authority could not be resolved for Continuity Seal verification.",
+        sealId:
+          seal.sealId,
       };
     }
   }
@@ -1942,6 +1948,8 @@ private authorityExecutionWorkspaceResolver?: (
           "INVALID_SEAL",
         reason:
           "Continuity Seal verification requires a trusted authority context provider.",
+        sealId:
+          seal.sealId,
       };
     }
 
@@ -1965,6 +1973,8 @@ private authorityExecutionWorkspaceResolver?: (
           error instanceof Error
             ? error.message
             : "Canonical workspace resolution failed.",
+        sealId:
+          seal.sealId,
       };
     }
 
@@ -2047,22 +2057,31 @@ private authorityExecutionWorkspaceResolver?: (
           error instanceof Error
             ? error.message
             : "Continuity Seal verification failed closed.",
+        sealId:
+          seal.sealId,
       };
     }
   }
 
-  public reconcileContinuityEffect(
+    public reconcileContinuityEffect(
     seal: ContinuitySeal,
     effect: Parameters<
       ContinuitySealEngine["reconcileEffect"]
     >[1],
   ): ContinuitySealVerification {
 
-    return this.continuitySealEngine
-      .reconcileEffect(
-        seal,
-        effect,
-      );
+    const reconciliation =
+      this.continuitySealEngine
+        .reconcileEffect(
+          seal,
+          effect,
+        );
+
+    return {
+      ...reconciliation,
+      sealId:
+        seal.sealId,
+    };
   }
 
   async evaluate(

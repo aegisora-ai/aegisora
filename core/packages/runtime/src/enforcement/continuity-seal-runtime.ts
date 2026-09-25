@@ -1,4 +1,4 @@
-import {
+﻿import {
   ContinuitySealEngine,
 } from "@aegisora/core";
 
@@ -101,11 +101,14 @@ export class ContinuitySealRuntime {
     seal: ContinuitySeal,
     actual: ContinuitySealEffectInput,
   ): ContinuitySealVerification {
-    const reconciliation =
-      this.engine.reconcileEffect(
+    const reconciliation: ContinuitySealVerification = {
+      ...this.engine.reconcileEffect(
         seal,
         actual,
-      );
+      ),
+      sealId:
+        seal.sealId,
+    };
 
     this.ledger.push({
       type:
