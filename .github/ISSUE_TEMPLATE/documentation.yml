@@ -1,0 +1,49 @@
+name: Documentation / developer experience
+description: Improve documentation, examples, onboarding, or developer experience.
+title: "[Docs / DX]: "
+labels:
+  - documentation
+  - developer experience
+  - growth
+
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - README
+        - Architecture
+        - Security documentation
+        - Quick start
+        - Examples
+        - API documentation
+        - Developer tooling
+        - CI / automation
+        - UI / developer experience
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is confusing, missing, outdated, or difficult?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+      description: Describe the concrete change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Relevant files, URLs, screenshots, examples, or related issues.
+    validations:
+      required: false

@@ -1,19 +1,18 @@
 blank_issues_enabled: false
 
 contact_links:
+  - name: Aegisora Security Research
+    url: https://github.com/aegisora-ai/aegisora/security
+    about: Report security vulnerabilities privately according to the security policy.
 
-* name: Security Vulnerability
-  url: https://github.com/aegisora-ai/aegisora/security
-  about: Report security vulnerabilities privately according to SECURITY.md.
+  - name: Aegisora Discussions
+    url: https://github.com/aegisora-ai/aegisora/discussions
+    about: Ask questions, discuss architecture, and propose ideas.
 
-* name: GitHub Discussions
-  url: https://github.com/aegisora-ai/aegisora/discussions
-  about: Ask questions, discuss ideas, and propose larger changes.
+  - name: Aegisora Documentation
+    url: https://github.com/aegisora-ai/aegisora/tree/main/docs
+    about: Read the architecture, security, and implementation documentation.
 
-* name: Support Guide
-  url: https://github.com/aegisora-ai/aegisora/blob/main/SUPPORT.md
-  about: Find the correct channel for support, bugs, features, and development questions.
-
-* name: Contributing Guide
-  url: https://github.com/aegisora-ai/aegisora/blob/main/CONTRIBUTING.md
-  about: Learn how to contribute code, documentation, tests, and security improvements.
+  - name: Aegisora Contributing Guide
+    url: https://github.com/aegisora-ai/aegisora/blob/main/CONTRIBUTING.md
+    about: Learn how to contribute code, tests, documentation, research, and integrations.
