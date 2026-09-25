@@ -42,7 +42,7 @@
   </p>
 
   <p>
-    <a href="https://www.producthunt.com/posts/aegisora" target="_blank">
+    <a href="https://www.producthunt.com/products/aegisora" target="_blank">
       <img
         src="https://img.shields.io/badge/Product%20Hunt-Featured%20on%20PH-FF6154?style=for-the-badge&logo=producthunt&logoColor=white"
         alt="Product Hunt Featured"
@@ -51,7 +51,7 @@
   </p>
 
   <p>
-    <a href="https://aegisora-ai.vercel.app"><strong>Live Demo</strong></a>
+    <a href="https://www.aegisora.org/"><strong>Live Demo</strong></a>
     &nbsp;·&nbsp;
     <a href="https://github.com/aegisora-ai/aegisora/tree/main/docs"><strong>Architecture</strong></a>
     &nbsp;·&nbsp;
@@ -66,6 +66,40 @@
 > Every tool call is evaluated at runtime before execution.
 
 ---
+
+## Global Developer Discovery
+
+Aegisora is an open-source runtime security and governance layer for autonomous AI agents.
+
+It evaluates consequential agent actions before execution and provides policy enforcement, permission control, human escalation, and auditable evidence.
+
+The project is relevant to developers working on AI agent security, agent runtime security, MCP security, LLM security, tool execution security, zero-trust agent architecture, and AI governance.
+
+### Start Here
+
+1. Understand the runtime enforcement boundary.
+2. Run the local quickstart.
+3. Observe ALLOW, BLOCK, and ESCALATE behavior.
+4. Inspect the resulting evidence.
+5. Choose a scoped contribution.
+
+### Open Source Entry Points
+
+Issues: https://github.com/aegisora-ai/aegisora/issues
+
+Discussions: https://github.com/aegisora-ai/aegisora/discussions
+
+Contributing: https://github.com/aegisora-ai/aegisora/blob/main/CONTRIBUTING.md
+
+Support: https://github.com/aegisora-ai/aegisora/blob/main/SUPPORT.md
+
+Contributor paths: https://github.com/aegisora-ai/aegisora/blob/main/docs/growth/CONTRIBUTOR_PATHS.md
+
+### Support the Project
+
+A GitHub star helps other developers discover Aegisora.
+
+https://github.com/aegisora-ai/aegisora
 
 ## Why Aegisora?
 
@@ -311,7 +345,7 @@ pnpm dev
 
 Then open the local development URL reported by Next.js.
 
-For the live project, see the [Live Demo](https://aegisora-ai.vercel.app).
+For the live project, see the [Live Demo](https://www.aegisora.org/).
 
 ---
 
@@ -490,7 +524,7 @@ Break it. Reproduce it. Test it. Harden it.
 
 [Join the Aegisora Discord](https://discord.gg/8CM3PpQRT5)
 
-[Try the Live Demo](https://aegisora-ai.vercel.app)
+[Try the Live Demo](https://www.aegisora.org/)
 
 We value real technical participation: security findings, reproductions, tests, reviews, documentation improvements, and PRs.
 
@@ -514,9 +548,9 @@ For project discussion and community collaboration, join the [Aegisora Discord](
 ## Community
 
 - **GitHub:** https://github.com/aegisora-ai/aegisora
-- **Live Demo:** https://aegisora-ai.vercel.app
+- **Live Demo:** https://www.aegisora.org/
 - **Discord:** https://discord.gg/8CM3PpQRT5
-- **Product Hunt:** https://www.producthunt.com/posts/aegisora
+- **Product Hunt:** https://www.producthunt.com/products/aegisora
 
 ---
 

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: Aegisora
+message: If you use Aegisora in research, engineering, or technical writing, please cite the project.
+type: software
+authors:
+  - family-names: Özer
+    given-names: Eray
+repository-code: https://github.com/aegisora-ai/aegisora
+url: https://www.aegisora.org/
+abstract: Open-source runtime security and governance for autonomous AI agents with policy enforcement, execution control, human escalation, and auditable evidence.
+keywords:
+  - AI agent security
+  - runtime security
+  - agent security
+  - AI governance
+  - policy enforcement
+  - MCP security
+  - zero trust
+license: MIT

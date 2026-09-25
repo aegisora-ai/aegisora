@@ -334,3 +334,32 @@ Support documentation should evolve with the project.
 If you notice a recurring question that is not answered here, consider contributing a documentation improvement so future developers can find the answer more easily.
 
 > **The best support system is one that helps the next developer solve the problem without needing to ask.**
+---
+
+## Contributor Growth Paths
+
+Aegisora is open source and welcomes focused technical contributions.
+
+### First Contribution
+
+Good starting work includes documentation fixes, reproducible examples, tests, scoped bug fixes, and developer experience improvements.
+
+### Security Research
+
+Useful areas include runtime enforcement, policy bypass, identity and authorization integrity, tool execution, approval integrity, delegation, and evidence integrity.
+
+Sensitive vulnerabilities should follow the project's security disclosure process rather than public issue discussion.
+
+### Agent Integrations
+
+Useful contribution areas include agent frameworks, MCP, model providers, tool execution, and observability integrations.
+
+### Testing and Benchmarks
+
+Contributors can add adversarial cases, regression coverage, policy fixtures, latency benchmarks, and reproducible security benchmarks.
+
+### Developer Experience
+
+Setup automation, local demos, CLI improvements, examples, test helpers, and CI improvements are useful contribution areas.
+
+Prefer small, reviewable, reproducible changes.

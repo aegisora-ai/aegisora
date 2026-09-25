@@ -1,83 +1,71 @@
-## Summary
+## What changed?
 
-<!-- Briefly describe what this pull request changes. -->
+<!-- Describe the change clearly and briefly. -->
 
-## Motivation
+## Why?
 
-<!-- What problem does this PR solve? Why is this change needed? -->
+<!-- What problem does this solve? -->
 
-## Changes
+## Related issue
 
-<!-- List the main changes introduced by this PR. -->
+<!-- Use Fixes #123 or Closes #123 when applicable. -->
 
-*
-*
-*
+## Scope
 
-## Testing
+- [ ] Security
+- [ ] Runtime enforcement
+- [ ] Policy
+- [ ] Identity / permissions
+- [ ] Agent integration
+- [ ] MCP
+- [ ] Tests
+- [ ] Documentation
+- [ ] Developer experience
+- [ ] Performance
+- [ ] Benchmark
+- [ ] Other
 
-<!-- Describe how you tested the change. -->
+## Validation
 
-* [ ] `pnpm lint`
-* [ ] `pnpm typecheck`
-* [ ] `pnpm test`
-* [ ] `pnpm build`
+- [ ] pnpm lint
+- [ ] pnpm typecheck
+- [ ] pnpm test
+- [ ] pnpm build
 
-Additional testing:
+Additional validation:
 
-<!-- Add manual testing steps, benchmarks, or reproduction details when relevant. -->
+Commands, traces, benchmarks, screenshots, or reproduction details.
 
 ## Security Impact
 
-<!-- Does this change affect security-sensitive behavior? -->
+- [ ] No security-sensitive behavior changed
+- [ ] Authentication / authorization
+- [ ] Policy enforcement
+- [ ] Agent identity
+- [ ] Tool execution
+- [ ] Runtime security boundary
+- [ ] Data / PII
+- [ ] Secrets / credentials
 
-* [ ] No security impact
-* [ ] Authentication / authorization
-* [ ] Policy enforcement
-* [ ] Agent identity
-* [ ] Tool execution
-* [ ] Data handling
-* [ ] Secrets / credentials
-* [ ] Runtime security boundary
-* [ ] Other:
+Explain:
 
-Security considerations:
+<!-- Describe security implications and failure behavior. -->
 
-<!-- Explain the security implications of the change. -->
+## Evidence
 
-## Breaking Changes
-
-* [ ] No breaking changes
-* [ ] Breaking change
-
-If this is a breaking change, describe the migration path:
-
-<!-- Explain how existing users should migrate. -->
+<!-- Add tests, screenshots, traces, benchmarks, or reproducible artifacts. -->
 
 ## Documentation
 
-* [ ] Documentation updated
-* [ ] Documentation not required
+- [ ] Documentation updated
+- [ ] Documentation not required
 
-Relevant documentation:
+## Contributor checklist
 
-<!-- Link relevant documentation changes when applicable. -->
-
-## Checklist
-
-* [ ] I have read `CONTRIBUTING.md`.
-* [ ] I have searched for related issues and pull requests.
-* [ ] This PR solves one logical problem.
-* [ ] I have added or updated tests where appropriate.
-* [ ] I have considered security implications.
-* [ ] I have not committed secrets, credentials, or private data.
-* [ ] I have updated documentation where necessary.
-* [ ] I am ready for review.
-
-## Related Issues
-
-<!-- Link related issues using `Fixes #123`, `Closes #123`, or `Related to #123`. -->
-
-## Additional Context
-
-<!-- Anything else reviewers should know. -->
+- [ ] I have read CONTRIBUTING.md.
+- [ ] This PR addresses one logical change.
+- [ ] I added or updated tests where appropriate.
+- [ ] I considered security implications.
+- [ ] I did not commit secrets or private data.
+- [ ] Documentation is updated or not required.
+- [ ] The change is ready for review.

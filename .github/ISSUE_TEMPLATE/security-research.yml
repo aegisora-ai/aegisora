@@ -1,0 +1,104 @@
+name: Security research
+description: Investigate a reproducible weakness in the Aegisora agent execution boundary.
+title: "[Security Research]: "
+labels:
+  - security research
+  - growth
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Break the execution boundary
+
+        Aegisora welcomes responsible security research.
+
+        Test only systems you own or are authorized to test.
+        Do not publish credentials, private data, or unnecessary exploit details.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit tested
+      description: Which release, tag, or commit did you test?
+      placeholder: "v3.0.0 / commit SHA"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: attack_surface
+    attributes:
+      label: Attack surface
+      options:
+        - Runtime execution
+        - Policy engine
+        - Identity / permissions
+        - Tool execution
+        - Approval workflow
+        - Go sidecar
+        - MCP
+        - Provider integration
+        - Audit / evidence
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Security hypothesis
+      description: What invariant or control do you believe may be bypassed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide exact steps and inputs.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected security behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs, tests, traces, screenshots, or reproducible evidence. Remove secrets.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Proposed mitigation
+      description: Optional.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: responsible_testing
+    attributes:
+      label: Responsible testing
+      options:
+        - label: I tested only systems I own or am authorized to test.
+          required: true
+        - label: I removed credentials, API keys, and private data.
+          required: true
+        - label: I am not publishing unnecessary exploit-enabling details.
+          required: true
