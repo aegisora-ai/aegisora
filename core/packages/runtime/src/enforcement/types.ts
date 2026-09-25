@@ -1,4 +1,6 @@
-﻿import type { RuntimeContext } from "../context/runtime-context";
+import type { RuntimeContext } from "../context/runtime-context";
+
+import type { ContinuitySeal } from "@aegisora/core";
 
 export type EnforcementDecision =
   | "ALLOW"
@@ -45,6 +47,8 @@ export interface EnforcementResult {
     | "executed"
     | "prevented"
     | "escalated";
+
+  continuitySeal?: ContinuitySeal;
 
   executionOutcome:
     | "not_attempted"

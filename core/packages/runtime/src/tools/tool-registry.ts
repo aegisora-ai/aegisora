@@ -1,5 +1,9 @@
 
 import type {
+  ContinuitySeal,
+} from "@aegisora/core";
+
+import type {
   DelegationAuthorityContract,
   CompromiseSimulationGraph,
 } from "@aegisora/core";
@@ -32,6 +36,7 @@ export interface ToolAuthorizationReceipt {
   readonly tool: string;
   readonly action: "tool.execute";
   readonly enforcement: EnforcementResult;
+  readonly continuitySeal?: ContinuitySeal;
   readonly marker: symbol;
 }
 
@@ -65,6 +70,10 @@ export class ToolRegistry {
     gate: EnforcementGate,
   ) {
     this.enforcement = gate;
+
+    gate.configureToolRegistry(
+      this,
+    );
   }
 
   register(
@@ -185,6 +194,14 @@ export class ToolRegistry {
       tool: name,
       action: "tool.execute" as const,
       enforcement,
+
+      ...(enforcement.continuitySeal
+        ? {
+            continuitySeal:
+              enforcement.continuitySeal,
+          }
+        : {}),
+
       marker: TOOL_AUTHORIZATION_MARKER,
     });
   }
@@ -193,6 +210,7 @@ export class ToolRegistry {
     receipt: ToolAuthorizationReceipt,
     name: string,
     context: ToolContext,
+    input: unknown,
   ) {
 
     if (
@@ -261,15 +279,136 @@ export class ToolRegistry {
       receipt,
       name,
       context,
+      input,
     );
+
+
+
+if (
+
+  receipt.continuitySeal &&
+
+  this.enforcement
+
+) {
+
+  const verification =
+
+    this.enforcement
+
+      .verifyContinuitySealForExecution(
+
+        {
+
+          agentId:
+
+            context.agentId,
+
+
+          resourceType:
+
+            "tool",
+
+
+          tool:
+
+            name,
+
+
+          action:
+
+            "tool.execute",
+
+
+          input,
+
+
+          metadata:
+
+            context.metadata,
+
+        },
+
+
+        receipt.continuitySeal,
+
+      );
+
+
+  if (!verification.valid) {
+
+    return Promise.reject(
+
+      new Error(`[CONTINUITY_SEAL:BLOCK] ${verification.reason}`),
+
+    );
+
+  }
+
+}
 
     const tool =
       this.resolve(name);
 
-    return tool.execute(
-      input,
-      context,
-    );
+    const result =
+      await tool.execute(
+        input,
+        context,
+      );
+
+    if (receipt.continuitySeal) {
+
+      const workspace =
+        context.metadata
+          ?.authorityWorkspaceId;
+
+      if (
+        typeof workspace !== "string" ||
+        workspace.trim().length === 0
+      ) {
+        throw new Error(
+          "[CONTINUITY_SEAL:BLOCK] Trusted workspace identity is unavailable for tool effect reconciliation.",
+        );
+      }
+
+      const verification =
+        this.enforcement
+          ?.reconcileContinuityEffect(
+            receipt.continuitySeal,
+            {
+              workspaceId:
+                workspace,
+
+              agentId:
+                context.agentId,
+
+              executionId:
+                receipt.enforcement.executionId,
+
+              action:
+                "tool.execute",
+
+              resource:
+                name,
+
+              tool:
+                name,
+
+              input,
+            },
+          );
+
+      if (!verification?.valid) {
+        throw new Error(
+          `[CONTINUITY_SEAL:VIOLATION] ${
+            verification?.reason ??
+            "Tool effect did not reconcile with Continuity Seal."
+          }`,
+        );
+      }
+    }
+
+    return result;
   }
 
   async executeDelegated(
