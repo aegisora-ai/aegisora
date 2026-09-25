@@ -80,7 +80,7 @@ function extractProvider(tool: string): string | undefined {
 
 export class PermissionEngine {
 
-  private readonly toolRegistry?: ToolRegistry;
+  private toolRegistry?: ToolRegistry;
   private readonly agentRegistry?: AgentRegistry;
 
   /**
@@ -98,6 +98,13 @@ export class PermissionEngine {
   ) {
     this.toolRegistry = toolRegistry;
     this.agentRegistry = agentRegistry;
+  }
+
+
+  public setToolRegistry(
+    toolRegistry: ToolRegistry,
+  ): void {
+    this.toolRegistry = toolRegistry;
   }
 
   check(

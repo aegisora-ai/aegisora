@@ -7,6 +7,11 @@ import type { EnterpriseEvidenceRuntimeConfig } from "./enterprise-evidence-brid
 import type { EnterpriseAuditRuntimeConfig } from "./enterprise-audit-bridge";
 import { RuntimeContext } from "../context/runtime-context";
 import type { RuntimeEvent } from "../events";
+import { ContinuitySealEngine } from "@aegisora/core";
+import type {
+  ContinuitySeal,
+  ContinuitySealVerification,
+} from "@aegisora/core";
 
 import {
   EnterpriseRuntimeApprovalBridge,
@@ -44,6 +49,11 @@ import type {
   EnterpriseApprovalRuntimeConfig,
 } from "./types";
 
+
+import type {
+  ToolRegistry,
+} from "../tools";
+
 export class EnforcementGate {
 
     private readonly enterpriseEntitlementLocks = new Map<string, Promise<void>>();
@@ -51,6 +61,8 @@ export class EnforcementGate {
 private readonly context: RuntimeContext;
 private readonly permissions: PermissionEngine;
 private readonly approvals: ApprovalEngine;
+
+  private readonly continuitySealEngine = new ContinuitySealEngine();
 
   private enterpriseApprovalConfig?:
     EnterpriseApprovalRuntimeConfig;
@@ -77,9 +89,14 @@ private readonly approvals: ApprovalEngine;
    */
   private authorityExecutionGate?: EnterpriseRuntimeExecutionGate;
 
-  private authorityExecutionWorkspaceResolver?: (
+
+  private authorityExecutionContextProvider?:
+    AuthorityAwareRuntimeContextProvider;
+
+private authorityExecutionWorkspaceResolver?: (
     request: EnforcementRequest,
   ) => WorkspaceId;
+
 
     constructor(
     context?: RuntimeContext,
@@ -247,6 +264,15 @@ private readonly approvals: ApprovalEngine;
    * Workspace identity is resolved independently and canonicalized
    * before every authority decision.
    */
+
+  public configureToolRegistry(
+    toolRegistry: ToolRegistry,
+  ): void {
+    this.permissions.setToolRegistry(
+      toolRegistry,
+    );
+  }
+
   configureAuthorityAwareExecution(config: {
     readonly contextProvider:
       AuthorityAwareRuntimeContextProvider;
@@ -278,6 +304,9 @@ private readonly approvals: ApprovalEngine;
     this.authorityExecutionWorkspaceResolver =
       () =>
         config.resolveWorkspaceId();
+
+    this.authorityExecutionContextProvider =
+      config.contextProvider;
 
     this.authorityExecutionGate =
       new EnterpriseRuntimeExecutionGate(
@@ -332,6 +361,118 @@ private readonly approvals: ApprovalEngine;
     });
   }
 
+  public verifyContinuitySealAtExecution(
+    request: EnforcementRequest,
+    seal: ContinuitySeal,
+  ): ContinuitySealVerification {
+    const contextProvider =
+      this.authorityExecutionContextProvider;
+
+    const workspaceResolver =
+      this.authorityExecutionWorkspaceResolver;
+
+    if (
+      !contextProvider ||
+      !workspaceResolver
+    ) {
+      return {
+        valid: false,
+        code: "INVALID_SEAL",
+        reason:
+          "Continuity Seal verification requires the canonical authority runtime context.",
+      };
+    }
+
+    let canonicalWorkspaceId:
+      WorkspaceId;
+
+    try {
+      canonicalWorkspaceId =
+        workspaceId(
+          workspaceResolver(
+            request,
+          ),
+        );
+    } catch (error) {
+      return {
+        valid: false,
+        code: "WORKSPACE_MISMATCH",
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Canonical workspace resolution failed during Continuity Seal verification.",
+      };
+    }
+
+    try {
+      const runtimeRequest:
+        RuntimeExecutionRequest = {
+        workspaceId:
+          canonicalWorkspaceId,
+
+        requestId:
+          seal.executionId,
+
+        agentId:
+          request.agentId,
+
+        action:
+          request.action,
+
+        payload:
+          request.input,
+      };
+
+      const current =
+        contextProvider.resolve(
+          runtimeRequest,
+        );
+
+      return this.continuitySealEngine.verify(
+        seal,
+        {
+          workspaceId:
+            canonicalWorkspaceId,
+
+          agentId:
+            request.agentId,
+
+          executionId:
+            seal.executionId,
+
+          action:
+            request.action,
+
+          resource:
+            request.tool,
+
+          tool:
+            request.tool,
+
+          input:
+            request.input,
+
+          transitiveAuthority:
+            current.transitiveAuthority,
+
+          authorityDriftSeverity:
+            current.authorityDriftSeverity,
+
+          containmentAction:
+            current.containmentAction,
+        },
+      );
+    } catch (error) {
+      return {
+        valid: false,
+        code: "INVALID_SEAL",
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Current authority could not be resolved for Continuity Seal verification.",
+      };
+    }
+  }
   getEnterpriseWorkspaceId():
     string | undefined {
     return this.enterpriseApprovalConfig?.workspaceId;
@@ -1032,6 +1173,192 @@ private readonly approvals: ApprovalEngine;
             metadata.executionId,
           );
 
+        const continuityProvider =
+          this.authorityExecutionContextProvider;
+
+        if (!continuityProvider) {
+          return this.complete(
+            request,
+            {
+              ...metadata,
+              continuitySealStatus:
+                "BLOCKED_NO_CONTEXT_PROVIDER",
+            },
+            {
+              decision:
+                "BLOCK",
+              reason:
+                "Continuity Seal requires a trusted authority context provider.",
+              riskScore:
+                100,
+              threats,
+              permission:
+                permission.action,
+              policy:
+                "allow",
+              security:
+                "allow",
+            },
+            "prevented",
+            "not_attempted",
+          );
+        }
+
+        try {
+          const continuityContext =
+            continuityProvider.resolve(
+              authorityRequest,
+            );
+
+          const suppliedContinuitySeal =
+            request.metadata
+              ?.continuitySeal as
+              | ContinuitySeal
+              | undefined;
+
+          if (suppliedContinuitySeal) {
+            const verification =
+              this.continuitySealEngine.verify(
+                suppliedContinuitySeal,
+                {
+                  workspaceId:
+                    canonicalWorkspaceId,
+                  agentId:
+                    request.agentId,
+                  executionId:
+                    String(
+                      metadata.executionId,
+                    ),
+                  action:
+                    request.action,
+                  resource:
+                    request.tool,
+                  tool:
+                    request.tool,
+                  input:
+                    request.input,
+                  transitiveAuthority:
+                    continuityContext.transitiveAuthority,
+                  authorityDriftSeverity:
+                    continuityContext.authorityDriftSeverity,
+                  containmentAction:
+                    continuityContext.containmentAction,
+                },
+              );
+
+            if (!verification.valid) {
+              metadata.continuitySealStatus =
+                "INVALID";
+
+              metadata.continuitySealViolation =
+                verification.code;
+
+              metadata.continuitySealReason =
+                verification.reason;
+
+              return this.complete(
+                request,
+                metadata,
+                {
+                  decision:
+                    "BLOCK",
+                  reason:
+                    `[CONTINUITY_SEAL:${verification.code}] ${verification.reason}`,
+                  riskScore:
+                    100,
+                  threats,
+                  permission:
+                    permission.action,
+                  policy:
+                    "allow",
+                  security:
+                    "allow",
+                },
+                "prevented",
+                "not_attempted",
+              );
+            }
+
+            metadata.continuitySealStatus =
+              "VERIFIED";
+
+            metadata.continuitySeal =
+              suppliedContinuitySeal;
+
+          } else {
+            const seal =
+              this.continuitySealEngine.create(
+                {
+                  workspaceId:
+                    canonicalWorkspaceId,
+                  agentId:
+                    request.agentId,
+                  executionId:
+                    String(
+                      metadata.executionId,
+                    ),
+                  action:
+                    request.action,
+                  resource:
+                    request.tool,
+                  tool:
+                    request.tool,
+                  input:
+                    request.input,
+                  transitiveAuthority:
+                    continuityContext.transitiveAuthority,
+                  authorityDriftSeverity:
+                    continuityContext.authorityDriftSeverity,
+                  containmentAction:
+                    continuityContext.containmentAction,
+                },
+              );
+
+            metadata.continuitySeal =
+              seal;
+
+            metadata.continuitySealStatus =
+              "SEALED";
+
+            metadata.continuitySealId =
+              seal.sealId;
+
+            metadata.continuitySealHash =
+              seal.sealHash;
+          }
+
+        } catch (error) {
+          metadata.continuitySealStatus =
+            "BLOCKED";
+
+          metadata.continuitySealReason =
+            error instanceof Error
+              ? error.message
+              : "Continuity Seal creation failed.";
+
+          return this.complete(
+            request,
+            metadata,
+            {
+              decision:
+                "BLOCK",
+              reason:
+                `[CONTINUITY_SEAL:BLOCK] ${metadata.continuitySealReason}`,
+              riskScore:
+                100,
+              threats,
+              permission:
+                permission.action,
+              policy:
+                "allow",
+              security:
+                "allow",
+            },
+            "prevented",
+            "not_attempted",
+          );
+        }
+
       } else {
 
         metadata.authorityDecision =
@@ -1593,6 +1920,151 @@ private readonly approvals: ApprovalEngine;
       "not_attempted",
     );
   }
+  public verifyContinuitySealForExecution(
+    request: EnforcementRequest,
+    seal: ContinuitySeal,
+  ): ContinuitySealVerification {
+
+    const provider =
+      this.authorityExecutionContextProvider;
+
+    const workspaceResolver =
+      this.authorityExecutionWorkspaceResolver;
+
+    if (
+      !provider ||
+      !workspaceResolver
+    ) {
+      return {
+        valid:
+          false,
+        code:
+          "INVALID_SEAL",
+        reason:
+          "Continuity Seal verification requires a trusted authority context provider.",
+      };
+    }
+
+    let canonicalWorkspaceId:
+      WorkspaceId;
+
+    try {
+      canonicalWorkspaceId =
+        workspaceId(
+          workspaceResolver(
+            request,
+          ),
+        );
+    } catch (error) {
+      return {
+        valid:
+          false,
+        code:
+          "WORKSPACE_MISMATCH",
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Canonical workspace resolution failed.",
+      };
+    }
+
+    const runtimeRequest:
+      RuntimeExecutionRequest = {
+      workspaceId:
+        canonicalWorkspaceId,
+
+      requestId:
+        String(
+          request.metadata?.executionId ??
+          seal.executionId,
+        ),
+
+      agentId:
+        request.agentId,
+
+      action:
+        request.action,
+
+      payload:
+        request.input,
+    };
+
+    try {
+
+      const currentContext =
+        provider.resolve(
+          runtimeRequest,
+        );
+
+      return this.continuitySealEngine.verify(
+        seal,
+        {
+          workspaceId:
+            canonicalWorkspaceId,
+
+          agentId:
+            request.agentId,
+
+          executionId:
+            String(
+              request.metadata?.executionId ??
+              seal.executionId,
+            ),
+
+          action:
+            request.action,
+
+          resource:
+            request.tool,
+
+          tool:
+            request.tool,
+
+          input:
+            request.input,
+
+          transitiveAuthority:
+            currentContext.transitiveAuthority,
+
+          authorityDriftSeverity:
+            currentContext.authorityDriftSeverity,
+
+          containmentAction:
+            currentContext.containmentAction,
+        },
+      );
+
+    } catch (error) {
+
+      return {
+        valid:
+          false,
+
+        code:
+          "INVALID_SEAL",
+
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Continuity Seal verification failed closed.",
+      };
+    }
+  }
+
+  public reconcileContinuityEffect(
+    seal: ContinuitySeal,
+    effect: Parameters<
+      ContinuitySealEngine["reconcileEffect"]
+    >[1],
+  ): ContinuitySealVerification {
+
+    return this.continuitySealEngine
+      .reconcileEffect(
+        seal,
+        effect,
+      );
+  }
+
   async evaluate(
     request: EnforcementRequest,
   ): Promise<EnforcementResult> {
@@ -1636,6 +2108,7 @@ private readonly approvals: ApprovalEngine;
 
     const result: EnforcementResult = {
       ...base,
+      continuitySeal: metadata.continuitySeal as EnforcementResult["continuitySeal"],
       traceId,
       decisionId,
       executionId,

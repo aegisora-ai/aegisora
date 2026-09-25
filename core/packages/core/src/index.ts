@@ -97,4 +97,8 @@ export * from "./enterprise/transitive-authority";
 export * from "./enterprise/delegation-authority-contract";
 
 export * from "./enterprise/authority-aware-execution-control";
+
+export * from "./enterprise/continuity-seal";
 export * from "./enterprise/runtime/authority-aware-adapter";
+
+export * from "./enterprise/continuity-seal";
