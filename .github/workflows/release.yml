@@ -45,6 +45,12 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.x"
+          cache: false
+
       - name: Verify Node and npm
         run: |
           node --version
@@ -64,6 +70,10 @@ jobs:
 
       - name: Example smoke test
         run: pnpm --filter "@aegisora/example-langgraph-agent-governance" test
+
+      - name: Validate Go sidecar
+        working-directory: services/sidecar
+        run: make fmt-check vet test-race build tools
 
       - name: Validate release version
         shell: bash

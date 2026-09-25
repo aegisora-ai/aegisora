@@ -171,13 +171,16 @@ Governance decisions should preserve identity, capability, decision, reason, ris
 
 ## 6. Current Engineering Bottlenecks
 
-One open architectural question is whether the highest-throughput network routing layer should eventually be decoupled into a dedicated **Go-based microservice**, while policy management and governance semantics remain in the existing control-plane implementation.
+The repository now evaluates this split through an initial **Go 1.27 decision sidecar** under `services/sidecar`, while policy management and governance semantics are intended to move into a **FastAPI control plane**.
 
 The benefit would be high-throughput routing and a clearer data-plane/control-plane separation.
 
-THe trade-off is additional operational complexity and the requirement to preserve identity, policy propagation, and audit correlation across the service boundary.
+The trade-off is additional operational complexity and the requirement to preserve identity, policy propagation, and audit correlation across the service boundary.
 
-This remains an open engineering decision rather than a finalized architecture.
+The decision API, signed local policy activation, and deterministic evaluator are implemented. The controlled upstream proxy, authenticated workload boundary, remote bundle distribution, and durable audit path remain open engineering work; until those land, the Go service is not yet the complete enforcement boundary.
+
+See [Go Sidecar and FastAPI Control Plane](./architecture/go-sidecar-fastapi-control-plane.md)
+for a detailed explanation and a concrete proposal for evaluating this split.
 
 ---
 

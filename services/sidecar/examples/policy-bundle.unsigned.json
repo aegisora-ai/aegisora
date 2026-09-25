@@ -1,0 +1,37 @@
+{
+  "bundle_id": "bundle-local-demo",
+  "scope": {
+    "tenant": "tenant-local",
+    "agent": "agent:demo",
+    "capability": "provider.generate"
+  },
+  "version": "policy-local-1",
+  "digest": "unsigned",
+  "expires_at": "2099-01-01T00:00:00Z",
+  "signature": "unsigned",
+  "policy": {
+    "default_decision": "BLOCK",
+    "rules": [
+      {
+        "capability": "provider.generate",
+        "provider": "openai",
+        "decision": "ALLOW",
+        "reason_code": "OPENAI_ALLOWED",
+        "risk": {
+          "score": 10,
+          "level": "LOW"
+        }
+      },
+      {
+        "capability": "provider.generate",
+        "provider": "anthropic",
+        "decision": "ESCALATE",
+        "reason_code": "ANTHROPIC_REVIEW_REQUIRED",
+        "risk": {
+          "score": 50,
+          "level": "MEDIUM"
+        }
+      }
+    ]
+  }
+}

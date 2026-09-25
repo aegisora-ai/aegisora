@@ -1,0 +1,17 @@
+{
+  "request_id": "req-local-001",
+  "correlation_id": "corr-local-001",
+  "agent_claim": "agent:demo",
+  "capability_request": {
+    "capability": "provider.generate",
+    "provider": "openai",
+    "model": "gpt-test",
+    "route": "/v1/chat/completions"
+  },
+  "input": {
+    "prompt": "hello"
+  },
+  "context": {
+    "source": "local-example"
+  }
+}

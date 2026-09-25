@@ -16,6 +16,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  sidecar:
+    name: Go 1.27 Sidecar
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/sidecar
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.x"
+          cache: false
+
+      - name: Verify formatting
+        run: make fmt-check
+
+      - name: Vet
+        run: make vet
+
+      - name: Test with race detector
+        run: make test-race
+
+      - name: Build service and policy tools
+        run: make build tools
+
   oss:
     name: OSS Build + Typecheck + Test + Example
     runs-on: ubuntu-latest
