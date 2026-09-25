@@ -8,7 +8,7 @@
 
 ## Related issue
 
-<!-- Use Closes #123 or Fixes #123 when applicable. -->
+<!-- Use Fixes #123 or Closes #123 when applicable. -->
 
 ## Scope
 
@@ -34,11 +34,9 @@
 
 Additional validation:
 
-`	ext
 Commands, traces, benchmarks, screenshots, or reproduction details.
-`"
-    "
 
+## Security Impact
 
 - [ ] No security-sensitive behavior changed
 - [ ] Authentication / authorization
@@ -56,6 +54,11 @@ Explain:
 ## Evidence
 
 <!-- Add tests, screenshots, traces, benchmarks, or reproducible artifacts. -->
+
+## Documentation
+
+- [ ] Documentation updated
+- [ ] Documentation not required
 
 ## Contributor checklist
 
