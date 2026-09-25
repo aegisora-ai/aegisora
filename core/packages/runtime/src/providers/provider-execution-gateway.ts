@@ -202,8 +202,22 @@ export class ProviderExecutionGateway {
      */
 
     const requestedModel =
+
       input.request.model;
 
+
+    const continuityInput = {
+
+      model:
+
+        requestedModel,
+
+
+      prompt:
+
+        input.request.prompt,
+
+    };
     const enforcement =
       await this.enforcement.enforce({
         agentId: input.agentId,
@@ -217,10 +231,7 @@ export class ProviderExecutionGateway {
         action:
           "provider.generate",
 
-        input: {
-          model: requestedModel,
-          prompt: input.request.prompt,
-        },
+        input: continuityInput,
 
         metadata: {
                   /*
@@ -293,6 +304,7 @@ export class ProviderExecutionGateway {
      * No authority information is read from input.metadata.
      */
 
+    let trustedWorkspaceIdForExecution: WorkspaceId | undefined;
     if (this.authorityExecutionGate) {
 
       const resolveWorkspaceId =
@@ -320,6 +332,9 @@ export class ProviderExecutionGateway {
         workspaceId(
           resolvedWorkspaceId,
         );
+
+      trustedWorkspaceIdForExecution =
+        canonicalWorkspaceId;
 
       const authorityRuntimeRequest:
         RuntimeExecutionRequest = {
@@ -454,6 +469,45 @@ export class ProviderExecutionGateway {
         input.request.prompt,
     };
 
+    if (enforcement.continuitySeal) {
+
+      const continuityVerification =
+        this.enforcement
+          .verifyContinuitySealForExecution(
+            {
+              agentId:
+                input.agentId,
+
+              resourceType:
+                "provider",
+
+              tool:
+                `provider:${providerName}`,
+
+              action:
+                "provider.generate",
+
+              input:
+                continuityInput,
+
+              metadata:
+                {
+                  ...(input.metadata ?? {}),
+                  executionId:
+                    enforcement.executionId,
+                },
+            },
+
+            enforcement.continuitySeal,
+          );
+
+      if (!continuityVerification.valid) {
+        throw new Error(
+          `[CONTINUITY_SEAL:BLOCK] ${continuityVerification.reason}`,
+        );
+      }
+    }
+
     try {
 
       const response =
@@ -461,6 +515,55 @@ export class ProviderExecutionGateway {
           providerRequest,
           providerContext
         );
+
+      if (enforcement.continuitySeal) {
+
+        const resolvedWorkspace =
+          enforcement.continuitySeal.workspaceId;
+
+        if (
+          typeof resolvedWorkspace !== "string" ||
+          resolvedWorkspace.trim().length === 0
+        ) {
+          throw new Error(
+            "[CONTINUITY_SEAL:BLOCK] Sealed workspace identity is unavailable for effect reconciliation.",
+          );
+        }
+
+        const effectVerification =
+          this.enforcement
+            .reconcileContinuityEffect(
+              enforcement.continuitySeal,
+              {
+                workspaceId:
+                  resolvedWorkspace,
+
+                agentId:
+                  input.agentId,
+
+                executionId:
+                  enforcement.executionId,
+
+                action:
+                  "provider.generate",
+
+                resource:
+                  `provider:${providerName}`,
+
+                tool:
+                  `provider:${providerName}`,
+
+                input:
+                  continuityInput,
+              },
+            );
+
+        if (!effectVerification.valid) {
+          throw new Error(
+            `[CONTINUITY_SEAL:VIOLATION] ${effectVerification.reason}`,
+          );
+        }
+      }
       if (
         this.enterpriseUsageBridge &&
         response.usage
