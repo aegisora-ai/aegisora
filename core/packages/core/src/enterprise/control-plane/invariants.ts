@@ -8,6 +8,7 @@ export function assertCanonicalExecutionGraph(
 
   const {
     intent,
+    identity,
     authority,
     policy,
     decision,
@@ -19,6 +20,23 @@ export function assertCanonicalExecutionGraph(
     incident,
   } = graph;
 
+  if (
+    identity.workspaceId !==
+    intent.workspaceId
+  ) {
+    throw new Error(
+      "CANONICAL_WORKSPACE_MISMATCH: identity",
+    );
+  }
+
+  if (
+    identity.agentId !==
+    intent.agentId
+  ) {
+    throw new Error(
+      "CANONICAL_AGENT_MISMATCH: identity",
+    );
+  }
   if (
     authority.workspaceId !==
     intent.workspaceId
@@ -100,6 +118,15 @@ export function assertCanonicalExecutionGraph(
     );
   }
 
+  if (
+    decision.decision ===
+    "ESCALATE" &&
+    !approval
+  ) {
+    throw new Error(
+      "CANONICAL_ESCALATION_APPROVAL_REQUIRED",
+    );
+  }
   if (approval) {
 
     if (

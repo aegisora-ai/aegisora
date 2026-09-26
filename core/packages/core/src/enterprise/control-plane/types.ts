@@ -64,6 +64,24 @@ export interface CanonicalExecutionIntent {
   readonly requestedAt: string;
 }
 
+export type CanonicalIdentityStatus =
+  | "active"
+  | "suspended"
+  | "revoked";
+
+export interface CanonicalIdentityReference {
+  readonly workspaceId: WorkspaceId;
+  readonly agentId: AgentId;
+
+  readonly principalId: string;
+  readonly authenticationMethod: string;
+
+  readonly status: CanonicalIdentityStatus;
+
+  readonly version: string;
+
+  readonly resolvedAt: string;
+}
 export interface CanonicalAuthorityReference {
   readonly workspaceId: WorkspaceId;
   readonly agentId: AgentId;
@@ -170,7 +188,7 @@ export interface CanonicalExecution {
   readonly provider?: string;
   readonly route?: string;
 
-  readonly continuitySealId: string;
+  readonly continuitySealId?: string;
 
   readonly status: CanonicalExecutionStatus;
 
@@ -228,6 +246,8 @@ export interface CanonicalIncidentReference {
 
 export interface CanonicalExecutionGraph {
   readonly intent: CanonicalExecutionIntent;
+
+  readonly identity: CanonicalIdentityReference;
 
   readonly authority: CanonicalAuthorityReference;
 
