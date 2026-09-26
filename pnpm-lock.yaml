@@ -170,6 +170,22 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  examples/mcp-execution-enforcement:
+    dependencies:
+      '@aegisora/runtime':
+        specifier: workspace:*
+        version: link:../../core/packages/runtime
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      tsx:
+        specifier: ^4
+        version: 4.23.10
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   website:
     dependencies:
       '@base-ui/react':
