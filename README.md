@@ -570,6 +570,11 @@ Aegisora is released under the [MIT License](./LICENSE).
 
   <br /><br />
 
+  <h3>Live Monitor</h3>
+  <img src="docs/assets/live-monitor-preview.gif" alt="Live Monitor in action" width="720" />
+
+  <br /><br />
+
   <a href="https://github.com/aegisora-ai/aegisora">
     GitHub
   </a>
