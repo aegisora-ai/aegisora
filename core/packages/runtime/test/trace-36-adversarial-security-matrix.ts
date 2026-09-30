@@ -65,7 +65,7 @@ function decisionOf(result: unknown): string {
 async function main() {
   console.log("");
   console.log("============================================================");
-  console.log("TRACE 36 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ADVERSARIAL SECURITY MATRIX");
+  console.log("TRACE 36 — ADVERSARIAL SECURITY MATRIX");
   console.log("============================================================");
 
   const engine = new GovernanceEngine();

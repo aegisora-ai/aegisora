@@ -37,7 +37,7 @@ async function main() {
 
   console.log("");
   console.log("============================================================");
-  console.log("TRACE 33 Ã¢â‚¬â€ SECURITY / POLICY / ACCESS ENFORCEMENT");
+  console.log("TRACE 33 — SECURITY / POLICY / ACCESS ENFORCEMENT");
   console.log("============================================================");
 
   // ----------------------------------------------------------
