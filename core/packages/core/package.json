@@ -1,35 +1,36 @@
 {
-    "name": "@aegisora/core",
-    "version": "2.0.0",
-    "description": "Core types and interfaces for Aegisora AI runtime governance platform.",
-    "license": "MIT",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "scripts": {
-        "build": "tsc",
-        "typecheck": "tsc --noEmit"
-    },
-    "devDependencies": {
-        "@types/node": "22.20.3",
-        "typescript": "^5"
-    },
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "require": "./dist/index.js"
-        }
-    },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/aegisora-ai/aegisora.git"
-    },
-    "bugs": {
-        "url": "https://github.com/aegisora-ai/aegisora/issues"
-    },
-    "homepage": "https://docs.aegisora.org"
+    "name":  "@aegisora/core",
+    "version":  "2.0.0",
+    "description":  "Core types and interfaces for Aegisora AI runtime governance platform.",
+    "license":  "MIT",
+    "main":  "./dist/index.js",
+    "types":  "./dist/index.d.ts",
+    "scripts":  {
+                    "build":  "tsc",
+                    "typecheck":  "tsc --noEmit"
+                },
+    "devDependencies":  {
+                            "@types/node":  "22.20.3",
+                            "typescript":  "^5"
+                        },
+    "exports":  {
+                    ".":  {
+                              "types":  "./dist/index.d.ts",
+                              "require":  "./dist/index.js",
+                              "import":  "./dist/index.js"
+                          }
+                },
+    "files":  [
+                  "dist",
+                  "README.md",
+                  "LICENSE"
+              ],
+    "repository":  {
+                       "type":  "git",
+                       "url":  "git+https://github.com/aegisora-ai/aegisora.git"
+                   },
+    "bugs":  {
+                 "url":  "https://github.com/aegisora-ai/aegisora/issues"
+             },
+    "homepage":  "https://docs.aegisora.org"
 }
