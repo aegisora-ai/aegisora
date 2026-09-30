@@ -84,3 +84,10 @@ security-evidence/
 
 # Aegisora security benchmark generated results
 core/packages/runtime/benchmark/results/
+
+# generated test output / local backups (added by repair runner)
+core/packages/runtime/test/**/*.js.map
+core/packages/runtime/_backups/
+
+core/**/*.js.map
+_repair_backups/

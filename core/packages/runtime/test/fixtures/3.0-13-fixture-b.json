@@ -1,0 +1,15 @@
+{
+  "event": {
+    "id": "97385765fe96a31b028674fb7572e23caa6298fd1d102c2e150d530fbf31494c",
+    "pubkey": "b950e905ced688128766d5df392a51d8726cb671ca147293b3b672ef8b051c13",
+    "created_at": 1760000102,
+    "kind": 1,
+    "tags": [],
+    "content": "{\"protocol\":\"aegisora.external-decision.v1\",\"decision\":\"ALLOW\",\"decision_ref\":\"sha256:fc1ee3d74464c142d282720fb0a672defcb8d0f579ecf7324317afbf4dbb9826\",\"decision_ref_preimage_fields\":[\"action_binding_agent_id\",\"action_binding_args_hash\",\"action_binding_tool_hash\"],\"action_binding_tool_hash\":\"sha256:4254029325e9d5cc4658f5838915a4a802f3b5af2cb60575faa777011fbe0dec\",\"action_binding_args_hash\":\"sha256:c92719c54b65e651215f3f42d596cb82578f79ffb936fd29f29cd09614bc4839\",\"action_binding_agent_id\":\"agent-fixture-B\",\"tool\":\"fixture.tool.read\",\"action\":\"tool.execute\",\"fixture\":\"B\"}",
+    "sig": "de4309f546c0a4ad0b549290772b0176fd1feb852a085ed7d7e495353cbec1bc115be9741396076877b9c3949d00d36e1f9301cdbd62131de3269eea74a94e19"
+  },
+  "decision_ref": "sha256:fc1ee3d74464c142d282720fb0a672defcb8d0f579ecf7324317afbf4dbb9826",
+  "action_binding_tool_hash": "sha256:4254029325e9d5cc4658f5838915a4a802f3b5af2cb60575faa777011fbe0dec",
+  "action_binding_args_hash": "sha256:c92719c54b65e651215f3f42d596cb82578f79ffb936fd29f29cd09614bc4839",
+  "action_binding_agent_id": "agent-fixture-B"
+}
