@@ -1860,6 +1860,52 @@ private authorityExecutionWorkspaceResolver?: (
       );
     }
 
+    /*
+
+     * The delegation contract engine fails closed by returning
+
+     * BLOCK with INVALID_GRAPH. Preserve BLOCK while recording
+
+     * the canonical evaluation failure code in decision/evidence.
+
+     */
+
+    if (
+
+      evaluation.decision ===
+
+        "BLOCK" &&
+
+      evaluation.reasonCodes.includes(
+
+        "INVALID_GRAPH",
+
+      )
+
+    ) {
+
+      return completeContractDecision(
+
+        "BLOCK",
+
+
+
+        evaluation.reasons.join("; ") ||
+
+          "Delegation authority contract evaluation failed closed.",
+
+
+
+        "CONTRACT_EVALUATION_ERROR",
+
+
+
+        evaluation.reasonCodes,
+
+      );
+
+    }
+
     const allowedMetadata = {
       ...metadata,
 
@@ -2063,7 +2109,7 @@ private authorityExecutionWorkspaceResolver?: (
     }
   }
 
-  public reconcileContinuityEffect(
+    public reconcileContinuityEffect(
     seal: ContinuitySeal,
     effect: Parameters<
       ContinuitySealEngine["reconcileEffect"]

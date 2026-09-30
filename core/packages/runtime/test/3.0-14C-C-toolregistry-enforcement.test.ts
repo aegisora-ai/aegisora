@@ -105,7 +105,7 @@ test(
         "agent-14c-allow",
     });
 
-    const receipt =
+    const authorizationReceipt =
       await registry.authorize(
         "agent-14c-allow",
         "echo",
@@ -121,7 +121,7 @@ test(
             "agent-14c-allow",
         },
         EXECUTION_TOKEN,
-        receipt,
+        authorizationReceipt,
       );
 
     assert.deepEqual(
