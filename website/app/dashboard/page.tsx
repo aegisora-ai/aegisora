@@ -50,12 +50,16 @@ const policyRows = [
   ["Human approval", "19", "escalated"],
 ];
 
+async function loadDashboardData() {
+  // Data is static for now. Replace with a real API call later.
+  return { events, policyRows };
+}
+
 export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
+    loadDashboardData().finally(() => setLoading(false));
   }, []);
 
   if (loading) {
