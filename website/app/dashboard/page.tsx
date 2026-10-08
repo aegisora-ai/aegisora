@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Activity,
   ArrowUpRight,
@@ -49,7 +50,22 @@ const policyRows = [
   ["Human approval", "19", "escalated"],
 ];
 
+async function loadDashboardData() {
+  // Data is static for now. Replace with a real API call later.
+  return { events, policyRows };
+}
+
 export default function DashboardOverview() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboardData().finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
+
   return (
     <div className="mx-auto max-w-[1400px]">
       <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -281,6 +297,33 @@ function EvidenceCard({
       <div className="mt-2 text-[24px] font-black">{value}</div>
       <div className="mt-1 text-[10px] font-medium text-slate-400">
         sample metric
+      </div>
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="mx-auto max-w-[1400px] animate-pulse">
+      <div className="mb-8">
+        <div className="h-3 w-40 rounded bg-slate-200" />
+        <div className="mt-3 h-8 w-72 rounded bg-slate-200" />
+        <div className="mt-3 h-4 w-96 rounded bg-slate-200" />
+      </div>
+
+      <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="aegis-panel p-5">
+            <div className="h-9 w-9 rounded-lg bg-slate-200" />
+            <div className="mt-6 h-3 w-20 rounded bg-slate-200" />
+            <div className="mt-2 h-7 w-24 rounded bg-slate-200" />
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[1.6fr_1fr]">
+        <div className="aegis-panel h-80" />
+        <div className="aegis-panel h-80" />
       </div>
     </div>
   );
