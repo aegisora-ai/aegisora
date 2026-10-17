@@ -29,7 +29,7 @@ export default function UseCaseSimulatedDataPage() {
         <div className="space-y-6">
           {[
             { title: "Adversarial Prompt Generation", desc: "Automatically synthesize prompt injections and jailbreak variations tailored to your agent's system prompt." },
-            { title: "Compliance Testing at Scale", desc: "Validate HIPAA and GDPR adherence by running millions of automated evaluation passes." },
+            { title: "Compliance Testing at Scale", desc: "Test policy behavior against HIPAA- and GDPR-related scenarios at scale." },
             { title: "Zero Human-Labeling Bottlenecks", desc: "Let Aegisora's evaluation engine benchmark your models continuously in CI/CD pipelines." }
           ].map((item, idx) => (
             <div key={idx} className="p-6 border b order-slate-200 rounded-2xl bg-[#FAFAFA] flex items-start gap-4">

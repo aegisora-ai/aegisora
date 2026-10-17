@@ -39,7 +39,7 @@ export default function ExecutionsPage() {
             <CheckCircle2 className="w-4 h-4 text-emerald-500" strokeWidth={1.5} />
           </div>
           <div className="text-2xl font-bold text-white mb-1">99.8%</div>
-          <div className="text-[11px] text-emerald-400">Healthy</div>
+          <div className="text-[11px] text-emerald-400">Healthy · sample data</div>
         </div>
         <div className="bg-[#111113] border b order-border rounded-xl p-5 shado w-sm">
           <div className="flex justify-between items-start mb-2">

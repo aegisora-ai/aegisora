@@ -207,7 +207,7 @@ return (
               <div className="bg-white dark:bg-[#111113] border b order-slate-200 dark:b order-white/10 p-8 rounded-2xl">
                 <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6"><FileCheck className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
                 <h3 className="text-[20px] font-bold text-slate-900 dark:text-white mb-3">Compliance Exports</h3>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Generate instant, structured CSV or JSON reports mapped directly to SOC 2 Type II, ISO 26262, and GDPR requirements.</p>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Generate instant, structured CSV or JSON reports mapped directly to SOC 2 Readiness, ISO 26262, and GDPR requirements.</p>
               </div>
             </div>
           </div>

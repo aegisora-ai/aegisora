@@ -126,7 +126,7 @@ return (
               <li className="flex items-start gap-3"><Check className="w-5 h-5 text-slate-400 shrink-0"/> VPC & On-Premise Deployment</li>
               <li className="flex items-start gap-3"><Check className="w-5 h-5 text-slate-400 shrink-0"/> SAML SSO & Advanced RBAC</li>
               <li className="flex items-start gap-3"><Check className="w-5 h-5 text-slate-400 shrink-0"/> Unlimited WORM Audit Logs</li>
-              <li className="flex items-start gap-3"><Check className="w-5 h-5 text-slate-400 shrink-0"/> SOC 2 & ISO 26262 Reports</li>
+              <li className="flex items-start gap-3"><Check className="w-5 h-5 text-slate-400 shrink-0"/> SOC 2 / ISO 26262 evidence mapping</li>
               <li className="flex items-start gap-3"><Check className="w-5 h-5 text-slate-400 shrink-0"/> Dedicated Solutions Engineer</li>
             </ul>
           </div>

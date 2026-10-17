@@ -174,7 +174,7 @@ export default function BillingPage() {
               "Multi-region Clusters",
               "Custom LLM Firewalls",
               "Dedicated Account Manager",
-              "99.99% SLA",
+              "SLA per agreement",
             ],
             actionText: "Contact Us",
             actionType: "contact",

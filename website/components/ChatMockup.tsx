@@ -45,7 +45,7 @@ const FLOW_SCENARIOS = [
       "Initializing sidecar proxy in secure VPC...",
       "Target identified: Finance Swarm (4 nodes)",
       "Applying strict fail-closed runtime policy...",
-      "Neural firewall active: raw payloads never leave perimeter.",
+      "Neural firewall active: payload egress policy enforced.",
     ],
     response:
       "Policy deployed successfully. 4 active Finance Agents restricted under strict fail-closed enforcement.",
@@ -161,8 +161,8 @@ export default function ChatMockup() {
         {/* Description */}
         <p className="text-zinc-400 font-mono text-sm sm:text-base max-w-2xl leading-relaxed mb-14">
           Aegisora intercepts unauthorized tool calls, enforces dynamic
-          zero-trust policies with strict fail-closed runtime, and guarantees
-          raw payloads never leave your perimeter.
+          zero-trust policies with strict fail-closed runtime, and helps keep
+          raw payloads within your perimeter.
         </p>
 
         {/* Chat mockup */}
@@ -184,7 +184,7 @@ export default function ChatMockup() {
                   Aegisora Core Intelligence
                 </h4>
                 <p className="text-[11px] text-blue-400 font-mono">
-                  Runtime Governance Active Ã¢â‚¬¢ Fail-Closed Enforced
+                  Runtime Governance Active • Fail-Closed Enforced
                 </p>
               </div>
             </div>

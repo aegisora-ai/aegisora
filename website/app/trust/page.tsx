@@ -32,7 +32,7 @@ export default function TrustCenterPage() {
               <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 border b order-blue-100">
                 <FileCheck className="w-7 h-7 text-[#0066FF]" />
               </div>
-              <h3 className="text-[20px] font-bold text-slate-900 mb-3">SOC 2 Type II</h3>
+              <h3 className="text-[20px] font-bold text-slate-900 mb-3">SOC 2 Readiness</h3>
               <p className="text-[15px] text-slate-600 leading-relaxed mb-6">Independently audited to ensure we maintain strict security, availability, and confidentiality controls.</p>
               <button className="text-[14px] font-bold text-[#0066FF] flex items-center gap-1.5 hover:underline">Request Report <ArrowRight className="w-4 h-4"/></button>
             </div>
@@ -40,15 +40,15 @@ export default function TrustCenterPage() {
               <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mb-6 border b order-emerald-100">
                 <Lock className="w-7 h-7 text-emerald-600" />
               </div>
-              <h3 className="text-[20px] font-bold text-slate-900 mb-3">GDPR Compliant</h3>
-              <p className="text-[15px] text-slate-600 leading-relaxed mb-6">Fully compliant with EU data protection regulations. We process data transparently and provide complete user control.</p>
+              <h3 className="text-[20px] font-bold text-slate-900 mb-3">GDPR Support</h3>
+              <p className="text-[15px] text-slate-600 leading-relaxed mb-6">Designed to support EU data protection (GDPR) obligations. We process data transparently and provide complete user control.</p>
               <button className="text-[14px] font-bold text-[#0066FF] flex items-center gap-1.5 hover:underline">View DPA <ArrowRight className="w-4 h-4"/></button>
             </div>
             <div className="bg-white border b order-slate-200 p-8 rounded-2xl shado w-sm">
               <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mb-6 border b order-rose-100">
                 <Server className="w-7 h-7 text-rose-600" />
               </div>
-              <h3 className="text-[20px] font-bold text-slate-900 mb-3">HIPAA Ready</h3>
+              <h3 className="text-[20px] font-bold text-slate-900 mb-3">HIPAA (roadmap)</h3>
               <p className="text-[15px] text-slate-600 leading-relaxed mb-6">Aegisora enterprise environments support Business Associate Agreements (BAAs) for healthcare workloads.</p>
               <button className="text-[14px] font-bold text-[#0066FF] flex items-center gap-1.5 hover:underline">Learn More <ArrowRight className="w-4 h-4"/></button>
             </div>

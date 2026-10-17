@@ -46,7 +46,7 @@ const blogPosts = [
   {
     title: "Immutable Logs for AI Compliance",
     description:
-      "Regulators demand transparency in autonomous decisions. Here is how continuous runtime logging and strict SOC 2/ISO compliance secures your entire agentic ecosystem...",
+      "Regulators demand transparency in autonomous decisions. Here is how continuous runtime logging and SOC 2/ISO-aligned controls help secure your entire agentic ecosystem...",
     date: "Jul 15, 2026",
     category: "Governance",
     author: {

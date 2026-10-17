@@ -43,7 +43,7 @@ export default function SalesPage() {
     }
 
     setIsLoading(true);
-    // Simüle edilmiÅŸ kurumsal satıÅŸ talep süreci
+    // Simüle edilmiş kurumsal satış talep süreci
     setTimeout(() => {
       setIsLoading(false);
       setIsSubmitted(true);
@@ -52,7 +52,7 @@ export default function SalesPage() {
 
   return (
     <main className="min-h-screen w-full flex flex-col justify-between font-sans bg-zinc-950 text-white pt-28 selection:bg-blue-500/30 relative overflo w-hidden">
-      {/* Arkaplan IÅŸık Efektleri */}
+      {/* Arkaplan Işık Efektleri */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(0,102,238,0.15)_0%,transparent_70%)] pointer-events-none" />
 
       {/* Üst Menü / Navbar */}
@@ -117,14 +117,14 @@ export default function SalesPage() {
           </motion.p>
         </div>
 
-        {/* SatıÅŸ Formu Kutusu (Enterprise Dark Mode & Glassmorphism) */}
+        {/* Satış Formu Kutusu (Enterprise Dark Mode & Glassmorphism) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="w-full rounded-[2.5rem] border b order-zinc-800/80 p-8 sm:p-12 shado w-2xl mb-12 bg-zinc-900/40 backdrop-blur-xl relative overflo w-hidden"
         >
-          {/* Form İçi İnce IÅŸık */}
+          {/* Form İçi İnce Işık */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
 
           {isSubmitted ? (
@@ -409,7 +409,7 @@ export default function SalesPage() {
         </motion.div>
       </div>
 
-      {/* YenilenmiÅŸ Aegisora Ana Footer (Dark Mode, Yeni Logo & GitHub) */}
+      {/* Yenilenmiş Aegisora Ana Footer (Dark Mode, Yeni Logo & GitHub) */}
       <footer className="relative z-10 w-full b order-t py-16 px-6 mt-10 b order-zinc-800 bg-zinc-950">
         <div className="max-w-[1100px] mx-auto flex flex-col items-center">
           <Link
@@ -433,7 +433,7 @@ export default function SalesPage() {
           <p className="text-[13px] text-zinc-500 font-mono text-center max-w-[500px] leading-relaxed">
             You deserve control over your autonomous systems. Aegisora
             intercepts unauthorized tool calls, enforces dynamic zero-trust
-            policies, and guarantees raw payloads never leave your perimeter.
+            policies, and helps keep raw payloads within your perimeter.
           </p>
 
           <div className="flex items-center gap-5 text-zinc-500 mt-8 mb-16">

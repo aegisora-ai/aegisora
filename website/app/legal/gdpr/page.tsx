@@ -57,7 +57,7 @@ export default function GDPRPage() {
             href="/"
             className="text-[13px] font-mono underline text-[#0066EE] hover:text-black transition-colors"
           >
-            â† Back to Home
+            ← Back to Home
           </Link>
           <Link
             href="/contact/support"

@@ -18,7 +18,7 @@ export default function StatusPage() {
            </div>
            <div>
              <h1 className="text-[20px] font-black text-emerald-900">All Systems Operational</h1>
-             <p className="text-[14px] text-emerald-700 font-medium">100% uptime across all global gateway regions over the past 90 days.</p>
+             <p className="text-[14px] text-slate-600 font-medium">Live uptime figures are not published yet; values below are placeholders.</p>
            </div>
         </div>
 
@@ -29,11 +29,11 @@ export default function StatusPage() {
            </div>
            <div className="divide-y divide-slate-100">
               {[
-                { name: "Global Runtime Gateway (EU)", uptime: "99.99%", latency: "14ms" },
-                { name: "Global Runtime Gateway (US)", uptime: "100.0%", latency: "22ms" },
-                { name: "Policy Evaluation Engine", uptime: "99.99%", latency: "4ms" },
-                { name: "Control Plane API", uptime: "99.95%", latency: "65ms" },
-                { name: "Enterprise Audit Ledger", uptime: "100.0%", latency: "30ms" },
+                { name: "Global Runtime Gateway (EU)", uptime: "N/A", latency: "N/A" },
+                { name: "Global Runtime Gateway (US)", uptime: "N/A", latency: "N/A" },
+                { name: "Policy Evaluation Engine", uptime: "N/A", latency: "N/A" },
+                { name: "Control Plane API", uptime: "N/A", latency: "N/A" },
+                { name: "Enterprise Audit Ledger", uptime: "N/A", latency: "N/A" },
               ].map((service, idx) => (
                 <div key={idx} className="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                    <div className="flex items-center gap-3">
@@ -42,7 +42,7 @@ export default function StatusPage() {
                    </div>
                    <div className="flex items-center gap-8 text-[13px] font-mono">
                       <span className="text-slate-500">Latency: <strong className="text-slate-900">{service.latency}</strong></span>
-                      <span className="text-emerald-600 font-bold">{service.uptime} Uptime</span>
+                      <span className="text-slate-500 font-bold">{service.uptime} uptime (not yet published)</span>
                    </div>
                 </div>
               ))}

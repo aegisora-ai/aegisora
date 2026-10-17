@@ -111,7 +111,7 @@ export default function Introducing() {
               <span className="opacity-50 uppercase tracking-widest">
                 Enterprise Proxy
               </span>
-              <span className="font-medium text-[#0066EE]">SOC 2 Ready</span>
+              <span className="font-medium text-[#0066EE]">SOC 2 Readiness</span>
             </div>
           </motion.div>
         </div>

@@ -15,7 +15,7 @@ export default function SecureByDefault() {
   const securityFeatures = [
     {
       icon: <ShieldCheck className="w-5 h-5 text-[#0066EE]" />,
-      title: "GDPR Compliant",
+      title: "GDPR Support",
     },
     {
       icon: (
@@ -24,7 +24,7 @@ export default function SecureByDefault() {
           <span>SOC2</span>
         </div>
       ),
-      title: "SOC 2 Type II",
+      title: "SOC 2 Readiness",
       sub: "(Certification in progress)",
     },
     {
@@ -35,7 +35,7 @@ export default function SecureByDefault() {
           </div>
         </div>
       ),
-      title: "ISO 27001",
+      title: "ISO 27001 Readiness",
       sub: "(Certification in progress)",
     },
     {

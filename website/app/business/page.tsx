@@ -94,13 +94,13 @@ export default function BusinessPage() {
 
   return (
     <main className="min-h-screen w-full flex flex-col justify-between font-sans bg-zinc-950 text-white pt-24 selection:bg-blue-500/30 relative overflo w-hidden">
-      {/* Arkaplan IÅŸık Efektleri */}
+      {/* Arkaplan Işık Efektleri */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(0,102,238,0.15)_0%,transparent_70%)] pointer-events-none" />
 
       {/* Üst Menü / Navbar */}
       <Navbar />
 
-      {/* Hero / Business BaÅŸlığı */}
+      {/* Hero / Business Başlığı */}
       <div className="relative z-10 max-w-[800px] w-full mx-auto px-6 pt-16 pb-16 text-center">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
@@ -157,7 +157,7 @@ export default function BusinessPage() {
               US$ 4.45M
             </p>
             <p className="text-xs font-mono text-zinc-400 mt-2 leading-relaxed">
-              Average per incidentâ€”driven by data leaks, unauthorized access,
+              Average per incident—driven by data leaks, unauthorized access,
               and regulatory fines.
             </p>
           </div>
@@ -233,7 +233,7 @@ export default function BusinessPage() {
           Connect your environments, define your policies, and let Aegisora map
           every point of AI interaction across your organization. Get a unified
           view of what&apos;s secure, what&apos;s vulnerable, and what needs
-          immediate action â€” without weeks of setup.
+          immediate action — without weeks of setup.
         </p>
 
         {/* Dashboard Mockup Kartı (Enterprise Dark Mode) */}
@@ -269,7 +269,7 @@ export default function BusinessPage() {
                 Optimal Fleet Status
               </h4>
               <span className="text-[11px] font-mono text-zinc-500">
-                Score: 98 / 100 â€¢ 0 Critical Incidents Detected
+                Score: 98 / 100 • 0 Critical Incidents Detected
               </span>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function BusinessPage() {
         </motion.div>
       </div>
 
-      {/* Plan KarÅŸılaÅŸtırma Tablosu */}
+      {/* Plan Karşılaştırma Tablosu */}
       <div className="relative z-10 max-w-[1000px] w-full mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-serif tracking-tight mb-4 text-white">
@@ -389,7 +389,7 @@ export default function BusinessPage() {
             Connect your infrastructure, set your policies, and let Aegisora
             start monitoring your AI agents. You&apos;ll get a clear view of
             what&apos;s active, what&apos;s compliant, and what needs
-            actionâ€”without weeks of setup.
+            action—without weeks of setup.
           </p>
           <Link href="/contact/sales">
             <button className="px-8 py-3.5 bg-white text-black text-[13px] font-bold rounded-full hover:bg-zinc-200 transition-all shado w-lg cursor-pointer outline-none flex items-center gap-2 mx-auto">
@@ -444,7 +444,7 @@ export default function BusinessPage() {
         </div>
       </div>
 
-      {/* YenilenmiÅŸ Aegisora Ana Footer (Dark Mode, Yeni Logo & GitHub) */}
+      {/* Yenilenmiş Aegisora Ana Footer (Dark Mode, Yeni Logo & GitHub) */}
       <footer className="relative z-10 w-full b order-t py-16 px-6 mt-20 b order-zinc-800 bg-zinc-950">
         <div className="max-w-[1100px] mx-auto flex flex-col items-center">
           {/* Logo Alanı */}
@@ -469,7 +469,7 @@ export default function BusinessPage() {
           <p className="text-[13px] text-zinc-500 font-mono text-center max-w-[500px] leading-relaxed">
             You deserve control over your autonomous systems. Aegisora
             intercepts unauthorized tool calls, enforces dynamic zero-trust
-            policies, and guarantees raw payloads never leave your perimeter.
+            policies, and helps keep raw payloads within your perimeter.
           </p>
 
           <div className="flex items-center gap-5 text-zinc-500 mt-8 mb-16">
