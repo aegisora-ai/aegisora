@@ -91,3 +91,6 @@ core/packages/runtime/_backups/
 
 core/**/*.js.map
 _repair_backups/
+
+# website4 ayri repodur (github.com/aegisora-ai/aegisora-dashboard)
+/website4/
