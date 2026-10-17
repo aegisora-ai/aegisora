@@ -1,0 +1,33 @@
+{
+  "name": "mosell",
+  "productName": "Mosell",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mosell by Aegisora - govern your AI agents",
+  "author": "Aegisora",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "start": "npm run build && electron ."
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/newsreader": "^5.3.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "lucide-react": "^1.59.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^44.9.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}

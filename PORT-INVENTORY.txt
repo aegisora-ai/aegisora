@@ -1,0 +1,45 @@
+dashboard pages: 30
+
+route (lines, kind, tables)
+[locale]\(app)\dashboard\loading.tsx                                 5 server 
+[locale]\(app)\dashboard                                           120 client decisions
+[locale]\(app)\dashboard\activity                                   24 client 
+[locale]\(app)\dashboard\agents                                    194 client 
+[locale]\(app)\dashboard\agents\[agentId]                           46 client 
+[locale]\(app)\dashboard\api-keys                                   89 client api_keys
+[locale]\(app)\dashboard\approvals                                 160 client 
+[locale]\(app)\dashboard\approvals\[approvalId]                      6 server 
+[locale]\(app)\dashboard\audit                                      22 client 
+[locale]\(app)\dashboard\billing                                   429 client 
+[locale]\(app)\dashboard\billing\usage-card.tsx                     80 client 
+[locale]\(app)\dashboard\decisions                                  25 client 
+[locale]\(app)\dashboard\decisions\[decisionId]                     62 client 
+[locale]\(app)\dashboard\evidence                                   99 client evidence
+[locale]\(app)\dashboard\identity                                   62 server 
+[locale]\(app)\dashboard\incidents                                  37 client incidents
+[locale]\(app)\dashboard\incidents\[incidentId]                      6 server 
+[locale]\(app)\dashboard\integrations                                6 server 
+[locale]\(app)\dashboard\policies                                  116 client agents,policies
+[locale]\(app)\dashboard\policies\[policyId]                        45 client 
+[locale]\(app)\dashboard\providers                                   6 server 
+[locale]\(app)\dashboard\providers\[providerId]                      6 server 
+[locale]\(app)\dashboard\risk                                       42 server 
+[locale]\(app)\dashboard\settings                                   89 client profiles,workspace_settings,workspaces
+[locale]\(app)\dashboard\team                                      468 client 
+[locale]\(app)\dashboard\traces                                     24 client 
+[locale]\(app)\dashboard\traces\[traceId]                            6 server 
+[locale]\(app)\dashboard\webhooks                                   81 client webhooks
+[locale]\(app)\dashboard\webhooks\[webhookId]                        6 server 
+[locale]\(app)\dashboard\workspace                                  48 client 
+
+tables used directly in pages:
+  agents (1)
+  api_keys (1)
+  decisions (1)
+  evidence (1)
+  incidents (1)
+  policies (1)
+  profiles (1)
+  webhooks (1)
+  workspace_settings (1)
+  workspaces (1)
