@@ -28,7 +28,7 @@ const architectureTabs = [
     title: "PII Masking Engine",
     subtitle: "Automated data redaction",
     icon: Lock,
-    badge: "GDPR & HIPAA",
+    badge: "GDPR support",
     description:
       "Instantly detect, redact, and tokenize sensitive enterprise data (PII, API keys, secrets) before it ever reaches external LLM endpoints.",
     codeSnippet: `[Masking Guard] Scanning outbound payload...\n-> Detected: SSN & Corporate Email.\n-> Action: Tokenized securely. [REDACTED_ENTITY_77]`,
@@ -48,10 +48,10 @@ const architectureTabs = [
     title: "Command Center",
     subtitle: "Centralized compliance oversight",
     icon: Terminal,
-    badge: "SOC2 Ready",
+    badge: "SOC 2 readiness",
     description:
       "Centralized operational oversight. Monitor active agents, blocked threats, and compliance scores in a single unified glass pane.",
-    codeSnippet: `[Telemetry Hub] Syncing immutable audit logs...\n-> Active Swarm Nodes: 14\n-> Compliance Score: 99.8% (SOC2 Type II Verified)`,
+    codeSnippet: `[Telemetry Hub] Syncing immutable audit logs...\n-> Active Swarm Nodes: 14\n-> Compliance Score: N/A (demo output)`,
   },
 ];
 
@@ -68,7 +68,7 @@ export default function PrivacyAutopilot() {
       ref={containerRef}
       className="w-full py-28 px-6 bg-transparent font-sans flex flex-col items-center relative z-10 overflo w-hidden text-white"
     >
-      {/* Üst BaÅŸlık Alanı */}
+      {/* Üst Başlık Alanı */}
       <div className="text-center mb-16 flex flex-col items-center max-w-3xl mx-auto">
         <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-blue-400 bg-blue-950/80 border b order-blue-800/50 px-3.5 py-1.5 rounded-full mb-4">
           Zero-Trust Architecture
@@ -178,7 +178,7 @@ export default function PrivacyAutopilot() {
                   </p>
                 </div>
 
-                {/* Simüle EdilmiÅŸ Terminal Çıktısı */}
+                {/* Simüle Edilmiş Terminal Çıktısı */}
                 <div className="bg-zinc-950 border b order-zinc-800/80 rounded-2xl p-4 sm:p-5 font-mono text-xs text-blue-300/90 leading-relaxed shado w-2xl relative overflo w-hidden">
                   <div className="absolute top-2 right-3 text-[10px] text-zinc-600 uppercase tracking-widest font-bold">
                     Live Stream
@@ -192,8 +192,8 @@ export default function PrivacyAutopilot() {
           </div>
 
           <div className="mt-8 pt-4 b order-t b order-zinc-800/80 flex items-center justify-between text-xs font-mono text-zinc-400">
-            <span>Security Standard: ISO 27001 / SOC2</span>
-            <span className="text-emerald-400">â— System Operational</span>
+            <span>Security Standard: ISO 27001 / SOC 2 (roadmap)</span>
+            <span className="text-emerald-400">● System Operational</span>
           </div>
         </div>
       </div>

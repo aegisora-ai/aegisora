@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           </p>
           <h2 className="text-[22px] font-bold text-slate-900 pt-4">Zero Data Retention Commitment</h2>
           <p>
-            Our core architecture guarantees that LLM payloads processed through our runtime gateway are handled strictly in-memory. We do not store, log, or train models on proprietary enterprise data.
+            Our core architecture is designed so that LLM payloads processed through our runtime gateway are handled strictly in-memory. We do not store, log, or train models on proprietary enterprise data.
           </p>
           <h2 className="text-[22px] font-bold text-slate-900 pt-4">Log Files</h2>
           <p>

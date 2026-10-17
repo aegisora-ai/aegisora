@@ -21,7 +21,7 @@ export default function AboutPage() {
     },
     {
       q: "Is our enterprise data safe?",
-      a: "Absolutely. Your raw payloads never leave your secure perimeter. Data is encrypted in transit and at rest, handled in strict accordance with enterprise security standards. We never use your proprietary corporate data or agent logs to train our own models.",
+      a: "Absolutely. Aegisora is designed to help keep raw payloads within your secure perimeter. Data is encrypted in transit and at rest, handled in strict accordance with enterprise security standards. We never use your proprietary corporate data or agent logs to train our own models.",
     },
     {
       q: "What governance tools do you offer?",
@@ -43,7 +43,7 @@ export default function AboutPage() {
 
   return (
     <main className="min-h-screen w-full flex flex-col justify-between font-sans bg-zinc-950 text-white pt-24 selection:bg-blue-500/30 relative overflo w-hidden">
-      {/* Arkaplan IÅŸık Efektleri */}
+      {/* Arkaplan Işık Efektleri */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(0,102,238,0.15)_0%,transparent_70%)] pointer-events-none" />
 
       {/* Üst Menü / Navbar */}
@@ -111,7 +111,7 @@ export default function AboutPage() {
             within their own perimeters.
           </p>
           <p>
-            Aegisora is much more than a security middlewareâ€”it is the
+            Aegisora is much more than a security middleware—it is the
             operational trust layer for the agentic enterprise. We are committed
             to securing your path toward autonomous operations.
           </p>
@@ -224,7 +224,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* YenilenmiÅŸ Aegisora Ana Footer (Dark Mode, Yeni Logo & GitHub) */}
+      {/* Yenilenmiş Aegisora Ana Footer (Dark Mode, Yeni Logo & GitHub) */}
       <footer className="relative z-10 w-full b order-t py-16 px-6 mt-20 b order-zinc-800 bg-zinc-950">
         <div className="max-w-[1100px] mx-auto flex flex-col items-center">
           {/* Logo Alanı */}
@@ -249,7 +249,7 @@ export default function AboutPage() {
           <p className="text-[13px] text-zinc-500 font-mono text-center max-w-[500px] leading-relaxed">
             You deserve control over your autonomous systems. Aegisora
             intercepts unauthorized tool calls, enforces dynamic zero-trust
-            policies, and guarantees raw payloads never leave your perimeter.
+            policies, and helps keep raw payloads within your perimeter.
           </p>
 
           <div className="flex items-center gap-5 text-zinc-500 mt-8 mb-16">

@@ -20,7 +20,7 @@ export default function RegisterPage() {
                 <li className="flex items-center gap-3 text-slate-300 text-[14px]"><Check className="w-5 h-5 text-[#0066FF]"/> Zero-Trust Architecture</li>
                 <li className="flex items-center gap-3 text-slate-300 text-[14px]"><Check className="w-5 h-5 text-[#0066FF]"/> PII Redaction & Detection</li>
                 <li className="flex items-center gap-3 text-slate-300 text-[14px]"><Check className="w-5 h-5 text-[#0066FF]"/> Real-time Hallucination Checks</li>
-                <li className="flex items-center gap-3 text-slate-300 text-[14px]"><Check className="w-5 h-5 text-[#0066FF]"/> SOC2 & HIPAA Compliant Logging</li>
+                <li className="flex items-center gap-3 text-slate-300 text-[14px]"><Check className="w-5 h-5 text-[#0066FF]"/> Audit logging to support SOC 2 & HIPAA programs</li>
               </ul>
             </div>
             <div className="mt-12 text-slate-400 text-[12px]">© 2026 Aegisora AI. All rights reserved.</div>

@@ -76,13 +76,13 @@ export default function Footer() {
             <div className="py-6 b order-b b order-white/20">
               <h3 className="text-lg font-bold mb-2 text-white">Security & Compliance</h3>
               <p className="text-blue-100/90 text-[14px] leading-relaxed">
-                SOC 2 Type II certified. Built for regulated industries with strict data handling requirements.
+                SOC 2 readiness in progress. Built for regulated industries with strict data handling requirements.
               </p>
             </div>
             <div className="pt-6">
-              <h3 className="text-lg font-bold mb-2 text-white">Reliability Guarantees</h3>
+              <h3 className="text-lg font-bold mb-2 text-white">Reliability</h3>
               <p className="text-blue-100/90 text-[14px] leading-relaxed">
-                99.9% uptime SLA. Dedicated support for enterprise customers. Scale to millions of test scenarios without degradation.
+                SLA per agreement. Dedicated support for enterprise customers.
               </p>
             </div>
           </div>
@@ -115,13 +115,13 @@ export default function Footer() {
                 <div className="w-10 h-10 rounded-full border b order-white/30 flex items-center justify-center shrink-0">
                   <ShieldCheck className="w-5 h-5 text-white" />
                 </div>
-                <div className="text-[9px] font-bold uppercase tracking-widest leading-tight text-white">SOC 2<br/>TYPE II<br/>CERTIFIED</div>
+                <div className="text-[9px] font-bold uppercase tracking-widest leading-tight text-white">SOC 2<br/>READINESS<br/>IN PROGRESS</div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full border b order-white/30 flex items-center justify-center shrink-0">
                   <FileCheck className="w-5 h-5 text-white" />
                 </div>
-                <div className="text-[9px] font-bold uppercase tracking-widest leading-tight text-white">HIPAA<br/>COMPLIANT</div>
+                <div className="text-[9px] font-bold uppercase tracking-widest leading-tight text-white">HIPAA<br/>ROADMAP</div>
               </div>
             </div>
           </div>

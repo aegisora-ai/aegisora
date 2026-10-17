@@ -105,7 +105,7 @@ export default function AdminPanel() {
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center px-6 font-sans relative overflo w-hidden selection:bg-blue-500/30">
-        {/* Arkaplan IÅŸık Efekti */}
+        {/* Arkaplan Işık Efekti */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(0,102,238,0.15)_0%,transparent_70%)] pointer-events-none" />
 
         <motion.form
@@ -156,7 +156,7 @@ export default function AdminPanel() {
   // 2. Durum: Yönetim Paneli (Dashboard) Ekranı
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-6 md:p-12 font-sans relative overflo w-hidden selection:bg-blue-500/30">
-      {/* Arkaplan IÅŸık Efekti */}
+      {/* Arkaplan Işık Efekti */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(0,102,238,0.1)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="max-w-[1000px] mx-auto space-y-8 relative z-10 pt-8">

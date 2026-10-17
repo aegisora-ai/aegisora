@@ -13,7 +13,7 @@ export default function EnterprisePage() {
           <Shield className="w-10 h-10 text-[#0066FF]" />
         </div>
         <h1 className="text-[48px] font-black text-slate-900 mb-4 tracking-tight">Aegisora Enterprise</h1>
-        <p className="text-[18px] text-slate-600 max-w-2xl mb-8">Dedicated infrastructure, custom SLAs, and advanced policy configurations for the world's most demanding AI environments.</p>
+        <p className="text-[18px] text-slate-600 max-w-2xl mb-8">Dedicated infrastructure, SLA terms per agreement, and advanced policy configurations for the world's most demanding AI environments.</p>
         <button className="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-colors">Contact Sales</button>
       </main>
       <Footer />

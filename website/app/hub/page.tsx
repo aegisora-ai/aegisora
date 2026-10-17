@@ -144,7 +144,7 @@ export default function HubIndex() {
                       </Link>
                     </div>
 
-                    {/* Seçme (Select) Butonu - Tıklanınca Rengi ve Yazısı DeğiÅŸir */}
+                    {/* Seçme (Select) Butonu - Tıklanınca Rengi ve Yazısı Değişir */}
                     <button
                       onClick={() => toggleValidator(val.id)}
                       className={`px-4 py-1.5 border rounded-md text-[13px] font-bold transition-all ${

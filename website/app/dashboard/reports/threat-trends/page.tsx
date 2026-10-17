@@ -50,7 +50,7 @@ export default function ThreatTrendsPage() {
             <Zap className="w-4 h-4 text-emerald-500" strokeWidth={1.5} />
           </div>
           <div className="text-2xl font-bold text-white mb-1">98.2%</div>
-          <div className="text-[11px] text-muted-foreground flex items-center gap-1">Successfully mitigated</div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1">Successfully mitigated · sample data</div>
         </div>
         <div className="bg-[#111113] border b order-border rounded-xl p-5 shado w-sm">
           <div className="flex justify-between items-start mb-2">

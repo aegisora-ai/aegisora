@@ -95,7 +95,7 @@ export default function DashboardLayout({
               <div>
                 <div className="text-[12px] font-black">Enterprise Workspace</div>
                 <div className="mt-1 text-[10px] font-medium text-slate-400">
-                  Sample tenant Â· v1.5
+                  Sample tenant · v1.5
                 </div>
               </div>
 

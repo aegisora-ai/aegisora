@@ -97,7 +97,7 @@ export default function SettingsPage() {
             <div className="flex justify-between items-start mb-6 b order-b b order-slate-100 pb-6">
                <div>
                  <h3 className="text-[18px] font-black text-slate-900 mb-1">Enterprise Plan</h3>
-                 <p className="text-[13px] text-slate-500">You are currently on the Enterprise tier with custom SLAs and SOC2 compliance.</p>
+                 <p className="text-[13px] text-slate-500">You are currently on the Enterprise tier. SLA terms per agreement.</p>
                </div>
                <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-[11px] font-bold uppercase tracking-wider rounded-md">Active</span>
             </div>

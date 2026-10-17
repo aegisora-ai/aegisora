@@ -132,7 +132,7 @@ export default function ProtectIdentityPage() {
             • All data is encrypted in transit and when stored.
           </p>
           <p className="text-[11px] text-gray-400">
-            • SOC2 & GDPR privacy regulations compliant.
+            • Designed to support SOC 2 and GDPR programs.
           </p>
           <p className="text-[11px] text-gray-400">
             • You can delete your account and data anytime.

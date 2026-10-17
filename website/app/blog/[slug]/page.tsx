@@ -181,7 +181,7 @@ export default function BlogPostPage() {
           <p className="text-[13px] text-zinc-500 font-mono text-center max-w-[500px] leading-relaxed">
             You deserve control over your autonomous systems. Aegisora
             intercepts unauthorized tool calls, enforces dynamic zero-trust
-            policies, and guarantees raw payloads never leave your perimeter.
+            policies, and helps keep raw payloads within your perimeter.
           </p>
 
           <div className="flex items-center gap-5 text-zinc-500 mt-8 mb-16">

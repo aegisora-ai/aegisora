@@ -5,7 +5,7 @@ import { ArrowRight, Shield, Activity } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-// GeliÅŸtirici odaklı daha teknik ifadeler
+// Geliştirici odaklı daha teknik ifadeler
 const PHRASES = [
   "Intercepting tool call: execute_sql_query...",
   "Analyzing semantic intent for prompt injection...",
@@ -49,7 +49,7 @@ export default function Hero() {
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-transparent overflo w-hidden font-sans">
-      {/* Arka Plan IÅŸık Hüzmeleri (Glow Effects) */}
+      {/* Arka Plan Işık Hüzmeleri (Glow Effects) */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <motion.div
           animate={
@@ -88,7 +88,7 @@ export default function Hero() {
           <p className="text-zinc-400 text-base sm:text-lg leading-relaxed mb-8 max-w-lg font-light">
             Stop selling abstract &quot;safety&quot;. Aegisora is the narrow
             control plane for agent tool and API calls. Enforce least-privilege
-            access, block PII leaks, and generate readable audit logsâ€”without
+            access, block PII leaks, and generate readable audit logs—without
             the bloated black-box middleware.
           </p>
 

@@ -32,7 +32,7 @@ const liveTerminalLogs = [
   "[Telemetry] Listening for autonomous agent tool invocations...",
   "[Policy Engine] Zero-trust perimeter active: fail-closed enforced.",
   "[Neural Firewall] 0 unauthorized prompt injection vectors detected.",
-  "[Compliance] SOC2 Type II immutable logging stream operational.",
+  "[Compliance] Immutable audit logging stream operational (demo output).",
 ];
 
 const AegisoraSpark = ({
