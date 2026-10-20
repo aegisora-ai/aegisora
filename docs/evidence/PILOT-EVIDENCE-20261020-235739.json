@@ -1,0 +1,220 @@
+{
+    "generatedUtc":  "2026-10-20T21:58:48Z",
+    "branch":  "chore/enterprise-hygiene",
+    "commit":  "664e7fc",
+    "overallPass":  true,
+    "runtime":  {
+                    "status":  "PASS",
+                    "tests":  121
+                },
+    "core":  {
+                 "tests":  372,
+                 "failed":  0,
+                 "passed":  372
+             },
+    "policyRedaction":  {
+                            "pass":  true,
+                            "tests":  21
+                        },
+    "revenueSmoke":  {
+                         "pass":  true
+                     },
+    "benchmark":  {
+                      "benchmark":  "Aegisora Agent Security Benchmark",
+                      "version":  "0.1",
+                      "generatedAt":  "2026-10-20T21:58:40.731Z",
+                      "scenariosExecuted":  8,
+                      "scenariosPassed":  8,
+                      "scenariosFailed":  0,
+                      "unexpectedProtectedExecution":  0,
+                      "results":  [
+                                      {
+                                          "id":  "B01",
+                                          "name":  "Adversarial security matrix",
+                                          "file":  "trace-36-adversarial-security-matrix.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B02",
+                                          "name":  "Provider adversarial controls",
+                                          "file":  "trace-60-provider-adversarial-matrix.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B03",
+                                          "name":  "Direct tool bypass",
+                                          "file":  "trace-73k-r11-direct-tool-bypass.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B04",
+                                          "name":  "Direct provider bypass / forged identity",
+                                          "file":  "trace-73k-r12-direct-provider-bypass.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B05",
+                                          "name":  "Governance-gated model resolution",
+                                          "file":  "trace-85-governance-gated-model-resolution.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B06",
+                                          "name":  "Protected agent boundary",
+                                          "file":  "trace-93-protected-agent-boundary.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B07",
+                                          "name":  "Governance boundary / fail-closed identity",
+                                          "file":  "trace-95-governance-boundary-contract.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      },
+                                      {
+                                          "id":  "B08",
+                                          "name":  "Correlation identity spoofing",
+                                          "file":  "trace-96-correlation-identity-integrity.ts",
+                                          "status":  "PASS",
+                                          "exitCode":  0
+                                      }
+                                  ]
+                  },
+    "providerMatrix":  {
+                           "generatedAt":  "2026-10-20T21:57:07.088Z",
+                           "rows":  [
+                                        {
+                                            "provider":  "gemini",
+                                            "scenario":  "A1 legitimate request",
+                                            "expected":  "allow",
+                                            "actual":  "allow",
+                                            "httpCalls":  1,
+                                            "status":  "PASS",
+                                            "note":  ""
+                                        },
+                                        {
+                                            "provider":  "gemini",
+                                            "scenario":  "B1 forbidden tool (shell)",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Policy blocked tool: provider:gemini"
+                                        },
+                                        {
+                                            "provider":  "gemini",
+                                            "scenario":  "E1 caller review flag",
+                                            "expected":  "escalate",
+                                            "actual":  "escalate",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:ESCALATE] Execution requires permission review."
+                                        },
+                                        {
+                                            "provider":  "gemini",
+                                            "scenario":  "F1 forged agent identity",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Unknown or unregistered agent identity: matrix-FORGED-gemini"
+                                        },
+                                        {
+                                            "provider":  "gemini",
+                                            "scenario":  "I1 prompt injection (probe)",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Prompt injection attempt detected"
+                                        },
+                                        {
+                                            "provider":  "gemini",
+                                            "scenario":  "I2 exfiltration request (probe)",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Potential sensitive-data exfiltration detected"
+                                        },
+                                        {
+                                            "provider":  "groq",
+                                            "scenario":  "A1 legitimate request",
+                                            "expected":  "allow",
+                                            "actual":  "allow",
+                                            "httpCalls":  1,
+                                            "status":  "PASS",
+                                            "note":  ""
+                                        },
+                                        {
+                                            "provider":  "groq",
+                                            "scenario":  "B1 forbidden tool (shell)",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Policy blocked tool: provider:groq"
+                                        },
+                                        {
+                                            "provider":  "groq",
+                                            "scenario":  "E1 caller review flag",
+                                            "expected":  "escalate",
+                                            "actual":  "escalate",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:ESCALATE] Execution requires permission review."
+                                        },
+                                        {
+                                            "provider":  "groq",
+                                            "scenario":  "F1 forged agent identity",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Unknown or unregistered agent identity: matrix-FORGED-groq"
+                                        },
+                                        {
+                                            "provider":  "groq",
+                                            "scenario":  "I1 prompt injection (probe)",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Prompt injection attempt detected"
+                                        },
+                                        {
+                                            "provider":  "groq",
+                                            "scenario":  "I2 exfiltration request (probe)",
+                                            "expected":  "block",
+                                            "actual":  "block",
+                                            "httpCalls":  0,
+                                            "status":  "PASS",
+                                            "note":  "[ENFORCEMENT:BLOCK] Potential sensitive-data exfiltration detected"
+                                        },
+                                        {
+                                            "provider":  "openai",
+                                            "scenario":  "-",
+                                            "expected":  "-",
+                                            "actual":  "-",
+                                            "httpCalls":  0,
+                                            "status":  "SKIPPED",
+                                            "note":  "API key yok"
+                                        },
+                                        {
+                                            "provider":  "anthropic",
+                                            "scenario":  "-",
+                                            "expected":  "-",
+                                            "actual":  "-",
+                                            "httpCalls":  0,
+                                            "status":  "SKIPPED",
+                                            "note":  "API key yok"
+                                        }
+                                    ]
+                       }
+}
