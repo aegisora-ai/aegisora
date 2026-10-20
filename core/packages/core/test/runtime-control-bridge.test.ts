@@ -1,8 +1,9 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
   ControlPolicyResolver,
+  EnterpriseControlSurface,
 } from "../src/enterprise/control";
 
 import {
@@ -48,10 +49,7 @@ function setup() {
     );
 
   const control =
-    new (
-      require("../src/enterprise/control")
-        .EnterpriseControlSurface
-    )(
+    new EnterpriseControlSurface(
       risk,
       resolver,
     );
