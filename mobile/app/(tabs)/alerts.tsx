@@ -1,0 +1,1 @@
+import { Text, View } from "react-native"; export default function Alerts() { return <View style={{flex:1, backgroundColor: "#080B12", justifyContent: "center", alignItems: "center"}}><Text style={{color: "#F4F7FB"}}>Alerts View</Text></View>; }

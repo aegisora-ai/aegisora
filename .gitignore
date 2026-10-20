@@ -94,3 +94,20 @@ _repair_backups/
 
 # website4 ayri repodur (github.com/aegisora-ai/aegisora-dashboard)
 /website4/
+
+# forensics / yerel kanýt dosyalarý
+.enterprise/readiness/
+_arsiv-website4/
+_repairs/
+audit/
+core/supabase/forensics/
+core/supabase/forensics-connection.sql
+
+# yedek dosyalar
+*.bak*
+*.backup.*
+*.syntax-backup-*
+.work/
+_verify/
+
+mobile/.expo/

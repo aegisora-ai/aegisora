@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Aegisora",
+    "slug": "aegisora-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#080B12",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aegisora.mobile"
+    },
+    "android": {
+      "package": "com.aegisora.mobile"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-notifications",
+      "expo-secure-store",
+      "expo-local-authentication"
+    ]
+  }
+}
