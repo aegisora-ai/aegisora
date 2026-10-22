@@ -74,8 +74,6 @@ _validate_json.cjs
 # Backup files
 *.bak
 
-website/.next
-
 # Generated security evidence
 security-evidence/
 
