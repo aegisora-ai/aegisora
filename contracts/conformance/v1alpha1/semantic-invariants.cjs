@@ -1,22 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const websiteRoot = path.resolve(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "website"
-);
-
-const yamlPackageRoot = path.join(
-  websiteRoot,
-  "node_modules",
-  "yaml"
-);
-
-const yamlPath = require.resolve(yamlPackageRoot);
-const YAML = require(yamlPath);
+const YAML = require("yaml");
 
 const contractPath = path.resolve(
   __dirname,

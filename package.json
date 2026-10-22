@@ -1,15 +1,18 @@
 {
-    "name":  "aegisora",
-    "version":  "2.0.0",
-    "private":  true,
-    "description":  "Zero-trust runtime security and governance for AI agents.",
-    "license":  "MIT",
-    "packageManager":  "pnpm@11.20.0",
-    "scripts":  {
-                    "build":  "pnpm --filter \"@aegisora/*\" build",
-                    "typecheck":  "pnpm --filter \"@aegisora/*\" typecheck",
-                    "test":  "pnpm --filter \"@aegisora/*\" test",
-                    "verify":  "pnpm build \u0026\u0026 pnpm typecheck \u0026\u0026 pnpm test",
-                    "test:live":  "pnpm --filter \"@aegisora/runtime\" test:live"
-                }
+    "name": "aegisora",
+    "version": "2.0.0",
+    "private": true,
+    "description": "Zero-trust runtime security and governance for AI agents.",
+    "license": "MIT",
+    "packageManager": "pnpm@11.20.0",
+    "scripts": {
+        "build": "pnpm --filter \"@aegisora/*\" build",
+        "typecheck": "pnpm --filter \"@aegisora/*\" typecheck",
+        "test": "pnpm --filter \"@aegisora/*\" test",
+        "verify": "pnpm build && pnpm typecheck && pnpm test",
+        "test:live": "pnpm --filter \"@aegisora/runtime\" test:live"
+    },
+    "devDependencies": {
+        "yaml": "^2.9.1"
+    }
 }

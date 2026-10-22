@@ -111,14 +111,6 @@ Infrastructure and runtime domain.
 
 Contains runtime execution, agent identity, lifecycle, permissions, enforcement, providers, policy, security, audit, observability, plugins, storage, SDK packages, and supporting infrastructure.
 
-### `/website`
-
-User-facing and developer-facing frontend.
-
-Contains Next.js, React components, public assets, styling, frontend utilities, and frontend build configuration.
-
-The website must not become the security authority for protected execution.
-
 ### `/docs`
 
 Architecture and contributor documentation.
