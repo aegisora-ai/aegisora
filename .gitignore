@@ -111,3 +111,10 @@ core/supabase/forensics-connection.sql
 _verify/
 
 mobile/.expo/
+
+# mobility: only the published run is tracked
+mobility/reports/*
+mobility/evidence/*
+!mobility/reports/report-core-20261030-193449.md
+!mobility/reports/results-core-20261030-193449.csv
+!mobility/evidence/evidence-core-20261030-193449.jsonl

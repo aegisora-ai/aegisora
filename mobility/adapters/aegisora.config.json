@@ -1,0 +1,6 @@
+﻿{
+    "endpoint":  "",
+    "apiKey":  "",
+    "decisionField":  "decision",
+    "enabled":  false
+}
