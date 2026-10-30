@@ -61,6 +61,11 @@ const input =
       /disregard\s+(all\s+)?previous\s+instructions/,
       /override\s+(the\s+)?system\s+instructions/,
       /forget\s+(all\s+)?previous\s+instructions/,
+      /\byou\s+are\s+now\s+(?:in\s+)?(?:an?\s+|the\s+)?(?:\w+\s+){0,3}(?:mode|persona|role)\b/,
+      /\b(?:enter|switch\s+to|enable|activate)\s+(?:an?\s+|the\s+)?(?:developer|maintenance|debug|admin|god|sudo|unrestricted|jailbreak)\s+mode\b/,
+      /\b(?:system|admin|developer)\s+override\s*:/,
+      /\b(?:ignore|disregard|forget)\s+(?:all\s+|any\s+)?(?:your|the|these)\s+(?:rules|guidelines|restrictions|constraints|safety\s+instructions)\b/,
+      /\bact\s+as\s+(?:if\s+you\s+(?:have|had)\s+)?no\s+(?:rules|restrictions|limits|guardrails)\b/,
     ];
 
     if (
@@ -108,6 +113,7 @@ if (
       /\b(bypass|circumvent|disable)\s+(the\s+)?security\s+controls?\b/i,
       /\b(bypass|circumvent|disable)\s+(the\s+)?security\s+policy\b/i,
       /\bignore\s+(all\s+)?security\s+polic(?:y|ies)\s+and\s+bypass\b/i,
+      /\b(?:disable|turn\s+off|switch\s+off|deactivate|skip|bypass|circumvent)\s+(?:all\s+|the\s+|your\s+|any\s+)?(?:safety|security)\s+(?:checks?|filters?|guards?|guardrails?|measures?|protocols?|restrictions?|mechanisms?)\b/i,
     ];
 
     if (
