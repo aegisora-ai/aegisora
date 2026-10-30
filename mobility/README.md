@@ -36,7 +36,7 @@ From the repo root (Node and pnpm required):
     pnpm install --frozen-lockfile
     powershell -ExecutionPolicy Bypass -File .\run-mobility-core.ps1
 
-New output goes to `mobility/reports/` and `mobility/evidence/` (git-ignored; only the run above is tracked). The harness is `core/packages/runtime/test/mobility/run-mobility-core.ts`.
+The first run builds the workspace packages the runtime depends on (this takes a minute). New output goes to `mobility/reports/` and `mobility/evidence/` (git-ignored; only the run above is tracked). The harness is `core/packages/runtime/test/mobility/run-mobility-core.ts`.
 
 ## Files
 
