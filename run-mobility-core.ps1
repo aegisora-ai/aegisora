@@ -27,6 +27,15 @@ Write-Host "Harness written: $harnessPath" -ForegroundColor Cyan
 # ---------- 2) run harness ----------
 $outJson = Join-Path $M "reports\harness-raw-$ts.json"
 $hLog = Join-Path $M "reports\harness-$ts.log"
+# Workspace packages are not committed as dist/; build them on a fresh clone.
+if (-not (Test-Path (Join-Path $Root 'core\packages\audit\dist\index.js'))) {
+    Write-Host "Building @aegisora/runtime and its workspace dependencies..." -ForegroundColor Cyan
+    Push-Location $Root
+    cmd /c "pnpm --filter @aegisora/runtime... run build"
+    $bCode = $LASTEXITCODE
+    Pop-Location
+    if ($bCode -ne 0) { throw "Workspace build failed (exit $bCode)" }
+}
 Push-Location $RT
 $tsx = (& node -p "require.resolve('tsx/cli')" 2>$null | Select-Object -Last 1)
 $env:MOBILITY_OUT = $outJson
