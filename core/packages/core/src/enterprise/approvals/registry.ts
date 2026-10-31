@@ -343,6 +343,15 @@ export class EnterpriseApprovalRegistry {
       );
     }
 
+    if (
+      record.requesterId.trim() ===
+      input.approverId.trim()
+    ) {
+      throw new Error(
+        "Separation of duties: the requester cannot approve their own request.",
+      );
+    }
+
     const timestamp =
       nowIso();
 
