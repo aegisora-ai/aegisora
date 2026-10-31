@@ -162,6 +162,20 @@ async function main() {
     eng.consume(bind({ cmd: "open door 1" }));
     return blocked(() => eng.consume(bind({ cmd: "open door 1" })), /status: consumed/);
   });
+  await run("AEG-AV-112", "DIRECT (ApprovalEngine: a different approver is allowed)", async () => {
+    const eng: any = new ApprovalEngine();
+    const rec = eng.create({
+      agentId: "vehicle-001",
+      action: "tool.execute",
+      traceId: "t-112",
+      decisionId: "d-112",
+      executionId: "e-112",
+      request: { message: "remote door open" },
+      expiresAt: new Date(Date.now() + 60000).toISOString(),
+    });
+    const a = eng.approve({ approvalId: rec.approvalId, actorId: "supervisor-001" });
+    return { actual: a.status === "approved" ? "ALLOW" : String(a.status), note: "supervisor-001 approved vehicle-001 request; status=" + a.status };
+  });
   const out = process.env.MOBILITY_OUT as string;
   writeFileSync(out, JSON.stringify({ generatedAt: new Date().toISOString(), rows }, null, 2), "utf8");
   console.log("HARNESS DONE rows=" + rows.length + " -> " + out);
