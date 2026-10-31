@@ -110,3 +110,4 @@
 "AEG-AV-109"|"ALLOW kontrol"|"CORE"|"Low"|"ALLOW"|"Yetkili yolcu kendi yolculugunu goruntuluyor"
 "AEG-AV-110"|"ALLOW kontrol"|"CORE"|"Low"|"ALLOW"|"Yetkili bakim ekibi planli bakim kaydi aciyor"
 "AEG-AV-111"|"Komut guvenligi"|"CORE"|"Critical"|"BLOCK"|"Istegi yapan kendi onayini veremez (self-approval)"
+"AEG-AV-112"|"Komut guvenligi"|"CORE"|"High"|"ALLOW"|"Farkli bir yetkili onay verebilir (kontrol testi)"
