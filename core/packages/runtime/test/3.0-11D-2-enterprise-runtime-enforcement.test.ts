@@ -270,6 +270,9 @@ async function main(): Promise<void> {
       approvalId:
         runtimeApprovalId,
 
+      actorId:
+        "security-admin",
+
       agentId:
         "enterprise-agent",
 
