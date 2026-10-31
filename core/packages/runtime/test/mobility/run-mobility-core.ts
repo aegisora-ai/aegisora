@@ -1,6 +1,7 @@
-﻿import { RuntimeContext } from "../../src/context/runtime-context";
+import { RuntimeContext } from "../../src/context/runtime-context";
 import { EnforcementGate } from "../../src/enforcement/enforcement-gate";
 import { writeFileSync } from "node:fs";
+import { ApprovalEngine } from "../../src/approval/approval-engine";
 
 interface Row { id: string; actual: string; mapping: string; note: string; detail?: unknown }
 const rows: Row[] = [];
@@ -104,6 +105,63 @@ async function main() {
     return { actual: limited ? "BLOCK" : "ALLOW", note: "decision counts=" + JSON.stringify(counts), detail: counts };
   });
 
+  await simple("AEG-AV-003", "PROXY (registered vehicle -> other vehicle agent resource)", ["vehicle-001", "vehicle-002"],
+    { agentId: "vehicle-001", resourceType: "agent", tool: "agent:vehicle-002", action: "agent.run", input: { message: "use vehicle-002 authority to open door" } });
+  await run("AEG-AV-111", "DIRECT (ApprovalEngine: requester self-approval)", async () => {
+    const eng: any = new ApprovalEngine();
+    const rec = eng.create({
+      agentId: "vehicle-001",
+      action: "tool.execute",
+      traceId: "t-111",
+      decisionId: "d-111",
+      executionId: "e-111",
+      request: { message: "remote door open" },
+      expiresAt: new Date(Date.now() + 60000).toISOString(),
+    });
+    try {
+      const a = eng.approve({ approvalId: rec.approvalId, actorId: "vehicle-001" });
+      return { actual: a.status === "approved" ? "ALLOW" : String(a.status), note: "requester vehicle-001 approved its own request; status=" + a.status, detail: a };
+    } catch (e: any) {
+      const m = String(e && e.message ? e.message : e);
+      return { actual: /not found|status/i.test(m) ? "ERROR" : "BLOCK", note: "approve threw: " + m };
+    }
+  });
+  const mk = (req: unknown, ms = 60000) => {
+    const eng: any = new ApprovalEngine();
+    const rec = eng.create({
+      agentId: "vehicle-001", action: "tool.execute",
+      traceId: "t-1", decisionId: "d-1", executionId: "e-1",
+      request: req, expiresAt: new Date(Date.now() + ms).toISOString(),
+    });
+    const bind = (r: unknown) => ({ approvalId: rec.approvalId, agentId: "vehicle-001", action: "tool.execute", traceId: "t-1", decisionId: "d-1", executionId: "e-1", request: r });
+    return { eng, rec, bind };
+  };
+  const blocked = async (fn: () => unknown, re: RegExp) => {
+    try { await fn(); return { actual: "ALLOW", note: "no error thrown" }; }
+    catch (e: any) { const m = String(e && e.message ? e.message : e); return { actual: re.test(m) ? "BLOCK" : "ERROR", note: m }; }
+  };
+
+  await run("AEG-AV-006", "UNIT (ApprovalEngine: no human approval)", async () => {
+    const { eng, bind } = mk({ cmd: "remote door open" });
+    return blocked(() => eng.validate(bind({ cmd: "remote door open" })), /status: pending/);
+  });
+  await run("AEG-AV-007", "UNIT (ApprovalEngine: approved command modified)", async () => {
+    const { eng, rec, bind } = mk({ cmd: "open door 1" });
+    eng.approve({ approvalId: rec.approvalId, actorId: "supervisor-001" });
+    return blocked(() => eng.validate(bind({ cmd: "open ALL doors" })), /request binding mismatch/);
+  });
+  await run("AEG-AV-008", "UNIT (ApprovalEngine: expired approval)", async () => {
+    const { eng, rec, bind } = mk({ cmd: "open door 1" }, 200);
+    eng.approve({ approvalId: rec.approvalId, actorId: "supervisor-001" });
+    await new Promise((r) => setTimeout(r, 400));
+    return blocked(() => eng.validate(bind({ cmd: "open door 1" })), /status: expired/);
+  });
+  await run("AEG-AV-009", "UNIT (ApprovalEngine: replay of consumed approval)", async () => {
+    const { eng, rec, bind } = mk({ cmd: "open door 1" });
+    eng.approve({ approvalId: rec.approvalId, actorId: "supervisor-001" });
+    eng.consume(bind({ cmd: "open door 1" }));
+    return blocked(() => eng.consume(bind({ cmd: "open door 1" })), /status: consumed/);
+  });
   const out = process.env.MOBILITY_OUT as string;
   writeFileSync(out, JSON.stringify({ generatedAt: new Date().toISOString(), rows }, null, 2), "utf8");
   console.log("HARNESS DONE rows=" + rows.length + " -> " + out);

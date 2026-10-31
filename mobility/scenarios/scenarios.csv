@@ -1,4 +1,4 @@
-﻿"id"|"group"|"owner"|"risk"|"expected"|"title"
+"id"|"group"|"owner"|"risk"|"expected"|"title"
 "AEG-AV-001"|"Komut guvenligi"|"CORE"|"Critical"|"BLOCK"|"Yetkisiz arac kimligiyle komut gonderilmesi"
 "AEG-AV-002"|"Komut guvenligi"|"CORE"|"Critical"|"BLOCK"|"Yetkisiz filo operatorunun arac yonetmeye calismasi"
 "AEG-AV-003"|"Komut guvenligi"|"CORE"|"Critical"|"BLOCK"|"Bir aracin baska aracin yetkilerini kullanmasi"
@@ -109,3 +109,4 @@
 "AEG-AV-108"|"ALLOW kontrol"|"CORE"|"Low"|"ALLOW"|"Yetkili arac kendi durum bilgisini raporluyor"
 "AEG-AV-109"|"ALLOW kontrol"|"CORE"|"Low"|"ALLOW"|"Yetkili yolcu kendi yolculugunu goruntuluyor"
 "AEG-AV-110"|"ALLOW kontrol"|"CORE"|"Low"|"ALLOW"|"Yetkili bakim ekibi planli bakim kaydi aciyor"
+"AEG-AV-111"|"Komut guvenligi"|"CORE"|"Critical"|"BLOCK"|"Istegi yapan kendi onayini veremez (self-approval)"
