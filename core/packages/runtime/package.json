@@ -1,6 +1,6 @@
 {
     "name": "@aegisora/runtime",
-    "version": "2.0.0",
+    "version": "4.5.0",
     "description": "Aegisora runtime governance engine for autonomous AI agents.",
     "license": "MIT",
     "main": "./dist/index.js",
