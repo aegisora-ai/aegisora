@@ -1,4 +1,4 @@
-﻿# Aegisora Product Proof
+# Aegisora Product Proof
 
 ## Purpose
 
@@ -22,7 +22,7 @@ The current working tree has been validated with the Aegisora runtime test suite
 
 **Result:**
 
-- Runtime tests: **103 / 103 passed**
+- Runtime tests: **119 / 119 passed** (release 4.5.0, local run on Node 26.13)
 - Provider execution boundary: verified
 - Governance decisions: **ALLOW / BLOCK / ESCALATE**
 - Canonical provider identity: verified
