@@ -1,4 +1,4 @@
-﻿# Aegisora Product Proof
+# Aegisora Product Proof
 
 ## Purpose
 
@@ -22,7 +22,7 @@ The current working tree has been validated with the Aegisora runtime test suite
 
 **Result:**
 
-- Runtime tests: **103 / 103 passed**
+- Runtime tests: **119 / 119 passed** (release 4.5.0, local run on Node 26.13)
 - Provider execution boundary: verified
 - Governance decisions: **ALLOW / BLOCK / ESCALATE**
 - Canonical provider identity: verified
@@ -157,7 +157,7 @@ This provides a consistent basis for tracing security decisions through the exec
 
 ### Local Reproducible Evidence
 
-The 103/103 runtime test result is development-working-tree evidence.
+The 119/119 runtime test result is local evidence from the 4.5.0 release commit (Node 26.13). CI runs Node 22.
 
 It demonstrates that the current runtime implementation satisfies the covered test contracts at the time of execution.
 
@@ -203,7 +203,7 @@ Marketing language should not exceed the strength of the available evidence.
 
 **Current local runtime verification: GREEN**
 
-**Runtime test result: 103 / 103 passed**
+**Runtime test result: 119 / 119 passed** (release 4.5.0, local run)
 
 **External certification status: Not claimed**
 
