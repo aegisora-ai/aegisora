@@ -84,3 +84,37 @@ security-evidence/
 
 # Aegisora security benchmark generated results
 core/packages/runtime/benchmark/results/
+
+# generated test output / local backups (added by repair runner)
+core/packages/runtime/test/**/*.js.map
+core/packages/runtime/_backups/
+
+core/**/*.js.map
+_repair_backups/
+
+# website4 ayri repodur (github.com/aegisora-ai/aegisora-dashboard)
+/website4/
+
+# forensics / yerel kanýt dosyalarý
+.enterprise/readiness/
+_arsiv-website4/
+_repairs/
+audit/
+core/supabase/forensics/
+core/supabase/forensics-connection.sql
+
+# yedek dosyalar
+*.bak*
+*.backup.*
+*.syntax-backup-*
+.work/
+_verify/
+
+mobile/.expo/
+
+# mobility: only the published run is tracked
+mobility/reports/*
+mobility/evidence/*
+!mobility/reports/report-core-20261030-193449.md
+!mobility/reports/results-core-20261030-193449.csv
+!mobility/evidence/evidence-core-20261030-193449.jsonl
