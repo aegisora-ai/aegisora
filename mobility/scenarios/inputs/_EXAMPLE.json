@@ -1,0 +1,8 @@
+﻿{
+    "target":  "vehicle-001",
+    "tool":  "vehicle.door.open",
+    "agent_id":  "agent-unauthorized",
+    "context":  {
+                    "route":  "trier-pilot-zone"
+                }
+}
