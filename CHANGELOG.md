@@ -10,6 +10,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ---
 
+## [4.5.0] - 2026-11-12
+
+### Security
+
+* Enforced separation of duties in the enterprise approval registry and in the runtime `ApprovalEngine`: a requester can no longer approve their own request.
+* Closed a prompt-injection mode-switch gap in the security guard. The guard is pattern-based: paraphrased payloads can bypass it, and the broad `you are now ... mode` pattern can block harmless text.
+* Added per-agent rate limiting at the enforcement gate. It is in-memory and per gate instance, so it resets when the process restarts.
+
+### Added
+
+* The `@aegisora/core` test suite now runs as part of `pnpm test` and CI. Previously its test files were not executed in CI.
+* Live provider matrix test (Gemini, Groq) for the enforcement gate, plus forged-identity and injection probes.
+* Reproducible pilot evidence report and generator.
+* Reproducible mobility security harness with approval and identity scenarios.
+
+### Changed
+
+* Usage ledger and usage projection tests no longer depend on strict mode or the working directory.
+* Removed the stale `website` workspace entry.
+* Rate limiting is on by default: 100 calls per 60 seconds per agent. Callers that send more than 100 calls per minute from one agent are affected. Configure with `AEGISORA_RATE_LIMIT_MAX` and `AEGISORA_RATE_LIMIT_WINDOW_MS`; `AEGISORA_RATE_LIMIT_MAX=0` disables it.
+* Package versions aligned to 4.5.0.
+
+---
+
 ## [2.0.0] - 2026-08-30
 
 ### Added

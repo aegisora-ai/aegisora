@@ -1,6 +1,6 @@
 {
     "name":  "aegisora",
-    "version":  "2.0.0",
+    "version":  "4.5.0",
     "private":  true,
     "description":  "Zero-trust runtime security and governance for AI agents.",
     "license":  "MIT",

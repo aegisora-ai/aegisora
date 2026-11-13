@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { checkAgentRateLimit } from "./rate-limiter";
 import { EnterpriseEvidenceRuntimeBridge } from "./enterprise-evidence-bridge";
 import { EnterpriseAuditRuntimeBridge } from "./enterprise-audit-bridge";
 import { EnterpriseEntitlementRuntimeBridge } from "./enterprise-entitlement-bridge";
@@ -845,6 +846,35 @@ private authorityExecutionWorkspaceResolver?: (
           permission: permission.action,
           policy: "block",
           security: "allow",
+        },
+        "prevented",
+        "not_attempted",
+      );
+    }
+
+    // Per-agent rate limiting (sliding window).
+    // Tunable via AEGISORA_RATE_LIMIT_MAX / AEGISORA_RATE_LIMIT_WINDOW_MS (MAX=0 disables).
+    const rateLimit = checkAgentRateLimit(this, request.agentId);
+
+    if (!rateLimit.allowed) {
+      return this.complete(
+        request,
+        metadata,
+        {
+          decision: "BLOCK",
+          reason: `Rate limit exceeded: more than ${rateLimit.limit} calls per ${Math.round(rateLimit.windowMs / 1000)}s for this agent`,
+          riskScore: 70,
+          threats: [
+            {
+              type: "rate_limit",
+              severity: "medium",
+              description: "Per-agent call rate exceeded the configured limit",
+              score: 70,
+            },
+          ],
+          permission: permission.action,
+          policy: "allow",
+          security: "block",
         },
         "prevented",
         "not_attempted",
@@ -1860,6 +1890,52 @@ private authorityExecutionWorkspaceResolver?: (
       );
     }
 
+    /*
+
+     * The delegation contract engine fails closed by returning
+
+     * BLOCK with INVALID_GRAPH. Preserve BLOCK while recording
+
+     * the canonical evaluation failure code in decision/evidence.
+
+     */
+
+    if (
+
+      evaluation.decision ===
+
+        "BLOCK" &&
+
+      evaluation.reasonCodes.includes(
+
+        "INVALID_GRAPH",
+
+      )
+
+    ) {
+
+      return completeContractDecision(
+
+        "BLOCK",
+
+
+
+        evaluation.reasons.join("; ") ||
+
+          "Delegation authority contract evaluation failed closed.",
+
+
+
+        "CONTRACT_EVALUATION_ERROR",
+
+
+
+        evaluation.reasonCodes,
+
+      );
+
+    }
+
     const allowedMetadata = {
       ...metadata,
 
@@ -2063,7 +2139,7 @@ private authorityExecutionWorkspaceResolver?: (
     }
   }
 
-  public reconcileContinuityEffect(
+    public reconcileContinuityEffect(
     seal: ContinuitySeal,
     effect: Parameters<
       ContinuitySealEngine["reconcileEffect"]

@@ -1,8 +1,8 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const sql = readFileSync(
-  "supabase/migrations/019_enterprise_usage_projection.sql",
+  require("node:path").resolve(__dirname, "../../../supabase/migrations/019_enterprise_usage_projection.sql"),
   "utf8",
 );
 

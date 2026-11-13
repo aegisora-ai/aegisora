@@ -249,6 +249,15 @@ export class ApprovalEngine {
       );
     }
 
+    if (
+      record.agentId.trim() ===
+      input.actorId.trim()
+    ) {
+      throw new Error(
+        "Separation of duties: the requester cannot approve their own request.",
+      );
+    }
+
     return this.store.update(
       record.approvalId,
       {

@@ -1,0 +1,15 @@
+{
+  "event": {
+    "id": "a9f82fa5f6dcf7cde5c3f3146aa5f3c9ae0ce4ac3ee413204c0bbfd0d1d7d935",
+    "pubkey": "809bbc3ba2be342973631189527ce8bef32aa581b2adfdae1e06aa11e492e54b",
+    "created_at": 1760000101,
+    "kind": 1,
+    "tags": [],
+    "content": "{\"protocol\":\"aegisora.external-decision.v1\",\"decision\":\"ALLOW\",\"decision_ref\":\"sha256:4d54d67cc63a5d9a2c0ebb2e8883df4a50d7347ffa8fd10af071ebf9cf31b20d\",\"decision_ref_preimage_fields\":[\"action_binding_agent_id\",\"action_binding_args_hash\",\"action_binding_tool_hash\"],\"action_binding_tool_hash\":\"sha256:4254029325e9d5cc4658f5838915a4a802f3b5af2cb60575faa777011fbe0dec\",\"action_binding_args_hash\":\"sha256:c0c29afcca19b0179392bd275576ad58d45d3fa3a51c4661f9575e28e725bf7e\",\"action_binding_agent_id\":\"agent-fixture-A\",\"tool\":\"fixture.tool.read\",\"action\":\"tool.execute\",\"fixture\":\"A\"}",
+    "sig": "a73d933b89a3115a349d7d037d90ce29ce9a8d1ce78ae80a728a7ed2f267be17996a9475d30a71c293f1ac5e3ea72c067ea3395c20af6081544bb0ebcecdc608"
+  },
+  "decision_ref": "sha256:4d54d67cc63a5d9a2c0ebb2e8883df4a50d7347ffa8fd10af071ebf9cf31b20d",
+  "action_binding_tool_hash": "sha256:4254029325e9d5cc4658f5838915a4a802f3b5af2cb60575faa777011fbe0dec",
+  "action_binding_args_hash": "sha256:c0c29afcca19b0179392bd275576ad58d45d3fa3a51c4661f9575e28e725bf7e",
+  "action_binding_agent_id": "agent-fixture-A"
+}

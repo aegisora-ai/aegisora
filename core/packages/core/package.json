@@ -1,22 +1,25 @@
 {
     "name": "@aegisora/core",
-    "version": "2.0.0",
+    "version": "4.5.0",
     "description": "Core types and interfaces for Aegisora AI runtime governance platform.",
     "license": "MIT",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "test": "node scripts/run-tests.mjs"
     },
     "devDependencies": {
         "@types/node": "22.20.3",
+        "tsx": "^4.23.10",
         "typescript": "^5"
     },
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "require": "./dist/index.js"
+            "require": "./dist/index.js",
+            "import": "./dist/index.js"
         }
     },
     "files": [
