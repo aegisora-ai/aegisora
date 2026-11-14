@@ -1,6 +1,6 @@
-﻿# Aegisora LangGraph Governance Example
+# Aegisora LangGraph Governance Example
 
-Runnable integration example showing how a LangGraph agent can execute through Aegisora governance.
+Runnable example showing how to wire `Aegisora.protect` into a LangGraph node.
 
 ## Run
 
@@ -15,3 +15,6 @@ STATUS=SUCCESS
 EXAMPLE_RESULT=PASS
 ```
 
+## What this example does not show
+
+`Aegisora.protect` wraps the agent's `run` method and normalizes its result. It does not evaluate policy, so this example does not exercise the ALLOW, BLOCK, or ESCALATE enforcement gate.

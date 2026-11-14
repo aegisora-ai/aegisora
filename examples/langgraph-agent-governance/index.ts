@@ -1,4 +1,4 @@
-﻿import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
+import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
 import { Aegisora } from "@aegisora/sdk";
 
 const State = Annotation.Root({
@@ -7,6 +7,8 @@ const State = Annotation.Root({
   output: Annotation<string>(),
 });
 
+// Aegisora.protect wraps run() and normalizes its result. It does not evaluate policy,
+// so this example shows SDK wiring in a LangGraph node, not the enforcement gate.
 const protectedAgent = Aegisora.protect({
   async run(input: string) {
     if (!input.trim()) {
@@ -14,7 +16,7 @@ const protectedAgent = Aegisora.protect({
     }
 
     return {
-      message: `Aegisora protected execution completed for: ${input}`,
+      message: `LangGraph node completed for: ${input}`,
     };
   },
 });
@@ -37,7 +39,7 @@ export const app = workflow.compile();
 
 async function main() {
   const goal = process.env.AEGISORA_EXAMPLE_GOAL ??
-    "Run a protected LangGraph agent action.";
+    "Run a LangGraph agent action.";
 
   const result = await app.invoke({
     goal,
