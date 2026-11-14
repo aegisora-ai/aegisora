@@ -33,3 +33,12 @@ context:ToolContext
 
 
 }
+
+export interface ToolExecutionPolicy {
+  readonly contractId: string;
+  readonly agentId: string;
+  readonly allowedTools: readonly string[];
+  readonly approvalRequiredTools?: readonly string[];
+  readonly expiresAt?: string;
+  readonly maxExecutions?: number;
+}

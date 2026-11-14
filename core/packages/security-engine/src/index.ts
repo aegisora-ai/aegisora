@@ -13,3 +13,6 @@ export type {
   ThreatType,
   ThreatSeverity,
 } from "./types/security";
+
+export * from "./self-play/types";
+export * from "./self-play/self-play-security-engine";

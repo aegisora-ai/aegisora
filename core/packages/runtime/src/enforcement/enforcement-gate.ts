@@ -54,7 +54,15 @@ import type {
   ToolRegistry,
 } from "../tools";
 
+interface TrustedEnforcementResultBinding {
+  readonly result: EnforcementResult;
+  readonly metadataSnapshot: Record<string, unknown>;
+}
+
 export class EnforcementGate {
+
+  private readonly trustedEnforcementResultBindings =
+    new WeakMap<EnforcementResult, TrustedEnforcementResultBinding>();
 
     private readonly enterpriseEntitlementLocks = new Map<string, Promise<void>>();
 
@@ -1824,42 +1832,54 @@ private authorityExecutionWorkspaceResolver?: (
         DelegationAuthorityContractEngine["evaluate"]
       >;
 
+    let canonicalWorkspaceId: WorkspaceId;
+    let canonicalGraph: CompromiseSimulationGraph;
+    const trustedEvaluationTime = new Date().toISOString();
+
     try {
-      const engine =
-        new DelegationAuthorityContractEngine();
-
-      evaluation =
-        engine.evaluate({
-          contract:
-            input.contract,
-
-          graph:
-            input.graph,
-
-          workspaceId:
-            input.workspaceId,
-
-          taskId:
-            input.taskId,
-
-          now:
-            input.now,
-        });
+      canonicalWorkspaceId =
+        this.context.getAuthorityWorkspaceId();
+      canonicalGraph =
+        this.context.getAuthorityGraph();
     } catch (error) {
-
       return completeContractDecision(
         "BLOCK",
-
         error instanceof Error
           ? error.message
-          : "Delegation authority contract evaluation failed closed.",
-
-        "CONTRACT_EVALUATION_ERROR",
-
-        ["INVALID_GRAPH"],
+          : "Trusted runtime authority context is unavailable.",
+        "AUTHORITY_CONTEXT_UNAVAILABLE",
+        ["AUTHORITY_CONTEXT_UNAVAILABLE"],
       );
     }
 
+    if (input.taskId !== input.contract.taskId) {
+      return completeContractDecision(
+        "BLOCK",
+        "Delegation contract task binding does not match the runtime task.",
+        "TASK_MISMATCH",
+        ["TASK_MISMATCH"],
+      );
+    }
+
+    try {
+      const engine = new DelegationAuthorityContractEngine();
+      evaluation = engine.evaluate({
+        contract: input.contract,
+        graph: canonicalGraph,
+        workspaceId: canonicalWorkspaceId,
+        taskId: input.contract.taskId,
+        now: trustedEvaluationTime,
+      });
+    } catch (error) {
+      return completeContractDecision(
+        "BLOCK",
+        error instanceof Error
+          ? error.message
+          : "Delegation authority contract evaluation failed closed.",
+        "CONTRACT_EVALUATION_ERROR",
+        ["INVALID_GRAPH"],
+      );
+    }
     const allowedMetadata = {
       ...metadata,
 
@@ -2090,6 +2110,25 @@ private authorityExecutionWorkspaceResolver?: (
     return this.enforce(request);
   }
 
+  /**
+   * Return a defensive copy of metadata cryptographically/logically
+   * associated with this exact EnforcementResult object identity.
+   */
+  public getTrustedExecutionBinding(
+    result: EnforcementResult,
+  ): TrustedEnforcementResultBinding | undefined {
+    const binding =
+      this.trustedEnforcementResultBindings.get(result);
+    if (!binding) {
+      return undefined;
+    }
+    try {
+      return structuredClone(binding);
+    } catch {
+      return undefined;
+    }
+  }
+
   private async complete(
     request: EnforcementRequest,
     metadata: Record<string, unknown>,
@@ -2136,11 +2175,30 @@ private authorityExecutionWorkspaceResolver?: (
       executionOutcome,
     };
 
+    // Snapshot before audit integrations receive mutable references.
+    let trustedBinding:
+      TrustedEnforcementResultBinding | undefined;
+    try {
+      trustedBinding = {
+        result: structuredClone(result),
+        metadataSnapshot: structuredClone(metadata),
+      };
+    } catch {
+      trustedBinding = undefined;
+    }
+
     await this.audit(
       request,
       result,
       metadata,
     );
+
+    if (trustedBinding) {
+      this.trustedEnforcementResultBindings.set(
+        result,
+        trustedBinding,
+      );
+    }
 
     return result;
   }

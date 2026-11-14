@@ -13,6 +13,7 @@
         "@aegisora/core": "workspace:*"
     },
     "devDependencies": {
+        "@types/node": "20.19.43",
         "typescript": "^5"
     },
     "exports": {

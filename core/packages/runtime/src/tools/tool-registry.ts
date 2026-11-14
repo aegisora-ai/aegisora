@@ -7,9 +7,12 @@ import type {
   DelegationAuthorityContract,
   CompromiseSimulationGraph,
 } from "@aegisora/core";
+import { isDeepStrictEqual } from "node:util";
+
 import {
   RuntimeTool,
   ToolContext,
+  ToolExecutionPolicy,
 } from "./tool";
 
 import {
@@ -40,6 +43,71 @@ export interface ToolAuthorizationReceipt {
   readonly marker: symbol;
 }
 
+interface ProtectedToolPolicyState {
+  readonly contractId: string;
+  readonly agentId: string;
+  readonly allowedTools: ReadonlySet<string>;
+  readonly approvalRequiredTools: ReadonlySet<string>;
+  readonly expiresAtMs?: number;
+  readonly maxExecutions?: number;
+  attemptedExecutions: number;
+}
+
+interface ToolAuthorizationBinding {
+  readonly agentId: string;
+  readonly name: string;
+  readonly inputSnapshot: unknown;
+  readonly tool: RuntimeTool;
+  readonly handler: RuntimeTool["execute"];
+  readonly metadataSnapshot: Record<string, unknown>;
+  readonly enforcement: EnforcementResult;
+  readonly gate: EnforcementGate;
+}
+
+interface PreparedToolAuthorization {
+  readonly gate: EnforcementGate;
+  readonly agentId: string;
+  readonly name: string;
+  readonly tool: RuntimeTool;
+  readonly inputSnapshot: unknown;
+  readonly metadataSnapshot: Record<string, unknown>;
+}
+
+const TOOL_AUTHORIZATION_BINDINGS =
+  new WeakMap<ToolAuthorizationReceipt, ToolAuthorizationBinding>();
+
+function deepFreezeSnapshot<T>(
+  value: T,
+  seen: WeakSet<object> = new WeakSet<object>(),
+): T {
+  if (value === null || typeof value !== "object") {
+    return value;
+  }
+  const object = value as object;
+  if (seen.has(object)) {
+    return value;
+  }
+  const prototype = Object.getPrototypeOf(object);
+  if (
+    !Array.isArray(object) &&
+    prototype !== Object.prototype &&
+    prototype !== null
+  ) {
+    return value;
+  }
+  seen.add(object);
+  for (const key of Reflect.ownKeys(object)) {
+    const descriptor = Object.getOwnPropertyDescriptor(object, key);
+    if (
+      descriptor &&
+      Object.prototype.hasOwnProperty.call(descriptor, "value")
+    ) {
+      deepFreezeSnapshot(descriptor.value, seen);
+    }
+  }
+  return Object.freeze(value) as T;
+}
+
 export class ToolRegistry {
 
   constructor(
@@ -50,60 +118,287 @@ export class ToolRegistry {
 
   #executionToken: symbol;
 
-  private enforcement?: EnforcementGate;
+  #enforcement?: EnforcementGate;
 
-  private tools =
-    new Map<string, RuntimeTool>();
+  #tools = new Map<string, RuntimeTool>();
 
-  private readonly consumedAuthorizations =
-    new Set<string>();
+  #consumedAuthorizations = new Set<string>();
 
-  private delegationAuthority?: DelegationAuthority;
+  #delegationAuthority?: DelegationAuthority;
+
+  #protectedPoliciesByTool =
+    new Map<string, ProtectedToolPolicyState>();
 
   setDelegationAuthority(
     authority: DelegationAuthority,
   ) {
-    this.delegationAuthority = authority;
+    this.#delegationAuthority = authority;
   }
 
   setEnforcementGate(
     gate: EnforcementGate,
   ) {
-    this.enforcement = gate;
+    this.#enforcement = gate;
 
     gate.configureToolRegistry(
       this,
     );
   }
 
-  register(
+  private createImmutableTool(
     tool: RuntimeTool,
-  ) {
-    if (this.tools.has(tool.name)) {
+  ): RuntimeTool {
+    if (
+      !tool ||
+      typeof tool.name !== "string" ||
+      !tool.name ||
+      typeof tool.description !== "string" ||
+      typeof tool.execute !== "function"
+    ) {
       throw new Error(
-        `Tool already registered: ${tool.name}`,
+        "[ENFORCEMENT:BLOCK] Invalid runtime tool registration.",
       );
     }
 
-    this.tools.set(
-      tool.name,
-      tool,
+    const originalHandler = tool.execute;
+
+    return Object.freeze({
+      name: tool.name,
+      description: tool.description,
+      execute: originalHandler.bind(tool),
+    });
+  }
+
+  register(
+    tool: RuntimeTool,
+  ) {
+    if (
+      !tool ||
+      this.#tools.has(tool.name) ||
+      this.#protectedPoliciesByTool.has(tool.name)
+    ) {
+      throw new Error(
+        `[ENFORCEMENT:BLOCK] Tool already registered or reserved: ${tool?.name}`,
+      );
+    }
+
+    const registered =
+      this.createImmutableTool(tool);
+
+    this.#tools.set(
+      registered.name,
+      registered,
     );
 
-    return tool;
+    return registered;
+  }
+
+  registerProtectedTools(
+    tools: readonly RuntimeTool[],
+    policy: ToolExecutionPolicy,
+  ): ReadonlyArray<Pick<RuntimeTool, "name" | "description">> {
+
+    if (
+      !policy ||
+      typeof policy.contractId !== "string" ||
+      !policy.contractId.trim() ||
+      typeof policy.agentId !== "string" ||
+      !policy.agentId.trim()
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Invalid protected tool contract.",
+      );
+    }
+
+    if (
+      !Array.isArray(policy.allowedTools) ||
+      policy.allowedTools.length === 0
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Protected contract requires allowed tools.",
+      );
+    }
+
+    const allowedTools = new Set(policy.allowedTools);
+
+    if (
+      allowedTools.size !== policy.allowedTools.length ||
+      [...allowedTools].some(
+        (name) =>
+          typeof name !== "string" ||
+          !name.trim() ||
+          name.trim() !== name,
+      )
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Invalid or duplicate allowed tool capability.",
+      );
+    }
+
+    const rawApprovalRequiredTools =
+      policy.approvalRequiredTools ?? [];
+
+    if (!Array.isArray(rawApprovalRequiredTools)) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Invalid approval capability list.",
+      );
+    }
+
+    const approvalRequiredTools =
+      new Set(rawApprovalRequiredTools);
+
+    if (
+      approvalRequiredTools.size !== rawApprovalRequiredTools.length ||
+      [...approvalRequiredTools].some(
+        (name) =>
+          typeof name !== "string" ||
+          !name.trim() ||
+          name.trim() !== name,
+      )
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Invalid or duplicate approval capability.",
+      );
+    }
+
+    for (const name of approvalRequiredTools) {
+      if (!allowedTools.has(name)) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] Approval capability is outside contract scope: ${name}`,
+        );
+      }
+    }
+
+    let expiresAtMs: number | undefined;
+
+    if (policy.expiresAt !== undefined) {
+
+      if (typeof policy.expiresAt !== "string") {
+        throw new Error(
+          "[ENFORCEMENT:BLOCK] Contract expiration must be a string.",
+        );
+      }
+
+      expiresAtMs = Date.parse(policy.expiresAt);
+
+      if (!Number.isFinite(expiresAtMs)) {
+        throw new Error(
+          "[ENFORCEMENT:BLOCK] Invalid contract expiration.",
+        );
+      }
+    }
+
+    if (
+      policy.maxExecutions !== undefined &&
+      (
+        !Number.isSafeInteger(policy.maxExecutions) ||
+        policy.maxExecutions < 1 ||
+        policy.maxExecutions > 1_000_000
+      )
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Invalid contract execution limit.",
+      );
+    }
+
+    if (!Array.isArray(tools) || tools.length === 0) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Protected tool set cannot be empty.",
+      );
+    }
+
+    const names = new Set<string>();
+
+    /*
+     * Every declared capability is reserved by this protected
+     * contract, including capabilities not registered in this
+     * particular tool batch.
+     *
+     * This prevents a later normal register() call from adding
+     * an unprotected handler under a contract-authorized name.
+     */
+
+    for (const name of allowedTools) {
+
+      if (
+        this.#tools.has(name) ||
+        this.#protectedPoliciesByTool.has(name)
+      ) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] Protected capability is already registered or reserved: ${name}`,
+        );
+      }
+    }
+
+    const prepared = tools.map((tool) => {
+      const registered =
+        this.createImmutableTool(tool);
+
+      if (
+        names.has(registered.name) ||
+        !allowedTools.has(registered.name) ||
+        this.#tools.has(registered.name) ||
+        this.#protectedPoliciesByTool.has(registered.name)
+      ) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] Protected tool identity conflict: ${registered.name}`,
+        );
+      }
+
+      names.add(registered.name);
+
+      return registered;
+    });
+
+    const state: ProtectedToolPolicyState = {
+      contractId: policy.contractId,
+      agentId: policy.agentId,
+      allowedTools,
+      approvalRequiredTools,
+      expiresAtMs,
+      maxExecutions: policy.maxExecutions,
+      attemptedExecutions: 0,
+    };
+
+    // All validation is completed before any registry mutation.
+    // One shared state enforces the contract execution budget
+    // across every tool registered under this contract.
+
+    for (const name of allowedTools) {
+      this.#protectedPoliciesByTool.set(name, state);
+    }
+
+    for (const tool of prepared) {
+      this.#tools.set(tool.name, tool);
+    }
+
+    // Never expose executable handler references through the
+    // protected registration API.
+    return prepared.map((tool) =>
+      Object.freeze({
+        name: tool.name,
+        description: tool.description,
+      }),
+    );
   }
 
   remove(
     name: string,
   ) {
-    return this.tools.delete(name);
+    if (this.#protectedPoliciesByTool.has(name)) {
+      throw new Error(
+        `[ENFORCEMENT:BLOCK] Protected tool registration cannot be removed: ${name}`,
+      );
+    }
+
+    return this.#tools.delete(name);
   }
 
   private resolve(
     name: string,
   ) {
     const tool =
-      this.tools.get(name);
+      this.#tools.get(name);
 
     if (!tool) {
       throw new Error(
@@ -129,7 +424,180 @@ export class ToolRegistry {
   has(
     name: string,
   ) {
-    return this.tools.has(name);
+    return this.#tools.has(name);
+  }
+
+  private prepareAuthorization(
+    agentId: string,
+    name: string,
+    input: unknown,
+    metadata?: Record<string, unknown>,
+  ): PreparedToolAuthorization {
+
+    const gate = this.#enforcement;
+    if (!gate) {
+      throw new Error(
+        "ToolRegistry execution boundary is not configured.",
+      );
+    }
+
+    const registeredTool = this.#tools.get(name);
+    if (!registeredTool) {
+      throw new Error(
+        `[ENFORCEMENT:BLOCK] Unknown or unregistered tool: ${name}`,
+      );
+    }
+
+    const protectedPolicy = this.#protectedPoliciesByTool.get(name);
+    if (protectedPolicy) {
+      if (protectedPolicy.agentId !== agentId) {
+        throw new Error(
+          "[ENFORCEMENT:BLOCK] Protected tool contract agent mismatch.",
+        );
+      }
+      if (
+        protectedPolicy.expiresAtMs !== undefined &&
+        Date.now() >= protectedPolicy.expiresAtMs
+      ) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] Task contract expired: ${protectedPolicy.contractId}`,
+        );
+      }
+      if (
+        protectedPolicy.maxExecutions !== undefined &&
+        protectedPolicy.attemptedExecutions >= protectedPolicy.maxExecutions
+      ) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] Task contract execution limit reached: ${protectedPolicy.contractId}`,
+        );
+      }
+      // Reserve synchronously before asynchronous governance work.
+      protectedPolicy.attemptedExecutions += 1;
+    }
+
+    let inputSnapshot: unknown;
+    let effectiveMetadata: Record<string, unknown>;
+    try {
+      inputSnapshot = structuredClone(input);
+      effectiveMetadata = structuredClone(metadata ?? {});
+    } catch {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Tool input and metadata must be structured-cloneable.",
+      );
+    }
+
+    if (protectedPolicy) {
+      effectiveMetadata = {
+        ...effectiveMetadata,
+        aegisoraTaskContractId: protectedPolicy.contractId,
+        aegisoraTaskContractVersion: "1",
+        aegisoraCapability: name,
+        requiresReview:
+          protectedPolicy.approvalRequiredTools.has(name) ||
+          effectiveMetadata.requiresReview === true,
+      };
+    }
+
+    if (effectiveMetadata.externalDecision) {
+      const externalBinding =
+        effectiveMetadata.externalDecision as ExternalDecisionBinding;
+      const decisionVerification = verifyExternalDecision(externalBinding);
+      if (!decisionVerification.valid) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] External decision verification failed: ${decisionVerification.reason}`,
+        );
+      }
+      const executionVerification = verifyExecutionBinding(externalBinding, {
+        agentId,
+        tool: name,
+        args: inputSnapshot,
+      });
+      if (!executionVerification.valid) {
+        throw new Error(
+          `[ENFORCEMENT:BLOCK] External decision execution binding failed: ${executionVerification.reason}`,
+        );
+      }
+    }
+
+    return {
+      gate,
+      agentId,
+      name,
+      tool: registeredTool,
+      inputSnapshot: deepFreezeSnapshot(inputSnapshot),
+      metadataSnapshot: deepFreezeSnapshot(
+        structuredClone(effectiveMetadata),
+      ),
+    };
+  }
+
+  private createAuthorizationReceipt(
+    prepared: PreparedToolAuthorization,
+    trustedBinding: {
+      result: EnforcementResult;
+      metadataSnapshot: Record<string, unknown>;
+    },
+  ): ToolAuthorizationReceipt {
+
+    const privateEnforcement =
+      deepFreezeSnapshot(
+        structuredClone(trustedBinding.result),
+      ) as EnforcementResult;
+    const privateMetadata =
+      deepFreezeSnapshot(
+        structuredClone(trustedBinding.metadataSnapshot),
+      );
+
+    if (
+      privateEnforcement.decision !== "ALLOW" ||
+      privateMetadata.action !== "tool.execute" ||
+      privateMetadata.canonicalTool !== prepared.name ||
+      privateMetadata.traceId !== privateEnforcement.traceId ||
+      privateMetadata.decisionId !== privateEnforcement.decisionId ||
+      privateMetadata.executionId !== privateEnforcement.executionId ||
+      privateMetadata.evidenceId !== privateEnforcement.evidenceId ||
+      !isDeepStrictEqual(
+        privateEnforcement.continuitySeal ?? null,
+        privateMetadata.continuitySeal ?? null,
+      )
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Trusted enforcement result and metadata binding are inconsistent.",
+      );
+    }
+
+    // The public receipt gets a separate deeply frozen copy.
+    const publicEnforcement =
+      deepFreezeSnapshot(
+        structuredClone(privateEnforcement),
+      ) as EnforcementResult;
+
+    const receipt: ToolAuthorizationReceipt = Object.freeze({
+      authorizationId: crypto.randomUUID(),
+      agentId: prepared.agentId,
+      tool: prepared.name,
+      action: "tool.execute" as const,
+      enforcement: publicEnforcement,
+      ...(publicEnforcement.continuitySeal
+        ? { continuitySeal: publicEnforcement.continuitySeal }
+        : {}),
+      marker: TOOL_AUTHORIZATION_MARKER,
+    });
+
+    TOOL_AUTHORIZATION_BINDINGS.set(receipt, {
+      agentId: prepared.agentId,
+      name: prepared.name,
+      inputSnapshot: deepFreezeSnapshot(
+        structuredClone(prepared.inputSnapshot),
+      ),
+      tool: prepared.tool,
+      handler: prepared.tool.execute,
+      metadataSnapshot: privateMetadata,
+      enforcement: privateEnforcement,
+      gate: prepared.gate,
+    });
+
+    return receipt;
   }
 
   async authorize(
@@ -139,71 +607,32 @@ export class ToolRegistry {
     metadata?: Record<string, unknown>,
   ): Promise<ToolAuthorizationReceipt> {
 
-    if (!this.enforcement) {
-      throw new Error(
-        "ToolRegistry execution boundary is not configured.",
-      );
-    }
+    const prepared =
+      this.prepareAuthorization(agentId, name, input, metadata);
 
-    if (metadata && metadata.externalDecision) {
-      const binding =
-        metadata.externalDecision as ExternalDecisionBinding;
-
-      const decisionVerification =
-        verifyExternalDecision(binding);
-
-      if (!decisionVerification.valid) {
-        throw new Error(
-          `[ENFORCEMENT:BLOCK] External decision verification failed: ${decisionVerification.reason}`,
-        );
-      }
-
-      const executionVerification =
-        verifyExecutionBinding(binding, {
-          agentId,
-          tool: name,
-          args: input,
-        });
-
-      if (!executionVerification.valid) {
-        throw new Error(
-          `[ENFORCEMENT:BLOCK] External decision execution binding failed: ${executionVerification.reason}`,
-        );
-      }
-    }
-
-    const enforcement =
-      await this.enforcement.enforce({
-        agentId,
-        resourceType: "tool",
-        tool: name,
-        action: "tool.execute",
-        input,
-        metadata,
-      });
-
-    if (enforcement.decision !== "ALLOW") {
-      throw new Error(
-        `[ENFORCEMENT:${enforcement.decision}] ${enforcement.reason}`,
-      );
-    }
-
-    return Object.freeze({
-      authorizationId: crypto.randomUUID(),
-      agentId,
-      tool: name,
-      action: "tool.execute" as const,
-      enforcement,
-
-      ...(enforcement.continuitySeal
-        ? {
-            continuitySeal:
-              enforcement.continuitySeal,
-          }
-        : {}),
-
-      marker: TOOL_AUTHORIZATION_MARKER,
+    const enforcement = await prepared.gate.enforce({
+      agentId: prepared.agentId,
+      resourceType: "tool",
+      tool: prepared.name,
+      action: "tool.execute",
+      input: structuredClone(prepared.inputSnapshot),
+      metadata: structuredClone(prepared.metadataSnapshot),
     });
+
+    const trustedBinding =
+      prepared.gate.getTrustedExecutionBinding(enforcement);
+    if (!trustedBinding) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Enforcement result has no trusted metadata binding.",
+      );
+    }
+    if (trustedBinding.result.decision !== "ALLOW") {
+      throw new Error(
+        `[ENFORCEMENT:${trustedBinding.result.decision}] ${trustedBinding.result.reason}`,
+      );
+    }
+
+    return this.createAuthorizationReceipt(prepared, trustedBinding);
   }
 
   private validateAuthorization(
@@ -211,7 +640,7 @@ export class ToolRegistry {
     name: string,
     context: ToolContext,
     input: unknown,
-  ) {
+  ): ToolAuthorizationBinding {
 
     if (
       !receipt ||
@@ -232,16 +661,38 @@ export class ToolRegistry {
       );
     }
 
-    if (
-      receipt.enforcement.decision !== "ALLOW"
-    ) {
+const binding =
+      TOOL_AUTHORIZATION_BINDINGS.get(receipt);
+
+    if (!binding) {
       throw new Error(
-        "[ENFORCEMENT:BLOCK] Tool authorization is not ALLOW.",
+        "[ENFORCEMENT:BLOCK] Authorization receipt has no trusted execution binding.",
       );
     }
 
     if (
-      this.consumedAuthorizations.has(
+      binding.agentId !== context.agentId ||
+      binding.name !== name
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Private authorization binding scope mismatch.",
+      );
+    }
+
+    if (binding.gate !== this.#enforcement) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Enforcement boundary changed after authorization.",
+      );
+    }
+
+    if (binding.enforcement.decision !== "ALLOW") {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Trusted tool authorization is not ALLOW.",
+      );
+    }
+
+    if (
+      this.#consumedAuthorizations.has(
         receipt.authorizationId,
       )
     ) {
@@ -250,9 +701,36 @@ export class ToolRegistry {
       );
     }
 
-    this.consumedAuthorizations.add(
+    // Burn a genuine receipt on every execution attempt, including
+    // attempts that supply a substituted input.
+    this.#consumedAuthorizations.add(
       receipt.authorizationId,
     );
+
+    if (
+      !isDeepStrictEqual(
+        binding.inputSnapshot,
+        input,
+      )
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Execution input does not match the authorized input snapshot.",
+      );
+    }
+
+    const currentTool =
+      this.#tools.get(name);
+
+    if (
+      currentTool !== binding.tool ||
+      currentTool.execute !== binding.handler
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Registered tool handler changed after authorization.",
+      );
+    }
+
+    return binding;
   }
 
   async execute(
@@ -268,142 +746,92 @@ export class ToolRegistry {
         "[ENFORCEMENT:BLOCK] Direct ToolRegistry execution is not authorized.",
       );
     }
-
     if (!receipt) {
       throw new Error(
         "[ENFORCEMENT:BLOCK] ToolRegistry execution requires a prior authorization receipt.",
       );
     }
 
-    this.validateAuthorization(
+    const authorizationBinding = this.validateAuthorization(
       receipt,
       name,
       context,
       input,
     );
 
-
-
-if (
-
-  receipt.continuitySeal &&
-
-  this.enforcement
-
-) {
-
-  const verification =
-
-    this.enforcement
-
-      .verifyContinuitySealForExecution(
-
-        {
-
-          agentId:
-
-            context.agentId,
-
-
-          resourceType:
-
-            "tool",
-
-
-          tool:
-
-            name,
-
-
-          action:
-
-            "tool.execute",
-
-
-          input,
-
-
-          metadata:
-
-            context.metadata,
-
-        },
-
-
-        receipt.continuitySeal,
-
+    const enforcement = authorizationBinding.enforcement;
+    const executionInput =
+      deepFreezeSnapshot(
+        structuredClone(authorizationBinding.inputSnapshot),
       );
+    const trustedMetadata =
+      structuredClone(authorizationBinding.metadataSnapshot);
 
+    const executionContext: ToolContext = {
+      ...context,
+      traceId: enforcement.traceId,
+      decisionId: enforcement.decisionId,
+      executionId: enforcement.executionId,
+      evidenceId: enforcement.evidenceId,
+      metadata: structuredClone(trustedMetadata),
+    };
 
-  if (!verification.valid) {
+    const seal = enforcement.continuitySeal;
+    let trustedWorkspaceId: string | undefined;
 
-    return Promise.reject(
-
-      new Error(`[CONTINUITY_SEAL:BLOCK] ${verification.reason}`),
-
-    );
-
-  }
-
-}
-
-    const tool =
-      this.resolve(name);
-
-    const result =
-      await tool.execute(
-        input,
-        context,
-      );
-
-    if (receipt.continuitySeal) {
-
-      const workspace =
-        context.metadata
-          ?.authorityWorkspaceId;
-
-      if (
-        typeof workspace !== "string" ||
-        workspace.trim().length === 0
-      ) {
+    if (seal) {
+      const workspace = trustedMetadata.authorityWorkspaceId;
+      if (typeof workspace !== "string" || workspace.trim().length === 0) {
         throw new Error(
-          "[CONTINUITY_SEAL:BLOCK] Trusted workspace identity is unavailable for tool effect reconciliation.",
+          "[CONTINUITY_SEAL:BLOCK] Trusted workspace identity is unavailable for tool execution.",
         );
       }
+      trustedWorkspaceId = workspace;
 
       const verification =
-        this.enforcement
-          ?.reconcileContinuityEffect(
-            receipt.continuitySeal,
-            {
-              workspaceId:
-                workspace,
+        authorizationBinding.gate.verifyContinuitySealForExecution(
+          {
+            agentId: context.agentId,
+            resourceType: "tool",
+            tool: name,
+            action: "tool.execute",
+            input: executionInput,
+            metadata: structuredClone(trustedMetadata),
+          },
+          seal,
+        );
 
-              agentId:
-                context.agentId,
-
-              executionId:
-                receipt.enforcement.executionId,
-
-              action:
-                "tool.execute",
-
-              resource:
-                name,
-
-              tool:
-                name,
-
-              input,
-            },
-          );
-
-      if (!verification?.valid) {
+      if (!verification.valid) {
         throw new Error(
-          `[CONTINUITY_SEAL:VIOLATION] ${
-            verification?.reason ??
-            "Tool effect did not reconcile with Continuity Seal."
-          }`,
+          `[CONTINUITY_SEAL:BLOCK] ${verification.reason}`,
+        );
+      }
+    }
+
+    // The exact registered handler and the private authorized input are used.
+    const result = await authorizationBinding.tool.execute(
+      executionInput,
+      executionContext,
+    );
+
+    if (seal) {
+      const verification =
+        authorizationBinding.gate.reconcileContinuityEffect(
+          seal,
+          {
+            workspaceId: trustedWorkspaceId!,
+            agentId: authorizationBinding.agentId,
+            executionId: enforcement.executionId,
+            action: "tool.execute",
+            resource: name,
+            tool: name,
+            input: executionInput,
+          },
+        );
+
+      if (!verification.valid) {
+        throw new Error(
+          `[CONTINUITY_SEAL:VIOLATION] ${verification.reason ?? "Tool effect did not reconcile with Continuity Seal."}`,
         );
       }
     }
@@ -420,7 +848,7 @@ if (
     delegationCapabilityId: string,
     delegationResource?: string,
   ): Promise<unknown> {
-    if (!this.delegationAuthority) {
+    if (!this.#delegationAuthority) {
       throw new Error(
         "[ENFORCEMENT:BLOCK] Delegation authority is not configured.",
       );
@@ -433,7 +861,7 @@ if (
     }
 
     const capability =
-      this.delegationAuthority.consume(
+      this.#delegationAuthority.consume(
         delegationCapabilityId,
         parentAgentId,
         childAgentId,
@@ -500,6 +928,13 @@ if (
    * The ToolRegistry performs no independent contract rejection
    * that would bypass the canonical evidence/audit path.
    */
+  /**
+   * Contract-governed delegated execution.
+   * Contract evaluation and normal runtime governance produce one
+   * final EnforcementResult, which is used directly for the receipt.
+   * Caller graph and clock parameters remain for API compatibility;
+   * EnforcementGate uses canonical RuntimeContext and runtime time.
+   */
   async executeContractDelegated(
     name: string,
     input: unknown,
@@ -510,87 +945,64 @@ if (
     now: string = new Date().toISOString(),
   ): Promise<unknown> {
 
-    if (!this.enforcement) {
-      throw new Error(
-        "[DELEGATION_CONTRACT:BLOCK] ToolRegistry execution boundary is not configured.",
-      );
-    }
+    const prepared = this.prepareAuthorization(
+      context.agentId,
+      name,
+      input,
+      {
+        ...(context.metadata ?? {}),
+        delegated: true,
+        delegationTaskId: taskId,
+      },
+    );
 
     const enforcement =
-      await this.enforcement.enforceDelegationContract({
+      await prepared.gate.enforceDelegationContract({
         contract,
-
+        // Compatibility-only caller values; the gate ignores graph/time.
         graph,
-
-        workspaceId:
-          contract.workspaceId,
-
+        workspaceId: contract.workspaceId,
         taskId,
-
         now,
-
         request: {
-          agentId:
-            context.agentId,
-
-          resourceType:
-            "tool",
-
-          tool:
-            name,
-
-          action:
-            "tool.execute",
-
-          input,
-
-          metadata: {
-            ...(context.metadata ?? {}),
-            delegated: true,
-          },
+          agentId: prepared.agentId,
+          resourceType: "tool",
+          tool: prepared.name,
+          action: "tool.execute",
+          input: structuredClone(prepared.inputSnapshot),
+          metadata: structuredClone(prepared.metadataSnapshot),
         },
       });
 
-    if (
-      enforcement.decision !==
-      "ALLOW"
-    ) {
+    const trustedBinding =
+      prepared.gate.getTrustedExecutionBinding(enforcement);
+    if (!trustedBinding) {
       throw new Error(
-        `[DELEGATION_CONTRACT:${enforcement.decision}] ${enforcement.reason}`,
+        "[DELEGATION_CONTRACT:BLOCK] Enforcement result has no trusted execution binding.",
+      );
+    }
+    if (trustedBinding.result.decision !== "ALLOW") {
+      throw new Error(
+        `[DELEGATION_CONTRACT:${trustedBinding.result.decision}] ${trustedBinding.result.reason}`,
       );
     }
 
-    const receipt: ToolAuthorizationReceipt =
-      Object.freeze({
-        authorizationId:
-          crypto.randomUUID(),
+    const receipt =
+      this.createAuthorizationReceipt(prepared, trustedBinding);
 
-        agentId:
-          context.agentId,
-
-        tool:
-          name,
-
-        action:
-          "tool.execute" as const,
-
-        enforcement,
-
-        marker:
-          TOOL_AUTHORIZATION_MARKER,
-      });
-
+    // Deliberately no second authorize() call.
     return this.execute(
       name,
-      input,
+      prepared.inputSnapshot,
       context,
       this.#executionToken,
       receipt,
     );
   }
+
   list() {
     return Array.from(
-      this.tools.values(),
+      this.#tools.values(),
     ).map(
       (tool) => ({
         name: tool.name,
