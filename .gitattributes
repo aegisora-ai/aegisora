@@ -14,9 +14,9 @@
 *.ttf binary
 *.otf binary
 
-# --- THE NUCLEAR OPTION FOR LANGUAGE STATS ---
-# 1. Ignore ALL files in the repository for language statistics
-* linguist-detectable=false
-
-# 2. Explicitly ONLY allow Python files to be counted
-*.py linguist-detectable=true
+# Language statistics: let GitHub Linguist detect code normally.
+# Lockfiles, build output and docs are excluded so they do not skew the stats.
+pnpm-lock.yaml linguist-generated=true
+package-lock.json linguist-generated=true
+**/dist/** linguist-generated=true
+docs/** linguist-documentation=true
