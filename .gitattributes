@@ -13,10 +13,3 @@
 *.woff2 binary
 *.ttf binary
 *.otf binary
-
-# --- THE NUCLEAR OPTION FOR LANGUAGE STATS ---
-# 1. Ignore ALL files in the repository for language statistics
-* linguist-detectable=false
-
-# 2. Explicitly ONLY allow Python files to be counted
-*.py linguist-detectable=true
