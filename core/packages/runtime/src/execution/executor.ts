@@ -130,22 +130,67 @@ private async executeStep(
 
     /*
      * ----------------------------------------------------------
+     * PROVIDER GOVERNANCE AND EXECUTION
+     * ----------------------------------------------------------
+     *
+     * Provider execution is independently governed by
+     * ProviderExecutionGateway.
+     *
+     * Tool authorization is intentionally performed only after
+     * the actual tool input has been constructed.
+     */
+
+    const providerName: ProviderName = "openai";
+
+    const providerResponse =
+      await this.providerGateway.generate({
+
+        agentId: agent.id,
+
+        provider: providerName,
+
+        request: {
+          prompt: step.description,
+        },
+
+        metadata: {
+          planId,
+          stepId: step.id,
+          tool: selection.tool.name,
+        },
+
+      });
+
+    const model = providerResponse.model;
+
+    /*
+     * ----------------------------------------------------------
+     * CANONICAL TOOL INPUT
+     * ----------------------------------------------------------
+     *
+     * The provider output participates in the actual tool action.
+     * Snapshot the complete payload before governance.
+     */
+
+    const toolInput = structuredClone({
+      task: step.description,
+      reasoning: providerResponse.output,
+    });
+
+    /*
+     * ----------------------------------------------------------
      * CANONICAL TOOL AUTHORIZATION
      * ----------------------------------------------------------
      *
-     * ToolRegistry owns the canonical governance decision for
-     * tool execution.
-     *
-     * Authorization is evaluated exactly once and converted into
-     * a single-use receipt. The receipt is then carried into the
-     * execution boundary so the same action is not evaluated twice.
+     * Authorization and execution now use exactly the same
+     * payload.
      */
 
     const authorization =
       await this.tools.authorize(
         agent.id,
         selection.tool.name,
-        step.description,
+        toolInput,
         {
           planId,
           stepId: step.id,
@@ -163,53 +208,51 @@ private async executeStep(
       enforcement.riskScore,
     );
 
-    /*
-     * ----------------------------------------------------------
-     * Provider execution
-     * ----------------------------------------------------------
-     */
-
-    const providerName: ProviderName = "openai";
-
-
-const providerResponse =
-  await this.providerGateway.generate({
-
-    agentId: agent.id,
-
-    provider: providerName,
-
-    request: {
-      prompt: step.description,
-    },
-
-    metadata: {
-      planId,
-      stepId: step.id,
-      tool: selection.tool.name,
-      riskScore:
-        enforcement.riskScore,
-    },
-
-  });
-    const model = providerResponse.model;
+    if (enforcement.decision !== "ALLOW") {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Tool execution was not authorized.",
+      );
+    }
 
     /*
      * ----------------------------------------------------------
-     * Actual tool execution
+     * PROTECTED TOOL EXECUTION
      * ----------------------------------------------------------
      *
-     * This is intentionally AFTER enforcement.
+     * ToolRegistry validates:
+     *   - receipt identity
+     *   - input snapshot
+     *   - tool identity
+     *   - handler identity
+     *   - single-use authorization
+     *
+     * No tool side effect occurs before these checks.
      */
-const result =
+
+    const result =
       await this.tools.execute(
         selection.tool.name,
-        {
-          task: step.description,
-          reasoning: providerResponse.output,
-        },
+        toolInput,
         {
           agentId: agent.id,
+
+          traceId:
+            enforcement.traceId,
+
+          decisionId:
+            enforcement.decisionId,
+
+          executionId:
+            enforcement.executionId,
+
+          evidenceId:
+            enforcement.evidenceId,
+
+          metadata: {
+            planId,
+            stepId: step.id,
+            confidence: selection.confidence,
+          },
         },
         this.executionToken,
         authorization,
@@ -255,6 +298,18 @@ const result =
         decision: enforcement.decision,
         riskScore: enforcement.riskScore,
       },
+
+      traceId:
+        enforcement.traceId,
+
+      decisionId:
+        enforcement.decisionId,
+
+      executionId:
+        enforcement.executionId,
+
+      evidenceId:
+        enforcement.evidenceId,
     };
   }
 }

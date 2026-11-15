@@ -5,6 +5,14 @@ export { SDKAgent } from "./agent/sdk-agent";
 export { Aegisora } from "./aegisora";
 
 export { protect } from "./protect";
+export { protectTools } from "./integration/protect-tools";
+
+export type {
+  AegisoraTaskContract,
+  AegisoraToolDefinition,
+  ProtectedAegisoraTool,
+  ProtectToolsOptions,
+} from "./integration/types";
 
 export type {
 AgentInput,

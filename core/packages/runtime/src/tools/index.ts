@@ -23,3 +23,7 @@ export type {
 ToolSelectionContext,
 ToolSelectionResult
 } from "./selector";
+
+export type {
+  ToolExecutionPolicy
+} from "./tool";

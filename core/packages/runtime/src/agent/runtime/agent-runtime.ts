@@ -1,5 +1,10 @@
 import { ToolRegistry, ToolSelector, EchoTool } from "../../tools";
 
+import type {
+  RuntimeTool,
+  ToolExecutionPolicy,
+} from "../../tools";
+
 import { Agent } from "..";
 
 import { GoalManager } from "../../goal";
@@ -236,8 +241,84 @@ export class AgentRuntime {
     return this.providerGateway;
   }
 
+  /**
+   * Execute a registered tool through the canonical ToolRegistry boundary.
+   *
+   * The input is snapshotted before authorization so callers cannot mutate
+   * the object while asynchronous governance checks are in progress.
+   */
+  async executeRegisteredTool(
+    agentId: string,
+    toolName: string,
+    input: unknown,
+    metadata: Record<string, unknown> = {},
+  ): Promise<unknown> {
+    if (!this.context.agentRegistry.getById(agentId)) {
+      throw new Error(`Unknown or unregistered agent identity: ${agentId}`);
+    }
+
+    let executionInput: unknown;
+    let executionMetadata: Record<string, unknown>;
+    try {
+      executionInput = structuredClone(input);
+      executionMetadata = structuredClone(metadata);
+    } catch {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Tool input and metadata must be structured-cloneable.",
+      );
+    }
+
+    const receipt = await this.tools.authorize(
+      agentId,
+      toolName,
+      executionInput,
+      executionMetadata,
+    );
+
+    return this.tools.execute(
+      toolName,
+      executionInput,
+      {
+        agentId,
+        traceId: receipt.enforcement.traceId,
+        decisionId: receipt.enforcement.decisionId,
+        executionId: receipt.enforcement.executionId,
+        evidenceId: receipt.enforcement.evidenceId,
+        metadata: executionMetadata,
+      },
+      this.toolExecutionToken,
+      receipt,
+    );
+  }
   registerTool(tool: import("../../tools").RuntimeTool) {
     return this.tools.register(tool);
+  }
+
+  /**
+   * Register a complete protected tool set through the canonical
+   * ToolRegistry policy boundary.
+   *
+   * The agent identity must already exist in this runtime.
+   */
+  registerProtectedTools(
+    tools: readonly RuntimeTool[],
+    policy: ToolExecutionPolicy,
+  ) {
+
+    if (
+      !policy ||
+      typeof policy.agentId !== "string" ||
+      !this.context.agentRegistry.getById(policy.agentId)
+    ) {
+      throw new Error(
+        "[ENFORCEMENT:BLOCK] Protected tool registration requires a registered agent identity.",
+      );
+    }
+
+    return this.tools.registerProtectedTools(
+      tools,
+      policy,
+    );
   }
 
   getToolRegistry() {

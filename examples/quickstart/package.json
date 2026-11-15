@@ -1,0 +1,14 @@
+{
+  "name": "@aegisora/example-quickstart",
+  "version": "4.5.0",
+  "private": true,
+  "description": "Minimal protectTools quickstart for the Aegisora SDK.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node v4.5-secure-tools.cjs",
+    "test": "node v4.5-secure-tools.cjs"
+  },
+  "dependencies": {
+    "@aegisora/sdk": "workspace:*"
+  }
+}

@@ -146,10 +146,10 @@ function createContract(
       createScope(),
     issuedAt:
       overrides.issuedAt ??
-      "2026-09-17T10:00:00.000Z",
+      new Date(Date.now() - 3_600_000).toISOString(),
     expiresAt:
       overrides.expiresAt ??
-      "2026-09-17T18:00:00.000Z",
+      new Date(Date.now() + 7_200_000).toISOString(),
     maxDelegationDepth:
       overrides.maxDelegationDepth ??
       1,
@@ -182,6 +182,13 @@ function createRuntime() {
 
   const gate =
     new EnforcementGate(context);
+
+  const authorityGraph = createGraph();
+  context.configureAuthorityContext({
+    workspaceId: authorityGraph.nodes[0].workspaceId,
+    graph: authorityGraph,
+  });
+  gate.configureAuthorityAwareExecutionFromRuntimeContext();
 
   const registry =
     new ToolRegistry(
@@ -403,7 +410,7 @@ test(
       createRuntime();
 
     const contract =
-      createContract();
+      createContract({ issuedAt: new Date(Date.now() - 7_200_000).toISOString(), expiresAt: new Date(Date.now() - 3_600_000).toISOString() }); // EXPIRED_CONTRACT_FOR_REAL_CLOCK
 
     await assert.rejects(
       async () => {
