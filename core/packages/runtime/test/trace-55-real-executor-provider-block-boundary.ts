@@ -417,8 +417,8 @@ async function main() {
 
   assert.equal(
     block.action,
-    "tool.execute",
-    "BLOCK trace must record the tool execution action"
+    "provider.generate",
+    "BLOCK trace must record the provider generation action (the provider is governed before tool input exists)"
   );
 
   assert.equal(
@@ -440,8 +440,8 @@ async function main() {
 
   assert.equal(
     block.metadata?.resourceType,
-    "tool",
-    "BLOCK metadata must identify tool resource"
+    "provider",
+    "BLOCK metadata must identify provider resource (the provider is governed before tool input exists)"
   );
 
   assert.equal(

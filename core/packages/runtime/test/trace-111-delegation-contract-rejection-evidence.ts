@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type {
@@ -157,11 +157,11 @@ function createContract(
 
     issuedAt:
       overrides.issuedAt ??
-      "2026-09-17T10:00:00.000Z",
+      new Date(Date.now() - 3_600_000).toISOString(),
 
     expiresAt:
       overrides.expiresAt ??
-      "2026-09-17T18:00:00.000Z",
+      new Date(Date.now() + 7_200_000).toISOString(),
 
     maxDelegationDepth:
       overrides.maxDelegationDepth ??
@@ -177,7 +177,7 @@ function createContract(
   });
 }
 
-function createRuntime() {
+function createRuntime(configureAuthority = true) {
 
   const context =
     new RuntimeContext();
@@ -200,6 +200,15 @@ function createRuntime() {
     new EnforcementGate(
       context,
     );
+
+  if (configureAuthority) {
+    const authorityGraph = baseGraph();
+    context.configureAuthorityContext({
+      workspaceId: authorityGraph.nodes[0].workspaceId,
+      graph: authorityGraph,
+    });
+    gate.configureAuthorityAwareExecutionFromRuntimeContext();
+  }
 
   const registry =
     new ToolRegistry(
@@ -432,21 +441,14 @@ test(
 );
 
 test(
-  "TRACE 111 - malformed cross-workspace graph fails closed and is audited",
+  "TRACE 111 - malformed cross-workspace graph cannot become the trusted authority context",
   async () => {
-
-    const app =
-      createRuntime();
-
-    const graph =
-      baseGraph();
-
+    const graph = baseGraph();
     graph.nodes.push({
       id: "agent:external",
       workspaceId: "workspace-b",
       type: "agent",
     });
-
     graph.edges.push({
       id: "cross-workspace",
       workspaceId: "workspace-a",
@@ -455,19 +457,33 @@ test(
       type: "DELEGATES_TO",
     });
 
-    const c =
-      createContract();
+    const fresh = new RuntimeContext();
+    assert.throws(
+      () =>
+        fresh.configureAuthorityContext({
+          workspaceId: "workspace-a",
+          graph,
+        }),
+      /workspace mismatch/,
+    );
+    assert.throws(() => fresh.getAuthorityGraph());
+  },
+);
+
+test(
+  "TRACE 111 - missing authority context fails closed and is audited",
+  async () => {
+    const app = createRuntime(false);
+    const c = createContract();
 
     await assert.rejects(
       async () => {
         await app.registry.executeContractDelegated(
           "echo",
           {},
-          {
-            agentId: "child",
-          },
+          { agentId: "child" },
           c,
-          graph,
+          baseGraph(),
           "task-111",
           "2026-09-17T12:00:00.000Z",
         );
@@ -475,73 +491,20 @@ test(
       /DELEGATION_CONTRACT:BLOCK/,
     );
 
+    assert.equal(app.executions, 0);
+
+    const decisions = all(app.context.decisionStore);
+    const evidence = all(app.context.evidenceStore);
+
+    assert.equal(decisions.length, 1);
+    assert.equal(evidence.length, 1);
+    assert.equal(decisions[0].decision, "block");
+    assert.equal(evidence[0].finalDecision, "BLOCK");
+    assert.equal(evidence[0].enforcementStatus, "prevented");
+    assert.equal(evidence[0].executionOutcome, "not_attempted");
     assert.equal(
-      app.executions,
-      0,
-    );
-
-    const decisions =
-      all(
-        app.context.decisionStore,
-      );
-
-    const evidence =
-      all(
-        app.context.evidenceStore,
-      );
-
-    assert.equal(
-      decisions.length,
-      1,
-    );
-
-    assert.equal(
-      evidence.length,
-      1,
-    );
-
-    assert.equal(
-      decisions[0].decision,
-      "block",
-    );
-
-    assert.equal(
-      evidence[0].finalDecision,
-      "BLOCK",
-    );
-
-    assert.equal(
-      evidence[0].enforcementStatus,
-      "prevented",
-    );
-
-    assert.equal(
-      evidence[0].executionOutcome,
-      "not_attempted",
-    );
-
-    assert.equal(
-      decisions[0].metadata
-        ?.delegationFailureCode,
-      "CONTRACT_EVALUATION_ERROR",
-    );
-
-    assert.equal(
-      evidence[0].metadata
-        ?.delegationFailureCode,
-      "CONTRACT_EVALUATION_ERROR",
-    );
-
-    assert.deepEqual(
-      decisions[0].metadata
-        ?.delegationReasonCodes,
-      ["INVALID_GRAPH"],
-    );
-
-    assert.deepEqual(
-      evidence[0].metadata
-        ?.delegationReasonCodes,
-      ["INVALID_GRAPH"],
+      decisions[0].metadata?.delegationFailureCode,
+      "AUTHORITY_CONTEXT_UNAVAILABLE",
     );
   },
 );

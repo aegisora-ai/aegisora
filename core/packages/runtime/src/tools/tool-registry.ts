@@ -945,6 +945,45 @@ const binding =
     now: string = new Date().toISOString(),
   ): Promise<unknown> {
 
+    // UNREGISTERED_DELEGATED_TOOL_AUDIT
+    // An unregistered tool is still evaluated against the delegation
+    // contract so a decision and an evidence record exist for the
+    // attempt. The call is blocked either way.
+    if (!this.#tools.has(name)) {
+      const unregisteredGate = this.#enforcement;
+      if (!unregisteredGate) {
+        throw new Error(
+          "[DELEGATION_CONTRACT:BLOCK] ToolRegistry execution boundary is not configured.",
+        );
+      }
+      const unregistered = await unregisteredGate.enforceDelegationContract({
+        contract,
+        graph,
+        workspaceId: contract.workspaceId,
+        taskId,
+        now,
+        request: {
+          agentId: context.agentId,
+          resourceType: "tool",
+          tool: name,
+          action: "tool.execute",
+          input,
+          metadata: {
+            ...(context.metadata ?? {}),
+            delegated: true,
+            delegationTaskId: taskId,
+          },
+        },
+      });
+      if (unregistered.decision !== "ALLOW") {
+        throw new Error(
+          `[DELEGATION_CONTRACT:${unregistered.decision}] ${unregistered.reason}`,
+        );
+      }
+      throw new Error(
+        `[ENFORCEMENT:BLOCK] Unknown or unregistered tool: ${name}`,
+      );
+    }
     const prepared = this.prepareAuthorization(
       context.agentId,
       name,
