@@ -199,39 +199,56 @@ jobs:
 
       - name: Build
         run: pnpm build
-
       - name: Publish @aegisora/audit
         working-directory: core/packages/audit
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-audit-*.tgz --access public
 
       - name: Publish @aegisora/core
         working-directory: core/packages/core
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-core-*.tgz --access public
 
       - name: Publish @aegisora/observability
         working-directory: core/packages/observability
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-observability-*.tgz --access public
 
       - name: Publish @aegisora/plugins
         working-directory: core/packages/plugins
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-plugins-*.tgz --access public
 
       - name: Publish @aegisora/policy-engine
         working-directory: core/packages/policy-engine
-        run: npm publish --access public
-
-      - name: Publish @aegisora/runtime
-        working-directory: core/packages/runtime
-        run: npm publish --access public
-
-      - name: Publish @aegisora/sdk
-        working-directory: core/packages/sdk
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-policy-engine-*.tgz --access public
 
       - name: Publish @aegisora/security-engine
         working-directory: core/packages/security-engine
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-security-engine-*.tgz --access public
+
+      - name: Publish @aegisora/runtime
+        working-directory: core/packages/runtime
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-runtime-*.tgz --access public
+
+      - name: Publish @aegisora/sdk
+        working-directory: core/packages/sdk
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-sdk-*.tgz --access public
 
       - name: Publish @aegisora/storage
         working-directory: core/packages/storage
-        run: npm publish --access public
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-storage-*.tgz --access public
