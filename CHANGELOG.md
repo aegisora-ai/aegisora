@@ -8,6 +8,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+* SDK `AegisoraClient.protectTools()`: per-tool enforcement through the runtime ToolRegistry boundary (exact tool names, expiry, execution limits, approval escalation, input snapshotting). The legacy `protect()` only gates the top-level `agent.run()` call and does not intercept tools called inside the agent.
+* Self-play security evaluation engine, a developer quickstart guide and a runnable quickstart package.
+
+### Changed
+
+* The delegation contract gate reads the workspace and authority graph from the trusted runtime context, not from caller input. Without that context it fails closed (BLOCK, audited).
+* Unregistered tools in delegated execution now produce a decision and an evidence record before they are blocked.
+* The executor governs the provider call before tool authorization, so the authorized tool payload is the one that is executed. Provider-level blocks are recorded as `provider.generate`.
+
+### Known limits
+
+* OpenAI and Anthropic are not tested live. The pilot evidence report has not been regenerated for these changes.
+
 ---
 
 ## [4.5.0] - 2026-11-12
