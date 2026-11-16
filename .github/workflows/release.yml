@@ -199,29 +199,23 @@ jobs:
 
       - name: Build
         run: pnpm build
-      - name: Publish @aegisora/audit
-        working-directory: core/packages/audit
-        run: |
-          pnpm pack --pack-destination "$RUNNER_TEMP"
-          npm publish "$RUNNER_TEMP"/aegisora-audit-*.tgz --access public
-
       - name: Publish @aegisora/core
         working-directory: core/packages/core
         run: |
           pnpm pack --pack-destination "$RUNNER_TEMP"
           npm publish "$RUNNER_TEMP"/aegisora-core-*.tgz --access public
 
+      - name: Publish @aegisora/audit
+        working-directory: core/packages/audit
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-audit-*.tgz --access public
+
       - name: Publish @aegisora/observability
         working-directory: core/packages/observability
         run: |
           pnpm pack --pack-destination "$RUNNER_TEMP"
           npm publish "$RUNNER_TEMP"/aegisora-observability-*.tgz --access public
-
-      - name: Publish @aegisora/plugins
-        working-directory: core/packages/plugins
-        run: |
-          pnpm pack --pack-destination "$RUNNER_TEMP"
-          npm publish "$RUNNER_TEMP"/aegisora-plugins-*.tgz --access public
 
       - name: Publish @aegisora/policy-engine
         working-directory: core/packages/policy-engine
@@ -234,6 +228,12 @@ jobs:
         run: |
           pnpm pack --pack-destination "$RUNNER_TEMP"
           npm publish "$RUNNER_TEMP"/aegisora-security-engine-*.tgz --access public
+
+      - name: Publish @aegisora/plugins
+        working-directory: core/packages/plugins
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          npm publish "$RUNNER_TEMP"/aegisora-plugins-*.tgz --access public
 
       - name: Publish @aegisora/runtime
         working-directory: core/packages/runtime
