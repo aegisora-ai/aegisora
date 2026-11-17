@@ -68,13 +68,29 @@ function renderCard(p) {
   card.append(actions);
   return card;
 }
+// Cards are kept between refreshes so text typed into a card (the reject reason) is not wiped.
+const cards = new Map();
 async function refresh() {
   try {
     const { pending } = await api("/api/pending");
     const box = $("pending");
-    box.replaceChildren();
-    if (pending.length === 0) box.append(el("p", "meta", "Nothing waiting for approval."));
-    for (const p of pending) box.append(renderCard(p));
+    const ids = new Set(pending.map((p) => p.approvalId));
+    for (const [id, node] of cards) {
+      if (!ids.has(id)) { node.remove(); cards.delete(id); }
+    }
+    for (const p of pending) {
+      if (!cards.has(p.approvalId)) {
+        const node = renderCard(p);
+        cards.set(p.approvalId, node);
+        box.append(node);
+      }
+    }
+    let note = box.querySelector(".empty");
+    if (cards.size === 0) {
+      if (!note) { note = el("p", "meta empty", "Nothing waiting for approval."); box.append(note); }
+    } else if (note) {
+      note.remove();
+    }
   } catch (e) {
     signOut(e.message);
   }
@@ -89,6 +105,8 @@ async function simulate(long) {
 function signOut(msg) {
   if (timer) clearInterval(timer);
   timer = null;
+  cards.clear();
+  $("pending").replaceChildren();
   try { sessionStorage.removeItem("aegisora.token"); } catch (_) {}
   token = "";
   $("app").hidden = true;
