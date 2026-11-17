@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../assets/logo";
+import Logo from "../components/Logo";
 import TitleBar from "../components/TitleBar";
 
 export default function Welcome() {
@@ -7,8 +7,8 @@ export default function Welcome() {
     <div className="window">
       <TitleBar />
       <main className="center">
-        <img className="logo" src={logo} alt="Mosell" />
-        <h1 className="serif">Mosell <em>for</em> Windows</h1>
+        <Logo className="logo"  alt="Aegisora" />
+        <h1 className="serif">Aegisora <em>for</em> Windows</h1>
         <p className="mute">The fastest way to govern your AI agents</p>
       </main>
       <div className="bottom">

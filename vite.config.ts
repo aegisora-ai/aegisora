@@ -17,7 +17,7 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      name: "mosell-csp",
+      name: "aegisora-csp",
       apply: "build",
       transformIndexHtml(html: string) {
         return html.replace("<!--CSP-->", `<meta http-equiv="Content-Security-Policy" content="${csp}">`);

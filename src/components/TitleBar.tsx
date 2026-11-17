@@ -4,7 +4,7 @@ export default function TitleBar() {
   return (
     <div className="titlebar">
       <Menu size={16} />
-      <span>Mosell</span>
+      <span>Aegisora</span>
     </div>
   );
 }

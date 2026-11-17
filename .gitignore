@@ -3,3 +3,10 @@ dist
 release
 .env
 logs-*
+
+backup-*/
+*-files.txt
+evidence-debug.txt
+
+pages-for-*.txt
+*-list.txt

@@ -1,0 +1,33 @@
+.ax-hub { display: flex; flex-direction: column; gap: 20px; }
+.ax-head h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.ax-head p { margin: 6px 0 0; max-width: 640px; font-size: 14px; opacity: 0.7; }
+.ax-note { border: 1px solid color-mix(in srgb, currentColor 15%, transparent); background: color-mix(in srgb, currentColor 4%, transparent); border-radius: 10px; padding: 10px 14px; font-size: 13px; opacity: 0.85; }
+.ax-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.ax-input { height: 36px; min-width: 240px; border-radius: 8px; border: 1px solid color-mix(in srgb, currentColor 20%, transparent); background: transparent; color: inherit; padding: 0 12px; font-size: 14px; outline: none; }
+.ax-input:focus { border-color: #2563eb; }
+.ax-count { font-size: 13px; opacity: 0.7; }
+.ax-spacer { margin-left: auto; }
+.ax-btn { height: 36px; border-radius: 8px; border: 1px solid color-mix(in srgb, currentColor 20%, transparent); background: transparent; color: inherit; padding: 0 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.ax-btn:hover:not(:disabled) { background: color-mix(in srgb, currentColor 8%, transparent); }
+.ax-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ax-btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+.ax-btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+.ax-btn-on { border-color: rgba(16, 185, 129, 0.5); color: #10b981; }
+.ax-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.ax-card { display: flex; flex-direction: column; gap: 12px; border: 1px solid color-mix(in srgb, currentColor 15%, transparent); background: color-mix(in srgb, currentColor 3%, transparent); border-radius: 14px; padding: 18px; }
+.ax-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.ax-card h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.ax-cat { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+.ax-desc { margin: 0; font-size: 14px; opacity: 0.8; line-height: 1.45; }
+.ax-badge { border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.ax-badge-ready { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.ax-badge-preview { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.ax-rules { display: flex; flex-wrap: wrap; gap: 6px; }
+.ax-rule { border-radius: 6px; padding: 2px 6px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; }
+.ax-allow { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.ax-escalate { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.ax-block { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.ax-setup { margin: 0; font-size: 12px; opacity: 0.6; }
+.ax-foot { margin-top: auto; padding-top: 6px; }
+.ax-foot .ax-btn { width: 100%; }
+.ax-empty { padding: 40px 0; text-align: center; font-size: 14px; opacity: 0.6; }
