@@ -11,12 +11,15 @@ It plugs straight into `protectTools()`.
 | delete | not offered, so it cannot be executed |
 
 ```ts
-import { protectTools, gmailConnector } from "@aegisora/sdk";
+import { AegisoraClient, gmailConnector, createGmailRestClient } from "@aegisora/sdk";
 
-// `runtime` is an AgentRuntime with the agent already registered.
-// `gmail` implements GmailClient (search, get, send) on top of the Gmail API.
-const tools = protectTools(
-  runtime,
+const client = new AegisoraClient();
+client.agent({ name: "support-agent" });
+
+// `gmail` implements GmailClient, for example createGmailRestClient(...).
+const gmail = createGmailRestClient({ getAccessToken: async () => myOAuthLayer.getFreshAccessToken() });
+
+const tools = client.protectTools(
   gmailConnector(gmail, {
     agentId: "support-agent",
     contractId: "support-task-001",
@@ -29,6 +32,6 @@ const tools = protectTools(
 
 ## Limits
 
-- The connector does not contain a Gmail API or OAuth implementation. You provide a `GmailClient`.
+- The connector itself contains no Gmail API or OAuth code. `createGmailRestClient()` is an optional REST adapter (see `connect-gmail-rest.md`); OAuth token acquisition is yours.
 - It has been tested with a mock client. It has not been tested against live Gmail.
-- The unit tests call the tool functions directly. Enforcement through the runtime comes from `protectTools`, which has its own tests.
+- Unit tests call the tool functions directly. `connect-gmail-e2e.test.cjs` runs them through the runtime and shows that send escalates (ENFORCEMENT:ESCALATE) before the Gmail client is called. The approved-send path is not covered yet.
