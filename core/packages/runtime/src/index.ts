@@ -263,3 +263,12 @@ export type {
   RuntimeApprovalView,
   RuntimeApprovalPreview,
 } from "./approval/approval-controller";
+
+export { createApprovalController } from "./approval/approval-controller";
+export { createHmacApproverVerifier } from "./approval/approver-auth";
+export type {
+  ApproverVerifier,
+  VerifiedApprover,
+  HmacApproverVerifier,
+  HmacApproverVerifierOptions,
+} from "./approval/approver-auth";

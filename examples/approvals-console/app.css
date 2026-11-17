@@ -1,0 +1,30 @@
+:root { --bg:#0f1115; --panel:#181b22; --line:#2a2f3a; --text:#e8eaf0; --muted:#8b93a7; --accent:#4f8cff; --ok:#2ea66f; --bad:#d4554d; --warn:#e0a030; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 system-ui, Segoe UI, sans-serif; }
+header { display:flex; align-items:baseline; gap:12px; padding:16px 24px; border-bottom:1px solid var(--line); }
+h1 { font-size:18px; margin:0; }
+h2 { font-size:14px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 10px; }
+.sub { color:var(--muted); }
+.who { margin-left:auto; color:var(--muted); }
+main { max-width:860px; margin:0 auto; padding:24px; }
+input { background:var(--panel); border:1px solid var(--line); color:var(--text); padding:8px 10px; border-radius:6px; width:100%; }
+button { background:var(--panel); border:1px solid var(--line); color:var(--text); padding:8px 14px; border-radius:6px; cursor:pointer; }
+button:hover { border-color:var(--accent); }
+button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+button.ok { background:var(--ok); border-color:var(--ok); color:#fff; }
+button.bad { background:var(--bad); border-color:var(--bad); color:#fff; }
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:14px; }
+.card h3 { margin:0 0 4px; font-size:15px; }
+.meta { color:var(--muted); font-size:13px; margin-bottom:10px; word-break:break-all; }
+.field { margin:4px 0; }
+.field b { display:inline-block; min-width:70px; color:var(--muted); font-weight:500; }
+pre { background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:10px; overflow:auto; max-height:220px; white-space:pre-wrap; word-break:break-word; }
+.warning { background:rgba(224,160,48,.12); border:1px solid var(--warn); color:var(--warn); padding:8px 12px; border-radius:6px; margin:10px 0; font-weight:600; }
+.actions { display:flex; gap:10px; margin-top:12px; align-items:center; }
+.actions input { flex:1; }
+.error { color:var(--bad); min-height:1.4em; }
+#log { list-style:none; padding:0; margin:0; color:var(--muted); font-size:13px; }
+#log li { padding:3px 0; border-bottom:1px solid var(--line); }
+#login { display:grid; gap:10px; max-width:420px; }

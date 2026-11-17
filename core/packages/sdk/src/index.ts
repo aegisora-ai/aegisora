@@ -50,3 +50,11 @@ export type {
   RuntimeApprovalView,
   RuntimeApprovalPreview,
 } from "@aegisora/runtime";
+
+export { createHmacApproverVerifier } from "@aegisora/runtime";
+export type {
+  ApproverVerifier,
+  VerifiedApprover,
+  HmacApproverVerifier,
+  HmacApproverVerifierOptions,
+} from "@aegisora/runtime";

@@ -1,6 +1,7 @@
 import type { ApprovalRecord } from "./approval";
 import type { RuntimeApprovalPreview } from "./approval-preview";
 import type { PreviewingApprovalEngine } from "./previewing-approval-engine";
+import type { ApproverVerifier } from "./approver-auth";
 
 export type { RuntimeApprovalPreview } from "./approval-preview";
 
@@ -12,16 +13,29 @@ export type RuntimeApprovalView = ApprovalRecord & {
 /**
  * Narrow surface for a human-facing approval UI. It cannot create, consume or
  * expire approvals. Those stay inside the runtime.
+ *
+ * When an approver verifier is configured, `credential` is required and the
+ * approver identity comes from it. A supplied `actorId` must then match.
  */
 export interface RuntimeApprovalController {
   listPending(): RuntimeApprovalView[];
   get(approvalId: string): RuntimeApprovalView | undefined;
-  approve(input: { readonly approvalId: string; readonly actorId: string }): RuntimeApprovalView;
+  approve(input: {
+    readonly approvalId: string;
+    readonly actorId?: string;
+    readonly credential?: string;
+  }): RuntimeApprovalView;
   reject(input: {
     readonly approvalId: string;
-    readonly actorId: string;
+    readonly actorId?: string;
+    readonly credential?: string;
     readonly reason?: string;
   }): RuntimeApprovalView;
+}
+
+export interface ApprovalControllerOptions {
+  /** Looked up on every call, so a verifier can be set after the runtime is created. */
+  readonly getVerifier: () => ApproverVerifier | undefined;
 }
 
 function asObject(input: unknown): Record<string, unknown> {
@@ -40,6 +54,7 @@ function requireId(value: unknown, field: string): string {
 
 export function createApprovalController(
   engine: PreviewingApprovalEngine,
+  options: ApprovalControllerOptions,
   guardResolution: () => void,
 ): RuntimeApprovalController {
 
@@ -49,6 +64,21 @@ export function createApprovalController(
         ? engine.getPreview(record.approvalId)
         : undefined;
     return { ...record, ...(preview ? { preview } : {}) };
+  };
+
+  const resolveActor = (o: Record<string, unknown>): string => {
+    const verifier = options.getVerifier();
+    if (!verifier) return requireId(o.actorId, "actorId");
+    const credential = o.credential;
+    if (typeof credential !== "string" || credential.length === 0 || credential.length > 2048) {
+      throw new Error("credential is required: approver identity verification is enabled.");
+    }
+    const verified = verifier.verify(credential);
+    const actorId = requireId(verified.actorId, "actorId");
+    if (o.actorId !== undefined && o.actorId !== actorId) {
+      throw new Error("actorId does not match the verified approver identity.");
+    }
+    return actorId;
   };
 
   const controller: RuntimeApprovalController = {
@@ -65,7 +95,7 @@ export function createApprovalController(
       guardResolution();
       const o = asObject(input);
       const approvalId = requireId(o.approvalId, "approvalId");
-      const actorId = requireId(o.actorId, "actorId");
+      const actorId = resolveActor(o);
       return view(engine.approve({ approvalId, actorId }));
     },
 
@@ -73,7 +103,7 @@ export function createApprovalController(
       guardResolution();
       const o = asObject(input);
       const approvalId = requireId(o.approvalId, "approvalId");
-      const actorId = requireId(o.actorId, "actorId");
+      const actorId = resolveActor(o);
       const reason = o.reason;
       if (reason !== undefined && (typeof reason !== "string" || reason.length > 500)) {
         throw new Error("reason must be a string of at most 500 characters.");

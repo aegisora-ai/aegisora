@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aegisora Connect - Approvals</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header>
+    <h1>Aegisora Connect</h1>
+    <span class="sub">Approvals</span>
+    <span id="who" class="who"></span>
+  </header>
+  <main>
+    <section id="login">
+      <label for="token">Approver credential</label>
+      <input id="token" type="password" autocomplete="off">
+      <button id="signin" class="primary">Sign in</button>
+      <p id="loginError" class="error"></p>
+    </section>
+    <section id="app" hidden>
+      <div class="toolbar">
+        <button id="simShort">Simulate agent email</button>
+        <button id="simLong">Simulate long email (truncated)</button>
+      </div>
+      <h2>Pending approvals</h2>
+      <div id="pending"></div>
+      <h2>Activity</h2>
+      <ul id="log"></ul>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
