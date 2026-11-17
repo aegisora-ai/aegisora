@@ -102,3 +102,5 @@ export * from "./enterprise/continuity-seal";
 export * from "./enterprise/runtime/authority-aware-adapter";
 
 export * from "./enterprise/continuity-seal";
+
+export * from "./enterprise/control-plane";
