@@ -248,12 +248,25 @@ export function protectTools(
       name,
       description,
 
-      execute: async (input: unknown): Promise<unknown> =>
-        runtime.executeRegisteredTool(
-          agentId,
-          name,
-          input,
-        ),
+      execute: async (
+        input: unknown,
+        options?: { readonly approvalId?: string },
+      ): Promise<unknown> => {
+        let metadata: Record<string, unknown> = {};
+        if (options !== undefined) {
+          if (!options || typeof options !== "object" || Array.isArray(options)) {
+            throw new Error("Invalid execute options.");
+          }
+          const approvalId = options.approvalId;
+          if (approvalId !== undefined) {
+            if (typeof approvalId !== "string" || approvalId.length === 0 || approvalId.length > 128) {
+              throw new Error("approvalId must be a non-empty string.");
+            }
+            metadata = { approvalId };
+          }
+        }
+        return runtime.executeRegisteredTool(agentId, name, input, metadata);
+      },
     });
   });
 }

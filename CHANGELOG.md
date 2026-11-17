@@ -10,6 +10,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+* Protected tools: `execute(input, { approvalId })` resumes an approved escalation. The approval is single-use and bound to the agent, the action and the exact input; replay and changed input are blocked. Covered for the Gmail connector with a mock client. The approval engine has no public SDK accessor yet.
+
 * Aegisora Connect (Gmail REST adapter): `createGmailRestClient()` implements `GmailClient` with plain `fetch` (search, read, send), no new dependency. Error messages carry only the HTTP status. Tested with a fake `fetch` only; OAuth acquisition is not included and it has not been tested against live Gmail.
 
 * Aegisora Connect (Gmail, governance layer): `gmailConnector()` builds Gmail tools and a matching task contract for `protectTools()`. Search and read are allowed, send requires approval, delete is not offered, optional recipient-domain allowlist. Tested with a mock client only; OAuth is not included and nothing has been tested against live Gmail.
