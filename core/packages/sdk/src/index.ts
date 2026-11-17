@@ -44,3 +44,9 @@ export type {
   FetchResponseLike,
   GmailRestClientOptions,
 } from "./integrations/gmail-rest";
+
+export type {
+  RuntimeApprovalController,
+  RuntimeApprovalView,
+  RuntimeApprovalPreview,
+} from "@aegisora/runtime";

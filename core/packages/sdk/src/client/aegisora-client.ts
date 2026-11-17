@@ -21,6 +21,11 @@ export class AegisoraClient {
   protectTools(options: import("../integration/types").ProtectToolsOptions) {
     return importProtectTools(this.runtime, options);
   }
+  /** Approve or reject pending tool approvals. */
+  get approvals() {
+    return this.runtime.getApprovals();
+  }
+
   runtimeInstance() {
     return this.runtime;
   }

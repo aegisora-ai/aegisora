@@ -1,4 +1,4 @@
-﻿export {
+export {
 Agent,
 AgentRuntime,
 AgentManager
@@ -258,3 +258,8 @@ export * from "./usage/enterprise-usage-pipeline-writer";
 
 export * from "./context";
 
+export type {
+  RuntimeApprovalController,
+  RuntimeApprovalView,
+  RuntimeApprovalPreview,
+} from "./approval/approval-controller";
