@@ -159,7 +159,7 @@ app.whenReady().then(() => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 15000);
     try {
-      const r = await net.fetch("https://www.aegisora.org" + p, { method, headers, body, signal: ctrl.signal });
+      const r = await net.fetch("https://aegisora.org" + p, { method, headers, body, signal: ctrl.signal, redirect: "error" });
       let data = null;
       try { data = await r.json(); } catch {}
       return { ok: r.ok, status: r.status, data };

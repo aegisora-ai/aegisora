@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-export const API_BASE = "https://www.aegisora.org";
+export const API_BASE = "https://aegisora.org";
 
 export type ApiReq = { method: string; path: string; body?: unknown; token?: string; workspaceId?: string };
 export type ApiRes = { ok: boolean; status: number; data: unknown };
