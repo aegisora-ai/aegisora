@@ -64,6 +64,15 @@ function renderCard(p) {
     } catch (e) { log("Reject failed: " + e.message); }
     refresh();
   };
+  if (preview.truncated) {
+    approve.disabled = true;
+    const ack = el("label", "ack");
+    const box = el("input");
+    box.type = "checkbox";
+    box.onchange = () => { approve.disabled = !box.checked; };
+    ack.append(box, document.createTextNode(" I approve without having seen the full content."));
+    card.append(ack);
+  }
   actions.append(reason, approve, reject);
   card.append(actions);
   return card;
