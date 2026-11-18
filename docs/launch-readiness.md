@@ -1,4 +1,4 @@
-# Launch readiness (Connect, 4.5.2)
+# Launch readiness (Connect, 4.5.3)
 
 Honest status. "Verified" means exercised by an automated test or a live run.
 
