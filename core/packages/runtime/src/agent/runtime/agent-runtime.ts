@@ -39,6 +39,7 @@ import { EnforcementGate } from "../../enforcement";
 import { PreviewingApprovalEngine } from "../../approval/previewing-approval-engine";
 import { createApprovalController } from "../../approval/approval-controller";
 import type { RuntimeApprovalController } from "../../approval/approval-controller";
+import type { ApproverVerifier } from "../../approval/approver-auth";
 import { ProviderExecutionGateway } from "../../providers";
 import { CollaborationManager } from "../../collaboration";
 
@@ -86,8 +87,11 @@ export class AgentRuntime {
     this.approvalEngine,
   );
 
+  private approverVerifier: ApproverVerifier | undefined = undefined;
+
   private approvalController = createApprovalController(
     this.approvalEngine,
+    { getVerifier: () => this.approverVerifier },
     () => {
       if (this.enforcement.getEnterpriseWorkspaceId() !== undefined) {
         throw new Error(
@@ -348,6 +352,11 @@ export class AgentRuntime {
   /** Human-facing approval controller for tool approvals (not LLM provider approvals). */
   getApprovals(): RuntimeApprovalController {
     return this.approvalController;
+  }
+
+  /** Requires verified approver credentials for approvals (see createHmacApproverVerifier). Pass undefined to turn it off. Host application only. */
+  setApproverVerifier(verifier: ApproverVerifier | undefined): void {
+    this.approverVerifier = verifier;
   }
 
   getContext() {

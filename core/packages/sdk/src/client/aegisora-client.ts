@@ -26,6 +26,11 @@ export class AegisoraClient {
     return this.runtime.getApprovals();
   }
 
+  /** Require verified approver credentials for approvals (see createHmacApproverVerifier). Host application only. */
+  useApproverVerifier(verifier: { verify(credential: string): { readonly actorId: string; readonly expiresAt: number } } | undefined): void {
+    this.runtime.setApproverVerifier(verifier);
+  }
+
   runtimeInstance() {
     return this.runtime;
   }

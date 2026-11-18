@@ -10,6 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+* Approver identity verification: `createHmacApproverVerifier` and `client.useApproverVerifier()`. With a verifier set, approve and reject require a signed, expiring credential and the approver is taken from it. Adds an approvals console example (`examples/approvals-console`), a live Gmail REST and OAuth helper, and quickstart, enterprise approvals and connector guides.
 * Approval controller: `runtime.getApprovals()` and `client.approvals` (listPending, get, approve, reject) for a human-facing approval UI, with a clipped in-memory preview of each request. It cannot create, consume or expire approvals and refuses to resolve when enterprise approval is configured. Tool approvals only.
 
 * Protected tools: `execute(input, { approvalId })` resumes an approved escalation. The approval is single-use and bound to the agent, the action and the exact input; replay and changed input are blocked. Covered for the Gmail connector with a mock client. The approval engine has no public SDK accessor yet.

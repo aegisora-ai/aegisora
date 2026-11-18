@@ -95,7 +95,7 @@ _repair_backups/
 # website4 ayri repodur (github.com/aegisora-ai/aegisora-dashboard)
 /website4/
 
-# forensics / yerel kanýt dosyalarý
+# forensics / yerel kanï¿½t dosyalarï¿½
 .enterprise/readiness/
 _arsiv-website4/
 _repairs/
@@ -118,3 +118,6 @@ mobility/evidence/*
 !mobility/reports/report-core-20261030-193449.md
 !mobility/reports/results-core-20261030-193449.csv
 !mobility/evidence/evidence-core-20261030-193449.jsonl
+
+# Local Gmail OAuth tokens
+examples/approvals-console/.gmail-token.json

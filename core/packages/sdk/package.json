@@ -8,7 +8,7 @@
     "scripts": {
         "build": "tsc",
         "typecheck": "tsc --noEmit",
-        "test": "node --test test/v4.5-protected-tools.test.cjs test/connect-gmail.test.cjs test/connect-gmail-rest.test.cjs test/connect-gmail-e2e.test.cjs test/connect-gmail-approval.test.cjs test/connect-approval-controller.test.cjs"
+        "test": "node --test test/v4.5-protected-tools.test.cjs test/connect-gmail.test.cjs test/connect-gmail-rest.test.cjs test/connect-gmail-e2e.test.cjs test/connect-gmail-approval.test.cjs test/connect-approval-controller.test.cjs test/connect-approval-hardening.test.cjs"
     },
     "dependencies": {
         "@aegisora/audit": "workspace:*",
