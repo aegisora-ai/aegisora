@@ -132,6 +132,7 @@ export function protectTools(
    */
   const names = new Set<string>();
 
+  const preflights = new Map<string, (input: unknown) => unknown>();
   const registeredTools = options.tools.map((tool) => {
 
     if (!tool || typeof tool !== "object") {
@@ -201,6 +202,20 @@ export function protectTools(
       );
     }
 
+    const preflightDescriptor = Object.getOwnPropertyDescriptor(tool, "preflight");
+    if (preflightDescriptor !== undefined) {
+      if (
+        !Object.prototype.hasOwnProperty.call(preflightDescriptor, "value") ||
+        typeof preflightDescriptor.value !== "function"
+      ) {
+        throw new Error(`Tool preflight must be an own function property: ${name}`);
+      }
+      preflights.set(
+        name,
+        Function.prototype.bind.call(preflightDescriptor.value, tool) as (input: unknown) => unknown,
+      );
+    }
+
     const handler = Function.prototype.bind.call(
       execute,
       tool,
@@ -264,6 +279,10 @@ export function protectTools(
             }
             metadata = { approvalId };
           }
+        }
+        const preflight = preflights.get(name);
+        if (preflight !== undefined) {
+          await preflight(input);
         }
         return runtime.executeRegisteredTool(agentId, name, input, metadata);
       },

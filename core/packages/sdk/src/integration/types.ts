@@ -19,6 +19,12 @@ export interface AegisoraToolDefinition {
   readonly name: string;
   readonly description: string;
   execute(input: unknown, context?: ToolContext): Promise<unknown> | unknown;
+  /**
+   * Optional cheap, side-effect-free validation. It runs before the approval gate,
+   * so a request that can never be valid is rejected without asking a human.
+   * Throw to reject. execute() should still validate its own input.
+   */
+  preflight?(input: unknown): Promise<void> | void;
 }
 
 /** Options for a governed execute call. approvalId resumes a previously approved escalation. */

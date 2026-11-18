@@ -1,6 +1,6 @@
 {
     "name": "@aegisora/core",
-    "version": "4.5.2",
+    "version": "4.5.3",
     "description": "Core types and interfaces for Aegisora AI runtime governance platform.",
     "license": "MIT",
     "main": "./dist/index.js",

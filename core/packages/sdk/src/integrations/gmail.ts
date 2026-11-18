@@ -181,6 +181,11 @@ export function gmailConnector(client: GmailClient, options: GmailConnectorOptio
     tools.push({
       name: GMAIL_TOOL_NAMES.send,
       description: "Send an email. Always requires human approval.",
+      preflight(input: unknown): void {
+        const args = asRecord(input, GMAIL_TOOL_NAMES.send);
+        enforceDomains(parseRecipients(args.to, "to", true), domains, "to");
+        enforceDomains(parseRecipients(args.cc, "cc", false), domains, "cc");
+      },
       async execute(input: unknown): Promise<unknown> {
         const args = asRecord(input, GMAIL_TOOL_NAMES.send);
         const to = parseRecipients(args.to, "to", true);

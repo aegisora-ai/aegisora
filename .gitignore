@@ -95,7 +95,7 @@ _repair_backups/
 # website4 ayri repodur (github.com/aegisora-ai/aegisora-dashboard)
 /website4/
 
-# forensics / yerel kan�t dosyalar�
+# forensics / yerel kanit dosyalari
 .enterprise/readiness/
 _arsiv-website4/
 _repairs/
