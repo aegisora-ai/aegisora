@@ -8,6 +8,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [4.5.2] - 2026-11-18
+
 ### Added
 
 * Approver identity verification: `createHmacApproverVerifier` and `client.useApproverVerifier()`. With a verifier set, approve and reject require a signed, expiring credential and the approver is taken from it. Adds an approvals console example (`examples/approvals-console`), a live Gmail REST and OAuth helper, and quickstart, enterprise approvals and connector guides.
