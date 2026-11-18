@@ -1,0 +1,40 @@
+name: Desktop build
+
+on:
+  push:
+    branches: ['wip/4.5-desktop']
+    tags: ['desktop-v*']
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+            cmd: npx electron-builder --win nsis --publish never
+          - os: macos-latest
+            name: macos
+            cmd: npx electron-builder --mac dmg --publish never
+    runs-on: ${{ matrix.os }}
+    env:
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: ${{ matrix.cmd }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aegisora-${{ matrix.name }}
+          path: |
+            release/*.exe
+            release/*.dmg
+          if-no-files-found: error

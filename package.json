@@ -12,7 +12,9 @@
         "typecheck": "tsc --noEmit",
         "build": "tsc --noEmit && vite build",
         "start": "npm run build && electron .",
-        "dist": "electron-builder --win nsis --publish never"
+        "dist": "electron-builder --win nsis --publish never",
+        "dist:win": "electron-builder --win nsis --publish never",
+        "dist:mac": "electron-builder --mac dmg --publish never"
     },
     "dependencies": {
         "@fontsource/inter": "^5.3.0",
@@ -60,6 +62,23 @@
             "allowToChangeInstallationDirectory": true,
             "shortcutName": "Aegisora",
             "createDesktopShortcut": true
+        },
+        "artifactName": "Aegisora-${version}-${os}-${arch}.${ext}",
+        "mac": {
+            "target": [
+                {
+                    "target": "dmg",
+                    "arch": [
+                        "x64",
+                        "arm64"
+                    ]
+                }
+            ],
+            "category": "public.app-category.developer-tools",
+            "icon": "build/icon.png"
+        },
+        "dmg": {
+            "title": "Aegisora"
         }
     }
 }
