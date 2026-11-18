@@ -1,6 +1,6 @@
 {
     "name": "@aegisora/observability",
-    "version": "4.5.1",
+    "version": "4.5.2",
     "description": "Observability and tracing layer for Aegisora AI governance runtime.",
     "license": "MIT",
     "main": "./dist/index.js",

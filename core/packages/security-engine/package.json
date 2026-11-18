@@ -1,6 +1,6 @@
 {
     "name": "@aegisora/security-engine",
-    "version": "4.5.1",
+    "version": "4.5.2",
     "description": "Security analysis engine for Aegisora AI runtime governance.",
     "license": "MIT",
     "main": "./dist/index.js",
