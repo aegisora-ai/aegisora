@@ -57,6 +57,10 @@ pnpm --filter @aegisora/example-langgraph-agent-governance test
 
 Each claim, the test behind it and the command to reproduce it are listed in the [evidence index](./docs/evidence/README.md).
 
+## Connect: governed Gmail (4.5)
+
+Connect lets an agent use a real tool under the execution boundary. Search and read run without approval. Sending requires approval from a named human, and an approval resumes exactly one request. There is no delete capability. See the [adoption guide](./docs/adoption-guide.md) and [launch readiness](./docs/launch-readiness.md) for what is verified and what is not.
+
 ## Providers
 
 Adapters in the runtime source: OpenAI, Anthropic, Gemini and Groq.
@@ -92,6 +96,10 @@ Report vulnerabilities privately by following [SECURITY.md](./SECURITY.md). Do n
 Read [CONTRIBUTING.md](./CONTRIBUTING.md). Tests are required for security-sensitive changes.
 
 Security researchers: [Challenge #28, break the agent execution boundary](https://github.com/aegisora-ai/aegisora/issues/28). Other work is tracked in [Issues](https://github.com/aegisora-ai/aegisora/issues). Questions go to [Discord](https://discord.gg/8CM3PpQRT5).
+
+## Pilot program
+
+Companies can test Aegisora on a real agent workflow in a free pilot. See [docs/pilot](./docs/pilot/README.md).
 
 ## License
 
