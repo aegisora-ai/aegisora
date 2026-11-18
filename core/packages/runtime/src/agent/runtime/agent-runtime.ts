@@ -36,6 +36,9 @@ import { DecisionTraceStore } from "../../audit";
 import { RuntimeContext } from "../../context/runtime-context";
 import { PermissionEngine } from "../../permissions";
 import { EnforcementGate } from "../../enforcement";
+import { PreviewingApprovalEngine } from "../../approval/previewing-approval-engine";
+import { createApprovalController } from "../../approval/approval-controller";
+import type { RuntimeApprovalController } from "../../approval/approval-controller";
 import { ProviderExecutionGateway } from "../../providers";
 import { CollaborationManager } from "../../collaboration";
 
@@ -75,7 +78,24 @@ export class AgentRuntime {
     this.context.agentRegistry,
   );
 
-  private enforcement = new EnforcementGate(this.context, this.permissions);
+  private approvalEngine = new PreviewingApprovalEngine();
+
+  private enforcement = new EnforcementGate(
+    this.context,
+    this.permissions,
+    this.approvalEngine,
+  );
+
+  private approvalController = createApprovalController(
+    this.approvalEngine,
+    () => {
+      if (this.enforcement.getEnterpriseWorkspaceId() !== undefined) {
+        throw new Error(
+          "[ENFORCEMENT:BLOCK] Enterprise approval is configured. Resolve approvals through EnterpriseApprovalResolutionSync.",
+        );
+      }
+    },
+  );
 
   private collaboration = new CollaborationManager(
     this.context.agentRegistry,
@@ -323,6 +343,11 @@ export class AgentRuntime {
 
   getToolRegistry() {
     return this.tools;
+  }
+
+  /** Human-facing approval controller for tool approvals (not LLM provider approvals). */
+  getApprovals(): RuntimeApprovalController {
+    return this.approvalController;
   }
 
   getContext() {

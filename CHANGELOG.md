@@ -10,6 +10,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+* Approval controller: `runtime.getApprovals()` and `client.approvals` (listPending, get, approve, reject) for a human-facing approval UI, with a clipped in-memory preview of each request. It cannot create, consume or expire approvals and refuses to resolve when enterprise approval is configured. Tool approvals only.
+
 * Protected tools: `execute(input, { approvalId })` resumes an approved escalation. The approval is single-use and bound to the agent, the action and the exact input; replay and changed input are blocked. Covered for the Gmail connector with a mock client. The approval engine has no public SDK accessor yet.
 
 * Aegisora Connect (Gmail REST adapter): `createGmailRestClient()` implements `GmailClient` with plain `fetch` (search, read, send), no new dependency. Error messages carry only the HTTP status. Tested with a fake `fetch` only; OAuth acquisition is not included and it has not been tested against live Gmail.

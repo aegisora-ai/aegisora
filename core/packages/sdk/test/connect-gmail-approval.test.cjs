@@ -14,8 +14,8 @@ function setup(agentId) {
   client.agent({ name: agentId });
   const tools = client.protectTools(gmailConnector(gmail, { agentId, contractId: "task-" + agentId }));
   const send = tools.find((t) => t.name === GMAIL_TOOL_NAMES.send);
-  // Test-only: the approval engine is reached through runtime internals. A public approval API is not designed yet.
-  const engine = client.runtimeInstance().enforcement.getApprovalEngine();
+  // Public approval controller.
+  const engine = client.approvals;
   return { agentId, send, engine, count: () => sends, sent };
 }
 
@@ -23,7 +23,7 @@ const mail = { to: ["a@b.com"], subject: "Hello", body: "Body text" };
 
 async function escalate(env, input = mail) {
   await assert.rejects(() => env.send.execute(input), /ENFORCEMENT:ESCALATE/i);
-  const pending = env.engine.list().find((r) => r.status === "pending");
+  const pending = env.engine.listPending()[0];
   assert.ok(pending, "an approval must be pending after ESCALATE");
   assert.equal(env.count(), 0);
   return pending;
