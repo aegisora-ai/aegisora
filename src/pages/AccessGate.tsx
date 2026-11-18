@@ -102,7 +102,7 @@ function MfaVerify({ onDone }: { onDone: () => void }) {
   );
 }
 
-function MfaEnroll({ onDone, onSkip }: { onDone: () => void; onSkip: () => void }) {
+function MfaEnroll({ onDone }: { onDone: () => void }) {
   const [factorId, setFactorId] = useState<string | null>(null);
   const [qr, setQr] = useState("");
   const [secret, setSecret] = useState("");
@@ -163,7 +163,6 @@ function MfaEnroll({ onDone, onSkip }: { onDone: () => void; onSkip: () => void 
         <button className="btn" type="submit" disabled={busy || !factorId}>{busy ? "Please wait..." : "Turn on"}</button>
       </form>
       <div className="links">
-        <button className="link" type="button" onClick={onSkip}>Skip for now</button>
         <button className="link" type="button" onClick={() => void supabase.auth.signOut()}>Sign out</button>
       </div>
     </Frame>
@@ -182,7 +181,7 @@ export default function AccessGate({ children }: { children: ReactNode }) {
     const rows = (mem.data ?? []) as { workspace_id: string; role: string }[];
     if (rows.length === 0) { setPhase("workspace"); return; }
     const privileged = rows.some((r) => ["OWNER", "ADMIN"].includes(String(r.role).toUpperCase()));
-    if (privileged && sessionStorage.getItem("aegisora.mfaSkip") !== "1") {
+    if (privileged) {
       const aal = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (!aal.error && aal.data.currentLevel === "aal1") {
         setPhase(aal.data.nextLevel === "aal2" ? "mfa-verify" : "mfa-enroll");
@@ -204,7 +203,6 @@ export default function AccessGate({ children }: { children: ReactNode }) {
     return (
       <MfaEnroll
         onDone={() => setPhase("ok")}
-        onSkip={() => { sessionStorage.setItem("aegisora.mfaSkip", "1"); setPhase("ok"); }}
       />
     );
   }
