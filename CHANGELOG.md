@@ -10,6 +10,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+* Aegisora Connect (Gmail, governance layer): `gmailConnector()` builds Gmail tools and a matching task contract for `protectTools()`. Search and read are allowed, send requires approval, delete is not offered, optional recipient-domain allowlist. Tested with a mock client only; it has no Gmail API or OAuth adapter and has not been tested against live Gmail.
+
 * SDK `AegisoraClient.protectTools()`: per-tool enforcement through the runtime ToolRegistry boundary (exact tool names, expiry, execution limits, approval escalation, input snapshotting). The legacy `protect()` only gates the top-level `agent.run()` call and does not intercept tools called inside the agent.
 * Self-play security evaluation engine, a developer quickstart guide and a runnable quickstart package.
 

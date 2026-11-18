@@ -27,3 +27,12 @@ AgentConfig
 export type {
 SDKAgentConfig
 } from "./agent/sdk-agent";
+
+export { gmailConnector, GMAIL_TOOL_NAMES } from "./integrations/gmail";
+export type {
+  GmailClient,
+  GmailConnectorOptions,
+  GmailMessage,
+  GmailMessageSummary,
+  GmailSendRequest,
+} from "./integrations/gmail";
