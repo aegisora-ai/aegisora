@@ -16,7 +16,7 @@ jobs:
             cmd: npx electron-builder --win nsis --publish never
           - os: macos-latest
             name: macos
-            cmd: npx electron-builder --mac dmg --publish never
+            cmd: npx electron-builder --mac dmg --x64 --arm64 --publish never
     runs-on: ${{ matrix.os }}
     env:
       VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
