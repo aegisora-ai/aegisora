@@ -21,11 +21,15 @@ export interface AegisoraToolDefinition {
   execute(input: unknown, context?: ToolContext): Promise<unknown> | unknown;
 }
 
+/** Options for a governed execute call. approvalId resumes a previously approved escalation. */
+export interface ProtectedToolExecuteOptions {
+  readonly approvalId?: string;
+}
 /** A tool with the same name and description, but a governed execute method. */
 export interface ProtectedAegisoraTool {
   readonly name: string;
   readonly description: string;
-  execute(input: unknown): Promise<unknown>;
+  execute(input: unknown, options?: ProtectedToolExecuteOptions): Promise<unknown>;
 }
 
 export interface ProtectToolsOptions {

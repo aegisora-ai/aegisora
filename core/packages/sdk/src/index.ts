@@ -36,3 +36,11 @@ export type {
   GmailMessageSummary,
   GmailSendRequest,
 } from "./integrations/gmail";
+
+export { createGmailRestClient } from "./integrations/gmail-rest";
+export type {
+  FetchInitLike,
+  FetchLike,
+  FetchResponseLike,
+  GmailRestClientOptions,
+} from "./integrations/gmail-rest";
