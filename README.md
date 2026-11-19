@@ -10,7 +10,7 @@ Every agent action gets a decision before it executes: `ALLOW`, `BLOCK` or `ESCA
 [![CI](https://img.shields.io/github/actions/workflow/status/aegisora-ai/aegisora/ci.yml?branch=main&label=CI)](https://github.com/aegisora-ai/aegisora/actions)
 [![Release](https://img.shields.io/github/v/release/aegisora-ai/aegisora?label=release)](https://github.com/aegisora-ai/aegisora/releases)
 
-[Evidence](./docs/evidence/README.md) · [Security policy](./SECURITY.md) · [Architecture](./docs/ARCHITECTURE.md) · [Threat model](./docs/security/THREAT_MODEL.md) · [Changelog](./CHANGELOG.md) · [Live demo](https://www.aegisora.org/) · [Discord](https://discord.gg/8CM3PpQRT5)
+[Evidence](./docs/evidence/README.md) · [Security policy](./SECURITY.md) · [Architecture](./docs/ARCHITECTURE.md) · [Threat model](./docs/security/THREAT_MODEL.md) · [Troubleshooting](./docs/troubleshooting.md) · [Changelog](./CHANGELOG.md) · [Live demo](https://www.aegisora.org/) · [Discord](https://discord.gg/8CM3PpQRT5)
 
 </div>
 
@@ -56,6 +56,10 @@ pnpm --filter @aegisora/example-langgraph-agent-governance test
 ```
 
 Each claim, the test behind it and the command to reproduce it are listed in the [evidence index](./docs/evidence/README.md).
+
+## Troubleshooting
+
+Hitting `ERR_PACKAGE_PATH_NOT_EXPORTED` on an ESM import, or an action that comes back `BLOCK` when you expected `ALLOW`? See [docs/troubleshooting.md](./docs/troubleshooting.md) for the ESM export map fix (4.5.1+), what `ALLOW`/`BLOCK`/`ESCALATE` mean, the common fail-closed reasons an action is blocked, and how to read an evidence record.
 
 ## Connect: governed Gmail (4.5)
 
